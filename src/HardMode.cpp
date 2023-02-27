@@ -27,8 +27,6 @@ void HardModeUnitScript::OnUnitDeath(Unit* victim, Unit* killer)
 
     Player* player = victim->ToPlayer();
     player->SetUInt32Value(PLAYER_XP, 0);
-
-    ChatHandler(player->GetSession()).SendSysMessage("You lost all your exp!");
 }
 
 void SC_AddHardModeScripts()
