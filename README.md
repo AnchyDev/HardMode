@@ -19,4 +19,4 @@ If you need any help you can join my [Discord Server](https://discord.gg/xdVPGcp
 
 ## Credits
 
-Thanks to Артём Борисов_99 from the AzerothCore Discord for the module suggestion.
+Thanks to Tenebris | Michael from the AzerothCore Discord for the module suggestion.
