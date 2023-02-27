@@ -5,13 +5,22 @@
 [worldserver]
 
 ########################################
-# My module configuration
+# Hard Mode configuration
 ########################################
 #
-#    MyModule.Enable
-#        Description: Enable my module and print "Hello World" message at server start
+#    HardMode.Enable
+#        Description: Enable the Hard Mode module.
 #        Default:     0 - Disabled
 #                     1 - Enabled
 #
 
-MyModule.Enable = 0
+HardMode.Enable = 0
+
+#
+#    HardMode.ExpLossOnDeath
+#        Description: Enable losing all XP on death.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#
+
+HardMode.ExpLossOnDeath = 1
