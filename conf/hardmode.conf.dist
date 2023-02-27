@@ -23,4 +23,4 @@ HardMode.Enable = 0
 #                     1 - Enabled
 #
 
-HardMode.ExpLossOnDeath = 1
+HardMode.ExpLossOnDeath = 0
