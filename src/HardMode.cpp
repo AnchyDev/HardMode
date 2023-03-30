@@ -39,6 +39,8 @@ void HardModePlayerScript::OnLevelChanged(Player* player, uint8 oldlevel)
         }
     }
 
+    //TODO: Add rewards here.
+
     if (hasModes)
     {
         ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You have reached max level in the modes: {}.", ss.str()));
