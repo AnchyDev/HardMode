@@ -1,7 +1,7 @@
 #include "HardMode.h"
 #include "HardModeHandler.h"
 
-#include "Modes/SelfCrafted.h"
+#include "Modes/DifficultyModeSelfCrafted.h"
 
 #include "Chat.h"
 #include "Config.h"
