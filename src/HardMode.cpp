@@ -38,6 +38,36 @@ bool HardModePlayerScript::CanSendMail(Player* player, ObjectGuid receiverGuid, 
     return true;
 }
 
+bool HardModePlayerScript::CanEquipItem(Player* player, uint8 slot, uint16& dest, Item* pItem, bool swap, bool notLoading)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return true;
+    }
+
+    if (!player)
+    {
+        return true;
+    }
+
+    for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (!sHardModeHandler->IsModeEnabled(player, i))
+        {
+            continue;
+        }
+
+        bool result = sHardModeHandler->Modes[i]->CanEquipItem(player, slot, dest, pItem, swap, notLoading);
+
+        if (!result)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool HardModeMiscScript::CanSendAuctionHello(WorldSession const* session, ObjectGuid guid, Creature* creature)
 {
     if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
