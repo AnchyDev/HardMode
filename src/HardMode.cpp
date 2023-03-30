@@ -20,6 +20,14 @@ void HardModePlayerScript::OnMoneyChanged(Player* player, int32& amount)
     sHardModeHandler->SetTainted(player, true);
 }
 
+bool HardModePlayerScript::CanInitTrade(Player* player, Player* target)
+{
+    sHardModeHandler->SetTainted(player, true);
+    sHardModeHandler->SetTainted(target, true);
+
+    return true;
+}
+
 bool HardModePlayerScript::CanSendMail(Player* player, ObjectGuid receiverGuid, ObjectGuid mailbox, std::string& subject, std::string& body, uint32 money, uint32 COD, Item* item)
 {
     auto targetPlayer = ObjectAccessor::FindPlayer(receiverGuid);

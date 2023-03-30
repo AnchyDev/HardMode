@@ -23,6 +23,7 @@ public:
 private:
     void OnGiveXP(Player* player, uint32& amount, Unit* victim) override;
     void OnMoneyChanged(Player* player, int32& amount) override;
+    bool CanInitTrade(Player* player, Player* target) override;
     bool CanSendMail(Player* player, ObjectGuid receiverGuid, ObjectGuid mailbox, std::string& subject, std::string& body, uint32 money, uint32 COD, Item* item) override;
     bool CanEquipItem(Player* player, uint8 slot, uint16& dest, Item* pItem, bool swap, bool notLoading) override;
 };
