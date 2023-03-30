@@ -3,7 +3,7 @@
 
 bool HardModeHandler::IsModeEnabled(Player* player, uint8 mode)
 {
-    return player->GetPlayerSetting("HardMode", mode).value == 1;
+    return player->GetPlayerSetting("HardMode", mode).value > 0;
 }
 
 std::string HardModeHandler::GetNameFromMode(uint8 mode)
