@@ -6,14 +6,43 @@
 #include "Chat.h"
 #include "Config.h"
 #include "Player.h"
+#include "ScriptedGossip.h"
 
 #include <sstream>
+
+void HardModePlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* victim)
+{
+    sHardModeHandler->SetTainted(player, true);
+}
+
+void HardModePlayerScript::OnMoneyChanged(Player* player, int32& amount)
+{
+    sHardModeHandler->SetTainted(player, true);
+}
+
+bool HardModePlayerScript::CanSendMail(Player* player, ObjectGuid receiverGuid, ObjectGuid mailbox, std::string& subject, std::string& body, uint32 money, uint32 COD, Item* item)
+{
+    auto targetPlayer = ObjectAccessor::FindPlayer(receiverGuid);
+
+    sHardModeHandler->SetTainted(player, true);
+
+    if (targetPlayer)
+    {
+        sHardModeHandler->SetTainted(targetPlayer, true);
+    }
+    else
+    {
+        CharacterDatabase.Execute("INSERT INTO character_settings (guid, source, data) VALUES ({}, 'HardModeTainted', '1') ON DUPLICATE KEY UPDATE data = '1'", receiverGuid.GetRawValue());
+    }
+
+    return true;
+}
 
 bool HardModeMiscScript::CanSendAuctionHello(WorldSession const* session, ObjectGuid guid, Creature* creature)
 {
     if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
     {
-return true;
+        return true;
     }
 
     Player* player = session->GetPlayer();
@@ -45,7 +74,8 @@ ChatCommandTable HardModeCommandScript::GetCommands() const
     static ChatCommandTable sbCommandTable =
     {
         { "info", HandleHardModeInfoCommand, SEC_ADMINISTRATOR, Console::No },
-        { "setmode", HandleHardModeSetModeCommand, SEC_ADMINISTRATOR, Console::No }
+        { "setmode", HandleHardModeSetModeCommand, SEC_ADMINISTRATOR, Console::No },
+        { "settaint", HandleHardModeSetTaintCommand, SEC_ADMINISTRATOR, Console::No }
     };
 
     static ChatCommandTable commandTable =
@@ -91,6 +121,7 @@ bool HardModeCommandScript::HandleHardModeInfoCommand(ChatHandler* handler, Opti
     }
 
     handler->SendSysMessage(Acore::StringFormatFmt("Enabled Difficulty Modes: {}", ss.str()));
+    handler->SendSysMessage(Acore::StringFormatFmt("IsTainted: {}", sHardModeHandler->IsTainted(targetPlayer)));
 
     return true;
 }
@@ -120,6 +151,73 @@ bool HardModeCommandScript::HandleHardModeSetModeCommand(ChatHandler* handler, O
     auto targetPlayer = target->GetConnectedPlayer();
     targetPlayer->UpdatePlayerSetting("HardMode", mode, value);
 
+    handler->SendSysMessage(Acore::StringFormatFmt("Updated mode '{}' for player '{}' to '{}'.", sHardModeHandler->GetNameFromMode(mode), targetPlayer->GetName(), value));
+
+    return true;
+}
+
+bool HardModeCommandScript::HandleHardModeSetTaintCommand(ChatHandler* handler, Optional<PlayerIdentifier> target, uint8 value)
+{
+    if (!target)
+    {
+        target = PlayerIdentifier::FromTargetOrSelf(handler);
+    }
+
+    if (!target)
+    {
+        return false;
+    }
+
+    if (!target->IsConnected())
+    {
+        return false;
+    }
+
+    auto targetPlayer = target->GetConnectedPlayer();
+    sHardModeHandler->SetTainted(targetPlayer, value);
+
+    handler->SendSysMessage(Acore::StringFormatFmt("Updated taint for player '{}' to '{}'.", targetPlayer->GetName(), value));
+
+    return true;
+}
+
+bool HardModeGameObjectScript::OnGossipHello(Player* player, GameObject* go)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return false;
+    }
+
+    if (sConfigMgr->GetOption<bool>("HardMode.EnableSelfCrafted", false))
+    {
+        if (!sHardModeHandler->IsModeEnabled(player, DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED) && !sHardModeHandler->IsTainted(player))
+        {
+            AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Enable Self-Crafted Mode", 0, DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED);
+        }
+        else if(sHardModeHandler->IsModeEnabled(player, DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED))
+        {
+            AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Disable Self-Crafted Mode", 0, DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED);
+        }
+    }
+
+    if (sHardModeHandler->IsTainted(player))
+    {
+        SendGossipMenuFor(player, HARDMODE_GOSSIP_NPCTEXT_ID_TAINTED, go->GetGUID());
+    }
+    else
+    {
+        SendGossipMenuFor(player, HARDMODE_GOSSIP_NPCTEXT_ID, go->GetGUID());
+    }
+
+    return true;
+}
+
+bool HardModeGameObjectScript::OnGossipSelect(Player* player, GameObject* go, uint32 sender, uint32 action)
+{
+    auto value = sHardModeHandler->IsModeEnabled(player, action) ? 0 : 1;
+    player->UpdatePlayerSetting("HardMode", action, value);
+    CloseGossipMenuFor(player);
+
     return true;
 }
 
@@ -128,5 +226,7 @@ void SC_AddHardModeScripts()
     sHardModeHandler->Modes[DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED] = new DifficultyModeSelfCrafted();
 
     new HardModeMiscScript();
+    new HardModePlayerScript();
     new HardModeCommandScript();
+    new HardModeGameObjectScript();
 }
