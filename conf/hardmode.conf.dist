@@ -5,13 +5,13 @@
 [worldserver]
 
 ########################################
-# My module configuration
+# HardMode configuration
 ########################################
 #
-#    MyModule.Enable
-#        Description: Enable my module and print "Hello World" message at server start
+#    HardMode.Enable
+#        Description: Enables/disables the HardMode modes.
 #        Default:     0 - Disabled
 #                     1 - Enabled
 #
 
-MyModule.Enable = 0
+HardMode.Enable = 0
