@@ -11,6 +11,46 @@
 #include <sstream>
 
 
+void HardModePlayerScript::OnLevelChanged(Player* player, uint8 oldlevel)
+{
+    uint8 level = player->GetLevel();
+    uint8 maxLevel = sConfigMgr->GetOption<int32>("MaxPlayerLevel", DEFAULT_MAX_LEVEL);
+
+    if (level < maxLevel)
+    {
+        return;
+    }
+
+    std::stringstream ss;
+    bool hasModes = false;
+
+    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (sHardModeHandler->IsModeEnabled(player, i))
+        {
+            ss << sHardModeHandler->GetNameFromMode(i);
+
+            if (i != DifficultyModes::DIFFICULTY_MODE_COUNT - 1)
+            {
+                ss << ", ";
+            }
+
+            hasModes = true;
+        }
+    }
+
+    if (hasModes)
+    {
+        ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You have reached max level in the modes: {}.", ss.str()));
+        ChatHandler(player->GetSession()).SendSysMessage("Your rewards have been mailed to you, return to the Shrine of Hard Mode to disable your modes.");
+
+        if (sConfigMgr->GetOption<bool>("HardMode.AnnounceModesMaxLevel", true))
+        {
+            sWorld->SendServerMessage(SERVER_MSG_STRING, Acore::StringFormatFmt("Congratulations, player {} reached max level in: {}!", player->GetName(), ss.str()));
+        }
+    }
+}
+
 void HardModePlayerScript::OnLogin(Player* player)
 {
     if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
