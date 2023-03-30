@@ -1,29 +1,29 @@
-/*
- * Copyright (C) 2016+ AzerothCore <www.azerothcore.org>, released under GNU AGPL v3 license: https://github.com/azerothcore/azerothcore-wotlk/blob/master/LICENSE-AGPL3
- */
+#ifndef MODULE_HARDMODE_H
+#define MODULE_HARDMODE_H
 
+#include "ChatCommand.h"
 #include "ScriptMgr.h"
-#include "Player.h"
-#include "Config.h"
-#include "Chat.h"
 
-// Add player scripts
-class MyPlayer : public PlayerScript
+using namespace Acore::ChatCommands;
+
+class HardModeMiscScript : MiscScript
 {
 public:
-    MyPlayer() : PlayerScript("MyPlayer") { }
+    HardModeMiscScript() : MiscScript("HardModeMiscScript") { }
 
-    void OnLogin(Player* player) override
-    {
-        if (sConfigMgr->GetOption<bool>("MyModule.Enable", false))
-        {
-            ChatHandler(player->GetSession()).SendSysMessage("Hello World from Skeleton-Module!");
-        }
-    }
+private:
+    bool CanSendAuctionHello(WorldSession const* session, ObjectGuid /*guid*/, Creature* /*creature*/) override;
 };
 
-// Add all scripts in one
-void AddMyPlayerScripts()
+class HardModeCommandScript : public CommandScript
 {
-    new MyPlayer();
-}
+public:
+    HardModeCommandScript() : CommandScript("HardModeCommandScript") { }
+
+    ChatCommandTable GetCommands() const override;
+    static bool HandleHardModeInfoCommand(ChatHandler* handler, Optional<PlayerIdentifier> target);
+    static bool HandleHardModeSetModeCommand(ChatHandler* handler, Optional<PlayerIdentifier> target, uint8 mode, uint8 value);
+};
+
+
+#endif // MODULE_HARDMODE_H
