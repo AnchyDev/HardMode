@@ -6,7 +6,8 @@
 enum DifficultyModes
 {
     DIFFICULTY_MODE_SELF_CRAFTED = 0,
-    DIFFICULTY_MODE_COUNT = 1
+    DIFFICULTY_MODE_HARDCORE = 1,
+    DIFFICULTY_MODE_COUNT = 2
 };
 
 class DifficultyMode

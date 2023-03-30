@@ -16,5 +16,6 @@
 
 HardMode.Enable = 0
 HardMode.EnableSelfCrafted = 0
+HardMode.EnableHardCore = 0
 HardMode.AnnounceModesOnLogin = 1
 HardMode.AnnounceModesMaxLevel = 1

@@ -35,6 +35,8 @@ std::string HardModeHandler::GetNameFromMode(uint8 mode)
     {
     case DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED:
         return "Self-Crafted";
+    case DifficultyModes::DIFFICULTY_MODE_HARDCORE:
+        return "HardCore";
     }
 
     return "ERROR";

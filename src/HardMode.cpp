@@ -2,6 +2,7 @@
 #include "HardModeHandler.h"
 
 #include "Modes/DifficultyModeSelfCrafted.h"
+#include "Modes/DifficultyModeHardCore.h"
 
 #include "Chat.h"
 #include "Config.h"
@@ -336,11 +337,23 @@ bool HardModeGameObjectScript::OnGossipHello(Player* player, GameObject* go)
     {
         if (!sHardModeHandler->IsModeEnabled(player, DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED) && !sHardModeHandler->IsTainted(player))
         {
-            AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Enable Self-Crafted Mode", 0, DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED);
+            AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Enable {} Mode", sHardModeHandler->GetNameFromMode(DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED)), 0, DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED);
         }
         else if(sHardModeHandler->IsModeEnabled(player, DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED))
         {
-            AddGossipItemFor(player, GOSSIP_ICON_CHAT, "Disable Self-Crafted Mode", 0, DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED);
+            AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Disable {} Mode", sHardModeHandler->GetNameFromMode(DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED)), 0, DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED);
+        }
+    }
+
+    if (sConfigMgr->GetOption<bool>("HardMode.EnableHardCore", false))
+    {
+        if (!sHardModeHandler->IsModeEnabled(player, DifficultyModes::DIFFICULTY_MODE_HARDCORE) && !sHardModeHandler->IsTainted(player))
+        {
+            AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Enable {} Mode", sHardModeHandler->GetNameFromMode(DifficultyModes::DIFFICULTY_MODE_HARDCORE)), 0, DifficultyModes::DIFFICULTY_MODE_HARDCORE);
+        }
+        else if (sHardModeHandler->IsModeEnabled(player, DifficultyModes::DIFFICULTY_MODE_HARDCORE))
+        {
+            AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Disable {} Mode", sHardModeHandler->GetNameFromMode(DifficultyModes::DIFFICULTY_MODE_HARDCORE)), 0, DifficultyModes::DIFFICULTY_MODE_HARDCORE);
         }
     }
 
@@ -377,6 +390,7 @@ bool HardModeGameObjectScript::OnGossipSelect(Player* player, GameObject* go, ui
 void SC_AddHardModeScripts()
 {
     sHardModeHandler->Modes[DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED] = new DifficultyModeSelfCrafted();
+    sHardModeHandler->Modes[DifficultyModes::DIFFICULTY_MODE_HARDCORE] = new DifficultyModeHardCore();
 
     new HardModeMiscScript();
     new HardModePlayerScript();
