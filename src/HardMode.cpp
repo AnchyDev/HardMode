@@ -214,9 +214,18 @@ bool HardModeGameObjectScript::OnGossipHello(Player* player, GameObject* go)
 
 bool HardModeGameObjectScript::OnGossipSelect(Player* player, GameObject* go, uint32 sender, uint32 action)
 {
-    auto value = sHardModeHandler->IsModeEnabled(player, action) ? 0 : 1;
-    player->UpdatePlayerSetting("HardMode", action, value);
-    CloseGossipMenuFor(player);
+    auto isModeEnabled = sHardModeHandler->IsModeEnabled(player, action);
+
+    if (!isModeEnabled && sHardModeHandler->IsTainted(player))
+    {
+        ChatHandler(player->GetSession()).SendSysMessage("You cannot enable modes while tainted.");
+        CloseGossipMenuFor(player);
+    }
+    else
+    {
+        player->UpdatePlayerSetting("HardMode", action, isModeEnabled == 0 ? 1 : 0);
+        CloseGossipMenuFor(player);
+    }
 
     return true;
 }
