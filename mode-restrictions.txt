@@ -1,0 +1,10 @@
+SelfCrafted:
+- Can't use auction house.
+- Can't equip items that aren't self crafted.
+- Can't trade other players.
+- Can't be traded by other players.
+
+HardCore:
+- Can't use auction house.
+- Can't trade other players.
+- Can't be traded by other players.
