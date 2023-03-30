@@ -22,6 +22,13 @@ bool DifficultyModeSelfCrafted::CanEquipItem(Player* player, uint8 slot, uint16&
         return true;
     }
 
+    // Allow fishing poles to be equipped since you cannot craft them.
+    if (pItem->GetTemplate()->Class == ITEM_CLASS_WEAPON &&
+        pItem->GetTemplate()->SubClass == ITEM_SUBCLASS_WEAPON_FISHING_POLE)
+    {
+        return true;
+    }
+
     if (!pItem->GetTemplate()->HasSignature())
     {
         return false;
