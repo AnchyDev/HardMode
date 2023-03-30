@@ -16,3 +16,4 @@
 
 HardMode.Enable = 0
 HardMode.EnableSelfCrafted = 0
+HardMode.AnnounceModesOnLogin = 1

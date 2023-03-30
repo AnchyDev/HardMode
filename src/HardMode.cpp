@@ -10,6 +10,43 @@
 
 #include <sstream>
 
+
+void HardModePlayerScript::OnLogin(Player* player)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return;
+    }
+
+    if (!sConfigMgr->GetOption<bool>("HardMode.AnnounceModesOnLogin", true))
+    {
+        return;
+    }
+
+    std::stringstream ss;
+    bool hasModes = false;
+
+    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (sHardModeHandler->IsModeEnabled(player, i))
+        {
+            ss << sHardModeHandler->GetNameFromMode(i);
+
+            if (i != DifficultyModes::DIFFICULTY_MODE_COUNT - 1)
+            {
+                ss << ", ";
+            }
+
+            hasModes = true;
+        }
+    }
+
+    if (hasModes)
+    {
+        ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("Enabled Difficulty Modes: {}", ss.str()));
+    }
+}
+
 void HardModePlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* victim)
 {
     sHardModeHandler->SetTainted(player, true);
