@@ -22,6 +22,33 @@ void HardModePlayerScript::OnMoneyChanged(Player* player, int32& amount)
 
 bool HardModePlayerScript::CanInitTrade(Player* player, Player* target)
 {
+    for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (sHardModeHandler->IsModeEnabled(player, i))
+        {
+            bool isTradable = sHardModeHandler->Modes[i]->IsTradable();
+
+            if (!isTradable)
+            {
+                ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot trade players while in the {} mode.", sHardModeHandler->GetNameFromMode(i)));
+
+                return false;
+            }
+        }
+
+        if (sHardModeHandler->IsModeEnabled(target, i))
+        {
+            bool isTradable = sHardModeHandler->Modes[i]->IsTradable();
+
+            if (!isTradable)
+            {
+                ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot trade players that are in the {} mode.", sHardModeHandler->GetNameFromMode(i)));
+
+                return false;
+            }
+        }
+    }
+
     sHardModeHandler->SetTainted(player, true);
     sHardModeHandler->SetTainted(target, true);
 

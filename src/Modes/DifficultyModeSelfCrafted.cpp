@@ -3,6 +3,8 @@
 #include "Config.h"
 #include "Player.h"
 
+DifficultyModeSelfCrafted::DifficultyModeSelfCrafted() : DifficultyMode(/*canBeTraded*/ false) { }
+
 bool DifficultyModeSelfCrafted::CanSendAuctionHello(WorldSession const* /*session*/, ObjectGuid /*guid*/, Creature* /*creature*/)
 {
     if (!sConfigMgr->GetOption<bool>("HardMode.EnableSelfCrafted", false))

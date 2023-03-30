@@ -6,7 +6,7 @@
 class DifficultyModeSelfCrafted : public DifficultyMode
 {
 public:
-    DifficultyModeSelfCrafted() { }
+    DifficultyModeSelfCrafted();
 
 public:
     bool CanSendAuctionHello(WorldSession const* session, ObjectGuid guid, Creature* creature) override;
