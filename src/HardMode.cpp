@@ -333,27 +333,18 @@ bool HardModeGameObjectScript::OnGossipHello(Player* player, GameObject* go)
         return false;
     }
 
-    if (sConfigMgr->GetOption<bool>("HardMode.EnableSelfCrafted", false))
+    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
     {
-        if (!sHardModeHandler->IsModeEnabled(player, DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED) && !sHardModeHandler->IsTainted(player))
+        if (sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(i), false))
         {
-            AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Enable {} Mode", sHardModeHandler->GetNameFromMode(DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED)), 0, DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED);
-        }
-        else if(sHardModeHandler->IsModeEnabled(player, DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED))
-        {
-            AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Disable {} Mode", sHardModeHandler->GetNameFromMode(DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED)), 0, DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED);
-        }
-    }
-
-    if (sConfigMgr->GetOption<bool>("HardMode.EnableHardCore", false))
-    {
-        if (!sHardModeHandler->IsModeEnabled(player, DifficultyModes::DIFFICULTY_MODE_HARDCORE) && !sHardModeHandler->IsTainted(player))
-        {
-            AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Enable {} Mode", sHardModeHandler->GetNameFromMode(DifficultyModes::DIFFICULTY_MODE_HARDCORE)), 0, DifficultyModes::DIFFICULTY_MODE_HARDCORE);
-        }
-        else if (sHardModeHandler->IsModeEnabled(player, DifficultyModes::DIFFICULTY_MODE_HARDCORE))
-        {
-            AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Disable {} Mode", sHardModeHandler->GetNameFromMode(DifficultyModes::DIFFICULTY_MODE_HARDCORE)), 0, DifficultyModes::DIFFICULTY_MODE_HARDCORE);
+            if (!sHardModeHandler->IsModeEnabled(player, i) && !sHardModeHandler->IsTainted(player))
+            {
+                AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Enable {} Mode", sHardModeHandler->GetNameFromMode(i)), 0, i);
+            }
+            else if (sHardModeHandler->IsModeEnabled(player, i))
+            {
+                AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Disable {} Mode", sHardModeHandler->GetNameFromMode(i)), 0, i);
+            }
         }
     }
 

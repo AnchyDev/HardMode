@@ -42,6 +42,19 @@ std::string HardModeHandler::GetNameFromMode(uint8 mode)
     return "ERROR";
 }
 
+std::string HardModeHandler::GetConfigNameFromMode(uint8 mode)
+{
+    switch (mode)
+    {
+    case DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED:
+        return "HardMode.EnableSelfCrafted";
+    case DifficultyModes::DIFFICULTY_MODE_HARDCORE:
+        return "HardMode.EnableHardCore";
+    }
+
+    return "ERROR";
+}
+
 PlayerSettingMap* HardModeHandler::GetPlayerSettingsFromDatabase(ObjectGuid guid)
 {
     PlayerSettingMap* settingMap = new PlayerSettingMap();

@@ -16,6 +16,7 @@ public:
     bool GetTainted(Player* player);
     bool IsTainted(Player* player);
     std::string GetNameFromMode(uint8 mode);
+    std::string GetConfigNameFromMode(uint8 mode);
     PlayerSettingMap* GetPlayerSettingsFromDatabase(ObjectGuid guid);
 
     static HardModeHandler* GetInstance();
