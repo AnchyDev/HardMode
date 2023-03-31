@@ -42,6 +42,45 @@ std::string HardModeHandler::GetNameFromMode(uint8 mode)
     return "ERROR";
 }
 
+std::string HardModeHandler::GetNamesFromEnabledModes(Player* player)
+{
+    std::stringstream ss;
+    std::vector<std::string> modes;
+
+    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (sHardModeHandler->IsModeEnabled(player, i))
+        {
+            modes.push_back(sHardModeHandler->GetNameFromMode(i));
+        }
+    }
+
+    for (uint8 i = 0; i < modes.size(); ++i)
+    {
+        ss << modes[i];
+
+        if (i != modes.size() - 1)
+        {
+            ss << ", ";
+        }
+    }
+
+    return ss.str();
+}
+
+bool HardModeHandler::HasModesEnabled(Player* player)
+{
+    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (sHardModeHandler->IsModeEnabled(player, i))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 std::string HardModeHandler::GetConfigNameFromMode(uint8 mode)
 {
     switch (mode)

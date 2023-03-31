@@ -17,6 +17,8 @@ public:
     void SetShadowBanned(Player* player, bool value);
     bool IsShadowBanned(Player* player);
     std::string GetNameFromMode(uint8 mode);
+    std::string GetNamesFromEnabledModes(Player* player);
+    bool HasModesEnabled(Player* player);
     std::string GetConfigNameFromMode(uint8 mode);
     PlayerSettingMap* GetPlayerSettingsFromDatabase(ObjectGuid guid);
 

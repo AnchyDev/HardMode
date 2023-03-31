@@ -13,30 +13,11 @@
 
 void HardModePlayerScript::OnPVPKill(Player* killer, Player* victim)
 {
-    std::stringstream ss;
-    bool hasModes = false;
-
-    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
-    {
-        if (sHardModeHandler->IsModeEnabled(victim, i))
-        {
-            ss << sHardModeHandler->GetNameFromMode(i);
-
-            if (i != DifficultyModes::DIFFICULTY_MODE_COUNT - 1)
-            {
-                ss << ", ";
-            }
-
-
-            hasModes = true;
-        }
-    }
-
-    if (hasModes && !sHardModeHandler->IsShadowBanned(killer))
+    if (sHardModeHandler->HasModesEnabled(victim) && !sHardModeHandler->IsShadowBanned(killer))
     {
         if (sConfigMgr->GetOption<bool>("HardMode.AnnounceOnPvPKill", true))
         {
-            sWorld->SendServerMessage(SERVER_MSG_STRING, Acore::StringFormatFmt("Player {} killed {} while they were doing the {} challenge(s)!", killer->GetName(), victim->GetName(), ss.str()));
+            sWorld->SendServerMessage(SERVER_MSG_STRING, Acore::StringFormatFmt("Player {} killed {} while they were doing the {} challenge(s)!", killer->GetName(), victim->GetName(), sHardModeHandler->GetNamesFromEnabledModes(victim)));
         }
     }
 }
@@ -147,34 +128,16 @@ void HardModePlayerScript::OnLevelChanged(Player* player, uint8 oldlevel)
         return;
     }
 
-    std::stringstream ss;
-    bool hasModes = false;
-
-    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
-    {
-        if (sHardModeHandler->IsModeEnabled(player, i))
-        {
-            ss << sHardModeHandler->GetNameFromMode(i);
-
-            if (i != DifficultyModes::DIFFICULTY_MODE_COUNT - 1)
-            {
-                ss << ", ";
-            }
-
-            hasModes = true;
-        }
-    }
-
     //TODO: Add rewards here.
 
-    if (hasModes)
+    if (sHardModeHandler->HasModesEnabled(player))
     {
-        ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You have reached max level in the modes: {}.", ss.str()));
+        ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You have reached max level in the modes: {}.", sHardModeHandler->GetNamesFromEnabledModes(player)));
         ChatHandler(player->GetSession()).SendSysMessage("Your rewards have been mailed to you, return to the Shrine of Hard Mode to disable your modes.");
 
         if (sConfigMgr->GetOption<bool>("HardMode.AnnounceModesMaxLevel", true))
         {
-            sWorld->SendServerMessage(SERVER_MSG_STRING, Acore::StringFormatFmt("Congratulations, player {} reached max level in: {}!", player->GetName(), ss.str()));
+            sWorld->SendServerMessage(SERVER_MSG_STRING, Acore::StringFormatFmt("Congratulations, player {} reached max level in: {}!", player->GetName(), sHardModeHandler->GetNamesFromEnabledModes(player)));
         }
     }
 }
@@ -191,27 +154,9 @@ void HardModePlayerScript::OnLogin(Player* player)
         return;
     }
 
-    std::stringstream ss;
-    bool hasModes = false;
-
-    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
+    if (sHardModeHandler->HasModesEnabled(player))
     {
-        if (sHardModeHandler->IsModeEnabled(player, i))
-        {
-            ss << sHardModeHandler->GetNameFromMode(i);
-
-            if (i != DifficultyModes::DIFFICULTY_MODE_COUNT - 1)
-            {
-                ss << ", ";
-            }
-
-            hasModes = true;
-        }
-    }
-
-    if (hasModes)
-    {
-        ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("Enabled Difficulty Modes: {}", ss.str()));
+        ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("Enabled Difficulty Modes: {}", sHardModeHandler->GetNamesFromEnabledModes(player)));
     }
 }
 
@@ -376,22 +321,7 @@ bool HardModeCommandScript::HandleHardModeInfoCommand(ChatHandler* handler, Opti
 
     auto targetPlayer = target->GetConnectedPlayer();
 
-    std::stringstream ss;
-
-    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
-    {
-        if (sHardModeHandler->IsModeEnabled(targetPlayer, i))
-        {
-            ss << sHardModeHandler->GetNameFromMode(i);
-
-            if (i != DifficultyModes::DIFFICULTY_MODE_COUNT - 1)
-            {
-                ss << ", ";
-            }
-        }
-    }
-
-    handler->SendSysMessage(Acore::StringFormatFmt("Enabled Difficulty Modes: {}", ss.str()));
+    handler->SendSysMessage(Acore::StringFormatFmt("Enabled Difficulty Modes: {}", sHardModeHandler->GetNamesFromEnabledModes(targetPlayer)));
     handler->SendSysMessage(Acore::StringFormatFmt("IsTainted: {}", sHardModeHandler->IsTainted(targetPlayer)));
     handler->SendSysMessage(Acore::StringFormatFmt("IsShadowBanned: {}", sHardModeHandler->IsShadowBanned(targetPlayer)));
 
