@@ -46,7 +46,17 @@ void HardModeHandler::LoadRewardsFromDatabase()
 
 void HardModeHandler::RewardItem(Player* player, uint32 itemId, uint32 itemCount)
 {
-    player->AddItem(itemId, itemCount);
+    ItemPosCountVec dest;
+    InventoryResult result = player->CanStoreNewItem(INVENTORY_SLOT_BAG_0, NULL_SLOT, dest, itemId, itemCount);
+
+    if (result == EQUIP_ERR_OK)
+    {
+        player->StoreNewItem(dest, itemId, true);
+    }
+    else
+    {
+        player->SendItemRetrievalMail(itemId, itemCount);
+    }
 }
 
 void HardModeHandler::RewardTitle(Player* player, uint32 titleId)
