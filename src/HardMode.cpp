@@ -11,6 +11,71 @@
 
 #include <sstream>
 
+bool HardModePlayerScript::CanRepopAtGraveyard(Player* player)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return true;
+    }
+
+    if (!player)
+    {
+        return true;
+    }
+
+    for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (!sHardModeHandler->IsModeEnabled(player, i))
+        {
+            continue;
+        }
+
+        bool result = sHardModeHandler->Modes[i]->CanRepopAtGraveyard(player);
+
+        if (!result)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void HardModePlayerScript::OnPlayerReleasedGhost(Player* player)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return;
+    }
+
+    for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (!sHardModeHandler->IsModeEnabled(player, i))
+        {
+            continue;
+        }
+
+        sHardModeHandler->Modes[i]->OnPlayerReleasedGhost(player);
+    }
+}
+
+void HardModePlayerScript::OnPlayerResurrect(Player* player, float restorePercent, bool applySickness)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return;
+    }
+
+    for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (!sHardModeHandler->IsModeEnabled(player, i))
+        {
+            continue;
+        }
+
+        sHardModeHandler->Modes[i]->OnPlayerResurrect(player, restorePercent, applySickness);
+    }
+}
 
 void HardModePlayerScript::OnLevelChanged(Player* player, uint8 oldlevel)
 {

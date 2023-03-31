@@ -28,6 +28,9 @@ private:
     bool CanEquipItem(Player* player, uint8 slot, uint16& dest, Item* pItem, bool swap, bool notLoading) override;
     void OnLogin(Player* player) override;
     void OnLevelChanged(Player* player, uint8 oldlevel) override;
+    void OnPlayerResurrect(Player* player, float restorePercent, bool applySickness) override;
+    void OnPlayerReleasedGhost(Player* player) override;
+    bool CanRepopAtGraveyard(Player* player) override;
 };
 
 class HardModeCommandScript : public CommandScript

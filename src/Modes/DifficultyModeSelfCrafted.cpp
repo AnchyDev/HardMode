@@ -1,4 +1,5 @@
 #include "DifficultyModeSelfCrafted.h"
+#include "HardModeHandler.h"
 
 #include "Config.h"
 #include "Player.h"
@@ -7,7 +8,7 @@ DifficultyModeSelfCrafted::DifficultyModeSelfCrafted() : DifficultyMode(/*canBeT
 
 bool DifficultyModeSelfCrafted::CanSendAuctionHello(WorldSession const* /*session*/, ObjectGuid /*guid*/, Creature* /*creature*/)
 {
-    if (!sConfigMgr->GetOption<bool>("HardMode.EnableSelfCrafted", false))
+    if (!sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED), false))
     {
         return true;
     }
@@ -17,7 +18,7 @@ bool DifficultyModeSelfCrafted::CanSendAuctionHello(WorldSession const* /*sessio
 
 bool DifficultyModeSelfCrafted::CanEquipItem(Player* player, uint8 slot, uint16& dest, Item* pItem, bool swap, bool notLoading)
 {
-    if (!sConfigMgr->GetOption<bool>("HardMode.EnableSelfCrafted", false))
+    if (!sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED), false))
     {
         return true;
     }
