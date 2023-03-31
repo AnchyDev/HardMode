@@ -11,6 +11,36 @@
 
 #include <sstream>
 
+void HardModePlayerScript::OnPVPKill(Player* killer, Player* victim)
+{
+    std::stringstream ss;
+    bool hasModes = false;
+
+    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (sHardModeHandler->IsModeEnabled(victim, i))
+        {
+            ss << sHardModeHandler->GetNameFromMode(i);
+
+            if (i != DifficultyModes::DIFFICULTY_MODE_COUNT - 1)
+            {
+                ss << ", ";
+            }
+
+
+            hasModes = true;
+        }
+    }
+
+    if (hasModes && !sHardModeHandler->IsShadowBanned(killer))
+    {
+        if (sConfigMgr->GetOption<bool>("HardMode.AnnounceOnPvPKill", true))
+        {
+            sWorld->SendServerMessage(SERVER_MSG_STRING, Acore::StringFormatFmt("Player {} killed {} while they were doing the {} challenge(s)!", killer->GetName(), victim->GetName(), ss.str()));
+        }
+    }
+}
+
 bool HardModePlayerScript::OnBeforeTeleport(Player* player, uint32 mapId, float x, float y, float z, float orientation, uint32 options, Unit* target)
 {
     if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
