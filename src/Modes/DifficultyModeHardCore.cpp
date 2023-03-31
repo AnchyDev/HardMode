@@ -31,9 +31,9 @@ void DifficultyModeHardCore::OnPlayerReleasedGhost(Player* player)
         return;
     }
 
-    WorldLocation worldLoc(37, -614.38, -239.69, 379.35, 0.69);
+    WorldLocation worldLoc(37, -614.38, -239.69, 379.35, 0.69); // Azshara Crater Shadow Realm
     player->TeleportTo(worldLoc);
-    player->SetHomebind(worldLoc, player->GetAreaId());
+    player->SetHomebind(worldLoc, 198 /* The Weeping Cave */);
     player->ResurrectPlayer(100, false);
 
     sHardModeHandler->SetShadowBanned(player, true);
