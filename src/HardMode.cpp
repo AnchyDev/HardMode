@@ -118,7 +118,7 @@ void HardModePlayerScript::OnPlayerResurrect(Player* player, float restorePercen
     }
 }
 
-void HardModePlayerScript::OnLevelChanged(Player* player, uint8 oldlevel)
+void HardModePlayerScript::OnLevelChanged(Player* player, uint8 /*oldLevel*/)
 {
     uint8 level = player->GetLevel();
     uint8 maxLevel = sConfigMgr->GetOption<int32>("MaxPlayerLevel", DEFAULT_MAX_LEVEL);
@@ -166,12 +166,12 @@ void HardModePlayerScript::OnLogin(Player* player)
     }
 }
 
-void HardModePlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* victim)
+void HardModePlayerScript::OnGiveXP(Player* player, uint32& /*amount*/, Unit* /*victim*/)
 {
     sHardModeHandler->SetTainted(player, true);
 }
 
-void HardModePlayerScript::OnMoneyChanged(Player* player, int32& amount)
+void HardModePlayerScript::OnMoneyChanged(Player* player, int32& /*amount*/)
 {
     sHardModeHandler->SetTainted(player, true);
 }
@@ -211,7 +211,7 @@ bool HardModePlayerScript::CanInitTrade(Player* player, Player* target)
     return true;
 }
 
-bool HardModePlayerScript::CanSendMail(Player* player, ObjectGuid receiverGuid, ObjectGuid mailbox, std::string& subject, std::string& body, uint32 money, uint32 COD, Item* item)
+bool HardModePlayerScript::CanSendMail(Player* player, ObjectGuid receiverGuid, ObjectGuid /*mailbox*/, std::string& /*subject*/, std::string& /*body*/, uint32 /*money*/, uint32 /*COD*/, Item* /*item*/)
 {
     auto targetPlayer = ObjectAccessor::FindPlayer(receiverGuid);
 
