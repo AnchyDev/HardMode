@@ -4,7 +4,7 @@
 #include "Config.h"
 #include "Player.h"
 
-DifficultyModeSelfCrafted::DifficultyModeSelfCrafted() : DifficultyMode(/*canBeTraded*/ false) { }
+DifficultyModeSelfCrafted::DifficultyModeSelfCrafted() : DifficultyMode(/*canBeTraded*/ false, /*canSendOrReceiveMail*/ false) { }
 
 bool DifficultyModeSelfCrafted::CanSendAuctionHello(WorldSession const* /*session*/, ObjectGuid /*guid*/, Creature* /*creature*/)
 {

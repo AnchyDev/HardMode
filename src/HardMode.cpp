@@ -215,6 +215,58 @@ bool HardModePlayerScript::CanSendMail(Player* player, ObjectGuid receiverGuid, 
 {
     auto targetPlayer = ObjectAccessor::FindPlayer(receiverGuid);
 
+    bool canMail = true;
+    uint8 receiverMode = 0;
+
+    if (targetPlayer)
+    {
+        for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
+        {
+            auto isMailable = sHardModeHandler->Modes[i]->IsMailable();
+
+            if (sHardModeHandler->IsModeEnabled(targetPlayer, i) && !isMailable)
+            {
+                receiverMode = i;
+                canMail = false;
+                break;
+            }
+        }
+    }
+    else
+    {
+        auto playerSettings = sHardModeHandler->GetPlayerSettingsFromDatabase(receiverGuid);
+
+        if (!playerSettings)
+        {
+            return true;
+        }
+
+        auto modes = playerSettings->find("HardMode")->second;
+        if (modes.size() < DifficultyModes::DIFFICULTY_MODE_COUNT)
+        {
+            return true;
+        }
+
+        for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
+        {
+            auto isMailable = sHardModeHandler->Modes[i]->IsMailable();
+
+            if (modes[i].value > 0 && !isMailable)
+            {
+                receiverMode = i;
+                canMail = false;
+                break;
+            }
+        }
+    }
+
+    if (!canMail)
+    {
+        ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot send mail to a {} mode player.", sHardModeHandler->GetNameFromMode(receiverMode)));
+
+        return false;
+    }
+
     sHardModeHandler->SetTainted(player, true);
 
     if (targetPlayer)
