@@ -460,12 +460,26 @@ bool HardModeGameObjectScript::OnGossipSelect(Player* player, GameObject* go, ui
     return true;
 }
 
+void HardModeWorldScript::OnAfterConfigLoad(bool reload)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return;
+    }
+
+    for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
+    {
+        sHardModeHandler->Modes[i]->OnAfterConfigLoad(reload);
+    }
+}
+
 void SC_AddHardModeScripts()
 {
     sHardModeHandler->Modes[DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED] = new DifficultyModeSelfCrafted();
     sHardModeHandler->Modes[DifficultyModes::DIFFICULTY_MODE_HARDCORE] = new DifficultyModeHardCore();
 
     new HardModeMiscScript();
+    new HardModeWorldScript();
     new HardModePlayerScript();
     new HardModeCommandScript();
     new HardModeGameObjectScript();

@@ -21,6 +21,7 @@ public:
     virtual void OnPlayerReleasedGhost(Player* /*player*/) { }
     virtual bool CanRepopAtGraveyard(Player* /*player*/) { return true; }
     virtual bool OnBeforeTeleport(Player* /*player*/, uint32 /*mapId*/, float /*x*/, float /*y*/, float /*z*/, float /*orientation*/, uint32 /*options*/, Unit* /*target*/) { return true; }
+    virtual void OnAfterConfigLoad(bool /*reload*/) { }
     bool IsTradable() { return _canBeTraded; }
 protected:
     bool _canBeTraded;
