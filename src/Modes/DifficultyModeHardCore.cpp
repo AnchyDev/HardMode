@@ -16,7 +16,7 @@ bool DifficultyModeHardCore::CanSendAuctionHello(WorldSession const* /*session*/
     return false;
 }
 
-void DifficultyModeHardCore::OnPlayerResurrect(Player* player, float restorePercent, bool applySickness)
+void DifficultyModeHardCore::OnPlayerResurrect(Player* /*player*/, float /*restorePercent*/, bool /*applySickness*/)
 {
     if (!sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(DifficultyModes::DIFFICULTY_MODE_HARDCORE), false))
     {
@@ -39,7 +39,7 @@ void DifficultyModeHardCore::OnPlayerReleasedGhost(Player* player)
     sHardModeHandler->SetShadowBanned(player, true);
 }
 
-bool DifficultyModeHardCore::CanRepopAtGraveyard(Player* player)
+bool DifficultyModeHardCore::CanRepopAtGraveyard(Player* /*player*/)
 {
     if (!sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(DifficultyModes::DIFFICULTY_MODE_HARDCORE), false))
     {
@@ -49,7 +49,7 @@ bool DifficultyModeHardCore::CanRepopAtGraveyard(Player* player)
     return false;
 }
 
-bool DifficultyModeHardCore::OnBeforeTeleport(Player* player, uint32 mapId, float x, float y, float z, float orientation, uint32 options, Unit* target)
+bool DifficultyModeHardCore::OnBeforeTeleport(Player* player, uint32 /*mapId*/, float /*x*/, float /*y*/, float /*z*/, float /*orientation*/, uint32 /*options*/, Unit* /*target*/)
 {
     if (!sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(DifficultyModes::DIFFICULTY_MODE_HARDCORE), false))
     {

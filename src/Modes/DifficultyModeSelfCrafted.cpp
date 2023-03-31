@@ -16,7 +16,7 @@ bool DifficultyModeSelfCrafted::CanSendAuctionHello(WorldSession const* /*sessio
     return false;
 }
 
-bool DifficultyModeSelfCrafted::CanEquipItem(Player* player, uint8 slot, uint16& dest, Item* pItem, bool swap, bool notLoading)
+bool DifficultyModeSelfCrafted::CanEquipItem(Player* player, uint8 /*slot*/, uint16& /*dest*/, Item* pItem, bool /*swap*/, bool /*notLoading*/)
 {
     if (!sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED), false))
     {
