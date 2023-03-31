@@ -128,7 +128,13 @@ void HardModePlayerScript::OnLevelChanged(Player* player, uint8 oldlevel)
         return;
     }
 
-    //TODO: Add rewards here.
+    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (sHardModeHandler->IsModeEnabled(player, i))
+        {
+            sHardModeHandler->RewardPlayerForMode(player, i);
+        }
+    }
 
     if (sHardModeHandler->HasModesEnabled(player))
     {
@@ -466,6 +472,8 @@ void HardModeWorldScript::OnAfterConfigLoad(bool reload)
     {
         return;
     }
+
+    sHardModeHandler->LoadRewardsFromDatabase();
 
     for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
     {

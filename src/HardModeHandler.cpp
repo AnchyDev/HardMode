@@ -1,8 +1,104 @@
 #include "HardModeHandler.h"
+#include "HardModeReward.h"
 
 #include "Tokenize.h"
 #include "Player.h"
 #include "StringConvert.h"
+#include "DBCStore.h"
+
+void HardModeHandler::LoadRewardsFromDatabase()
+{
+    _hardModeRewards.clear();
+
+    QueryResult qResult = WorldDatabase.Query("SELECT `mode`, `reward_type`, `reward_id`, `reward_count` FROM `hardmode_rewards`");
+
+    if (qResult)
+    {
+        uint32 count = 0;
+
+        do
+        {
+            Field* fields = qResult->Fetch();
+
+            uint32 mode = fields[0].Get<uint32>();
+            uint32 rewardType = fields[1].Get<uint32>();
+            uint32 rewardId = fields[2].Get<uint32>();
+            uint32 rewardCount = fields[3].Get<uint32>();
+
+            HardModeReward reward;
+
+            reward.Mode = mode;
+            reward.Type = rewardType;
+            reward.RewardId = rewardId;
+            reward.RewardCount = rewardCount;
+
+            _hardModeRewards.push_back(reward);
+            count++;
+        } while (qResult->NextRow());
+
+        LOG_INFO("module", "Loaded '{}' rows from 'hardmode_rewards' table.", count);
+    }
+    else
+    {
+        LOG_INFO("module", "Loaded '0' rows from 'hardmode_rewards' table.");
+    }
+}
+
+void HardModeHandler::RewardItem(Player* player, uint32 itemId, uint32 itemCount)
+{
+    player->AddItem(itemId, itemCount);
+}
+
+void HardModeHandler::RewardTitle(Player* player, uint32 titleId)
+{
+    auto titleEntry = sCharTitlesStore.LookupEntry(titleId);
+    player->SetTitle(titleEntry);
+}
+
+void HardModeHandler::RewardSpell(Player* player, uint32 spellId)
+{
+    player->learnSpell(spellId);
+}
+
+void HardModeHandler::RewardPlayerForMode(Player* player, uint8 mode)
+{
+    std::vector<HardModeReward> rewards = GetRewardsForMode(mode);
+
+    for (auto const& reward : rewards)
+    {
+        switch (reward.Type)
+        {
+        case HardModeRewardType::HARDMODE_REWARD_TYPE_ITEM:
+            RewardItem(player, reward.RewardId, reward.RewardCount);
+            break;
+
+        case HardModeRewardType::HARDMODE_REWARD_TYPE_TITLE:
+            RewardTitle(player, reward.RewardId);
+            break;
+
+        case HardModeRewardType::HARDMODE_REWARD_TYPE_SPELL:
+            RewardSpell(player, reward.RewardId);
+            break;
+        }
+    }
+}
+
+std::vector<HardModeReward> HardModeHandler::GetRewardsForMode(uint8 mode)
+{
+    std::vector<HardModeReward> rewards;
+
+    for (uint32 i = 0; i < _hardModeRewards.size(); ++i)
+    {
+        auto reward = _hardModeRewards[i];
+
+        if (reward.Mode == mode)
+        {
+            rewards.push_back(reward);
+        }
+    }
+
+    return rewards;
+}
 
 bool HardModeHandler::IsModeEnabled(Player* player, uint8 mode)
 {

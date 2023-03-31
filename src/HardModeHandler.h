@@ -2,6 +2,8 @@
 #define MODULE_HARDMODE_HANDLER_H
 
 #include "DifficultyMode.h"
+#include "HardModeReward.h"
+
 #include "Player.h"
 #include <vector>
 
@@ -16,16 +18,27 @@ public:
     bool IsTainted(Player* player);
     void SetShadowBanned(Player* player, bool value);
     bool IsShadowBanned(Player* player);
+
     std::string GetNameFromMode(uint8 mode);
     std::string GetNamesFromEnabledModes(Player* player);
     bool HasModesEnabled(Player* player);
     std::string GetConfigNameFromMode(uint8 mode);
     PlayerSettingMap* GetPlayerSettingsFromDatabase(ObjectGuid guid);
 
+    void LoadRewardsFromDatabase();
+    std::vector<HardModeReward> GetRewardsForMode(uint8 mode);
+    void RewardPlayerForMode(Player* player, uint8 mode);
+    void RewardItem(Player* player, uint32 itemId, uint32 itemCount);
+    void RewardTitle(Player* player, uint32 titleId);
+    void RewardSpell(Player* player, uint32 spellId);
+
     static HardModeHandler* GetInstance();
 
 public:
     DifficultyMode* Modes[DifficultyModes::DIFFICULTY_MODE_COUNT];
+
+private:
+    std::vector<HardModeReward> _hardModeRewards;
 };
 
 #define sHardModeHandler HardModeHandler::GetInstance()
