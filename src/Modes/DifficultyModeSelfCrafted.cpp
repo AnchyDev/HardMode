@@ -30,6 +30,11 @@ bool DifficultyModeSelfCrafted::CanEquipItem(Player* player, uint8 /*slot*/, uin
         return true;
     }
 
+    if (IsItemExcluded(pItem->GetTemplate()->ItemId))
+    {
+        return true;
+    }
+
     if (!pItem->GetTemplate()->HasSignature())
     {
         return false;
@@ -41,4 +46,47 @@ bool DifficultyModeSelfCrafted::CanEquipItem(Player* player, uint8 /*slot*/, uin
     }
 
     return true;
+}
+
+bool DifficultyModeSelfCrafted::IsItemExcluded(uint32 itemId)
+{
+    for (auto i = 0; i < excludedItemIds.size(); ++i)
+    {
+        if (excludedItemIds[i] == itemId)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void DifficultyModeSelfCrafted::OnAfterConfigLoad(bool reload)
+{
+    if (reload)
+    {
+        excludedItemIds.clear();
+    }
+
+    QueryResult qResult = WorldDatabase.Query("SELECT `item_id` FROM `hardmode_selfcraft_exclude`");
+
+    if (qResult)
+    {
+        uint32 count = 0;
+
+        do
+        {
+            Field* fields = qResult->Fetch();
+            uint32 itemId = fields[0].Get<uint32>();
+
+            excludedItemIds.push_back(itemId);
+            count++;
+        } while (qResult->NextRow());
+
+        LOG_INFO("module", "Loaded '{}' rows from 'hardmode_selfcraft_exclude' table.", count);
+    }
+    else
+    {
+        LOG_INFO("module", "Loaded '0' rows from 'hardmode_selfcraft_exclude' table.");
+    }
 }
