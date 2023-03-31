@@ -500,7 +500,7 @@ bool HardModeGameObjectScript::OnGossipHello(Player* player, GameObject* go)
     return true;
 }
 
-bool HardModeGameObjectScript::OnGossipSelect(Player* player, GameObject* go, uint32 sender, uint32 action)
+bool HardModeGameObjectScript::OnGossipSelect(Player* player, GameObject* /*go*/, uint32 /*sender*/, uint32 action)
 {
     auto isModeEnabled = sHardModeHandler->IsModeEnabled(player, action);
 
