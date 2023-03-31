@@ -13,6 +13,7 @@ public:
     void OnPlayerResurrect(Player* player, float restorePercent, bool applySickness) override;
     void OnPlayerReleasedGhost(Player* player) override;
     bool CanRepopAtGraveyard(Player* player) override;
+    bool OnBeforeTeleport(Player* player, uint32 mapId, float x, float y, float z, float orientation, uint32 options, Unit* target) override;
 };
 
 #endif // MODULE_HARDMODE_MODE_HARDCORE_H

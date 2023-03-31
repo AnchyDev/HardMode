@@ -13,8 +13,9 @@ private:
 public:
     bool IsModeEnabled(Player* player, uint8 mode);
     void SetTainted(Player* player, bool value);
-    bool GetTainted(Player* player);
     bool IsTainted(Player* player);
+    void SetShadowBanned(Player* player, bool value);
+    bool IsShadowBanned(Player* player);
     std::string GetNameFromMode(uint8 mode);
     std::string GetConfigNameFromMode(uint8 mode);
     PlayerSettingMap* GetPlayerSettingsFromDatabase(ObjectGuid guid);

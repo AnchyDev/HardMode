@@ -14,19 +14,19 @@ void HardModeHandler::SetTainted(Player* player, bool value)
     player->UpdatePlayerSetting("HardModeTainted", 0, value);
 }
 
-bool HardModeHandler::GetTainted(Player* player)
+bool HardModeHandler::IsTainted(Player* player)
 {
     return player->GetPlayerSetting("HardModeTainted", 0).value > 0;
 }
 
-bool HardModeHandler::IsTainted(Player* player)
+void HardModeHandler::SetShadowBanned(Player* player, bool value)
 {
-    if (GetTainted(player))
-    {
-        return true;
-    }
+    player->UpdatePlayerSetting("HardModeShadowBanned", 0, value);
+}
 
-    return false;
+bool HardModeHandler::IsShadowBanned(Player* player)
+{
+    return player->GetPlayerSetting("HardModeShadowBanned", 0).value > 0;
 }
 
 std::string HardModeHandler::GetNameFromMode(uint8 mode)

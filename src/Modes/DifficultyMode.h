@@ -20,6 +20,7 @@ public:
     virtual void OnPlayerResurrect(Player* player, float restorePercent, bool applySickness) { }
     virtual void OnPlayerReleasedGhost(Player* player) { }
     virtual bool CanRepopAtGraveyard(Player* player) { return true; }
+    virtual bool OnBeforeTeleport(Player* player, uint32 mapId, float x, float y, float z, float orientation, uint32 options, Unit* target) { return true; }
     bool IsTradable() { return _canBeTraded; }
 protected:
     bool _canBeTraded;

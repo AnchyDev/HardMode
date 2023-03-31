@@ -11,6 +11,36 @@
 
 #include <sstream>
 
+bool HardModePlayerScript::OnBeforeTeleport(Player* player, uint32 mapId, float x, float y, float z, float orientation, uint32 options, Unit* target)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return true;
+    }
+
+    if (!player)
+    {
+        return true;
+    }
+
+    for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (!sHardModeHandler->IsModeEnabled(player, i))
+        {
+            continue;
+        }
+
+        bool result = sHardModeHandler->Modes[i]->OnBeforeTeleport(player, mapId, x, y, z, orientation, options, target);
+
+        if (!result)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool HardModePlayerScript::CanRepopAtGraveyard(Player* player)
 {
     if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
@@ -285,7 +315,8 @@ ChatCommandTable HardModeCommandScript::GetCommands() const
     {
         { "info", HandleHardModeInfoCommand, SEC_ADMINISTRATOR, Console::No },
         { "setmode", HandleHardModeSetModeCommand, SEC_ADMINISTRATOR, Console::No },
-        { "settaint", HandleHardModeSetTaintCommand, SEC_ADMINISTRATOR, Console::No }
+        { "settaint", HandleHardModeSetTaintCommand, SEC_ADMINISTRATOR, Console::No },
+        { "setshadowban", HandleHardModeSetShadowBanCommand, SEC_ADMINISTRATOR, Console::No }
     };
 
     static ChatCommandTable commandTable =
@@ -332,6 +363,7 @@ bool HardModeCommandScript::HandleHardModeInfoCommand(ChatHandler* handler, Opti
 
     handler->SendSysMessage(Acore::StringFormatFmt("Enabled Difficulty Modes: {}", ss.str()));
     handler->SendSysMessage(Acore::StringFormatFmt("IsTainted: {}", sHardModeHandler->IsTainted(targetPlayer)));
+    handler->SendSysMessage(Acore::StringFormatFmt("IsShadowBanned: {}", sHardModeHandler->IsShadowBanned(targetPlayer)));
 
     return true;
 }
@@ -387,6 +419,31 @@ bool HardModeCommandScript::HandleHardModeSetTaintCommand(ChatHandler* handler, 
     sHardModeHandler->SetTainted(targetPlayer, value);
 
     handler->SendSysMessage(Acore::StringFormatFmt("Updated taint for player '{}' to '{}'.", targetPlayer->GetName(), value));
+
+    return true;
+}
+
+bool HardModeCommandScript::HandleHardModeSetShadowBanCommand(ChatHandler* handler, Optional<PlayerIdentifier> target, uint8 value)
+{
+    if (!target)
+    {
+        target = PlayerIdentifier::FromTargetOrSelf(handler);
+    }
+
+    if (!target)
+    {
+        return false;
+    }
+
+    if (!target->IsConnected())
+    {
+        return false;
+    }
+
+    auto targetPlayer = target->GetConnectedPlayer();
+    sHardModeHandler->SetShadowBanned(targetPlayer, value);
+
+    handler->SendSysMessage(Acore::StringFormatFmt("Updated shadow ban for player '{}' to '{}'.", targetPlayer->GetName(), value));
 
     return true;
 }

@@ -31,6 +31,7 @@ private:
     void OnPlayerResurrect(Player* player, float restorePercent, bool applySickness) override;
     void OnPlayerReleasedGhost(Player* player) override;
     bool CanRepopAtGraveyard(Player* player) override;
+    bool OnBeforeTeleport(Player* player, uint32 mapId, float x, float y, float z, float orientation, uint32 options, Unit* target) override;
 };
 
 class HardModeCommandScript : public CommandScript
@@ -42,6 +43,7 @@ public:
     static bool HandleHardModeInfoCommand(ChatHandler* handler, Optional<PlayerIdentifier> target);
     static bool HandleHardModeSetModeCommand(ChatHandler* handler, Optional<PlayerIdentifier> target, uint8 mode, uint8 value);
     static bool HandleHardModeSetTaintCommand(ChatHandler* handler, Optional<PlayerIdentifier> target, uint8 value);
+    static bool HandleHardModeSetShadowBanCommand(ChatHandler* handler, Optional<PlayerIdentifier> target, uint8 value);
 };
 
 class HardModeGameObjectScript : GameObjectScript

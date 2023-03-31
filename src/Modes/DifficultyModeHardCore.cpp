@@ -35,6 +35,8 @@ void DifficultyModeHardCore::OnPlayerReleasedGhost(Player* player)
     player->TeleportTo(worldLoc);
     player->SetHomebind(worldLoc, player->GetAreaId());
     player->ResurrectPlayer(100, false);
+
+    sHardModeHandler->SetShadowBanned(player, true);
 }
 
 bool DifficultyModeHardCore::CanRepopAtGraveyard(Player* player)
@@ -45,4 +47,19 @@ bool DifficultyModeHardCore::CanRepopAtGraveyard(Player* player)
     }
 
     return false;
+}
+
+bool DifficultyModeHardCore::OnBeforeTeleport(Player* player, uint32 mapId, float x, float y, float z, float orientation, uint32 options, Unit* target)
+{
+    if (!sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(DifficultyModes::DIFFICULTY_MODE_HARDCORE), false))
+    {
+        return true;
+    }
+
+    if (sHardModeHandler->IsShadowBanned(player))
+    {
+        return false;
+    }
+
+    return true;
 }
