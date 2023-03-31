@@ -50,7 +50,7 @@ bool DifficultyModeSelfCrafted::CanEquipItem(Player* player, uint8 /*slot*/, uin
 
 bool DifficultyModeSelfCrafted::IsItemExcluded(uint32 itemId)
 {
-    for (auto i = 0; i < excludedItemIds.size(); ++i)
+    for (uint32 i = 0; i < excludedItemIds.size(); ++i)
     {
         if (excludedItemIds[i] == itemId)
         {
