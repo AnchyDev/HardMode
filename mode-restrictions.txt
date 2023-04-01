@@ -2,14 +2,14 @@ SelfCrafted:
 - Can't use auction house.
 - Can't use guild bank.
 - Can't trade other players.
-- Can't be traded by other players.
+- Can't send or receive mail.
 - Can't equip items that aren't self crafted.
 
 HardCore:
 - Can't use auction house.
 - Can't use guild bank.
 - Can't trade other players.
-- Can't be traded by other players.
+- Can't send or receive mail.
 - Teleported to shadow realm on death.
 - Can't teleport while shadow banned.
 - Gains a red aura, notifying players of hardcore.
