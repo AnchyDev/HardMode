@@ -17,6 +17,8 @@
 HardMode.Enable = 0
 HardMode.EnableSelfCrafted = 0
 HardMode.EnableHardCore = 0
+HardMode.EnableSlowXP = 0
+HardMode.SlowXPMultiplier = 1
 HardMode.AnnounceModesOnLogin = 1
 HardMode.AnnounceModesMaxLevel = 1
 HardMode.AnnounceOnPvPKill = 1

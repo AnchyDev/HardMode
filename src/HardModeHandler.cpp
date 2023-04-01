@@ -219,6 +219,8 @@ std::string HardModeHandler::GetNameFromMode(uint8 mode)
         return "Self-Crafted";
     case DifficultyModes::DIFFICULTY_MODE_HARDCORE:
         return "HardCore";
+    case DifficultyModes::DIFFICULTY_MODE_SLOWXP:
+        return "SlowXP";
     }
 
     return "ERROR";
@@ -306,6 +308,8 @@ std::string HardModeHandler::GetConfigNameFromMode(uint8 mode)
         return "HardMode.EnableSelfCrafted";
     case DifficultyModes::DIFFICULTY_MODE_HARDCORE:
         return "HardMode.EnableHardCore";
+    case DifficultyModes::DIFFICULTY_MODE_SLOWXP:
+        return "HardMode.EnableSlowXP";
     }
 
     return "ERROR";

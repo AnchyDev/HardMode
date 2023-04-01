@@ -19,3 +19,6 @@ HardCore:
 - Teleported to shadow realm on death.
 - Can't teleport while shadow banned.
 - Gains a red aura, notifying players of hardcore.
+
+LowXP:
+- Exp scaled back to 1x (may be futher reduced if configured).

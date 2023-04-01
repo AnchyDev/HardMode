@@ -3,6 +3,7 @@
 
 #include "Modes/DifficultyModeSelfCrafted.h"
 #include "Modes/DifficultyModeHardCore.h"
+#include "Modes/DifficultyModeSlowXP.h"
 
 #include "Chat.h"
 #include "Config.h"
@@ -253,8 +254,13 @@ void HardModePlayerScript::OnLogin(Player* player)
     }
 }
 
-void HardModePlayerScript::OnGiveXP(Player* player, uint32& /*amount*/, Unit* /*victim*/)
+void HardModePlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* victim)
 {
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return;
+    }
+
     if (player->getClass() == CLASS_DEATH_KNIGHT && player->GetMapId() == HARDMODE_ZONE_EBONHOLD)
     {
         if (!player->IsQuestRewarded(HARDMODE_DEATHKNIGHT_INITIAL_QUEST))
@@ -263,7 +269,35 @@ void HardModePlayerScript::OnGiveXP(Player* player, uint32& /*amount*/, Unit* /*
         }
     }
 
+    for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (!sHardModeHandler->IsModeEnabledForPlayerAndServer(player, i))
+        {
+            continue;
+        }
+
+        sHardModeHandler->Modes[i]->OnGiveXP(player, amount, victim);
+    }
+
     sHardModeHandler->SetTainted(player, true);
+}
+
+void HardModePlayerScript::OnQuestComputeXP(Player* player, Quest const* quest, uint32& xpValue)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return;
+    }
+
+    for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (!sHardModeHandler->IsModeEnabledForPlayerAndServer(player, i))
+        {
+            continue;
+        }
+
+        sHardModeHandler->Modes[i]->OnQuestComputeXP(player, quest, xpValue);
+    }
 }
 
 void HardModePlayerScript::OnMoneyChanged(Player* player, int32& /*amount*/)
@@ -717,6 +751,7 @@ void SC_AddHardModeScripts()
 {
     sHardModeHandler->Modes[DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED] = new DifficultyModeSelfCrafted();
     sHardModeHandler->Modes[DifficultyModes::DIFFICULTY_MODE_HARDCORE] = new DifficultyModeHardCore();
+    sHardModeHandler->Modes[DifficultyModes::DIFFICULTY_MODE_SLOWXP] = new DifficultyModeSlowXP();
 
     new HardModeMiscScript();
     new HardModeGuildScript();

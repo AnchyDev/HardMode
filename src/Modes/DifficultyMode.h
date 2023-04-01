@@ -7,7 +7,8 @@ enum DifficultyModes
 {
     DIFFICULTY_MODE_SELF_CRAFTED = 0,
     DIFFICULTY_MODE_HARDCORE = 1,
-    DIFFICULTY_MODE_COUNT = 2
+    DIFFICULTY_MODE_SLOWXP = 2,
+    DIFFICULTY_MODE_COUNT = 3
 };
 
 class DifficultyMode
@@ -24,6 +25,8 @@ public:
     virtual void OnPlayerReleasedGhost(Player* /*player*/) { }
     virtual bool CanRepopAtGraveyard(Player* /*player*/) { return true; }
     virtual bool OnBeforeTeleport(Player* /*player*/, uint32 /*mapId*/, float /*x*/, float /*y*/, float /*z*/, float /*orientation*/, uint32 /*options*/, Unit* /*target*/) { return true; }
+    virtual void OnGiveXP(Player* /*player*/, uint32& /*amount*/, Unit* /*victim*/) { }
+    virtual void OnQuestComputeXP(Player* /*player*/, Quest const* /*quest*/, uint32& /*xpValue*/) { }
     virtual void OnAfterConfigLoad(bool /*reload*/) { }
 
     bool IsTradable() { return _canBeTraded; }
