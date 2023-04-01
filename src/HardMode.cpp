@@ -193,6 +193,14 @@ void HardModePlayerScript::OnLogin(Player* player)
 
 void HardModePlayerScript::OnGiveXP(Player* player, uint32& /*amount*/, Unit* /*victim*/)
 {
+    if (player->getClass() == CLASS_DEATH_KNIGHT)
+    {
+        if (!player->IsQuestRewarded(HARDMODE_DEATHKNIGHT_INITIAL_QUEST))
+        {
+            return;
+        }
+    }
+
     sHardModeHandler->SetTainted(player, true);
 }
 
