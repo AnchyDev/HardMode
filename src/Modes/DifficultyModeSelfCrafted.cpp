@@ -24,6 +24,11 @@ bool DifficultyModeSelfCrafted::CanCastItemUseSpell(Player* player, Item* item, 
         return true;
     }
 
+    if (IsSpellExcluded(item->GetTemplate()->Spells[0].SpellId))
+    {
+        return true;
+    }
+
     auto itemProto = item->GetTemplate();
 
     if (itemProto->Class != ITEM_CLASS_CONSUMABLE)
@@ -94,15 +99,29 @@ bool DifficultyModeSelfCrafted::CanEquipItem(Player* player, uint8 /*slot*/, uin
     return true;
 }
 
-bool DifficultyModeSelfCrafted::IsItemExcluded(uint32 itemId)
+bool DifficultyModeSelfCrafted::IsExcluded(int32 id)
 {
     for (uint32 i = 0; i < excludedItemIds.size(); ++i)
     {
-        if (excludedItemIds[i] == itemId)
+        if (excludedItemIds[i] == id)
         {
             return true;
         }
     }
+
+    return false;
+}
+
+bool DifficultyModeSelfCrafted::IsSpellExcluded(uint32 spellId)
+{
+    return IsExcluded(-spellId);
+
+    return false;
+}
+
+bool DifficultyModeSelfCrafted::IsItemExcluded(uint32 itemId)
+{
+    return IsExcluded(itemId);
 
     return false;
 }
@@ -114,7 +133,7 @@ void DifficultyModeSelfCrafted::OnAfterConfigLoad(bool reload)
         excludedItemIds.clear();
     }
 
-    QueryResult qResult = WorldDatabase.Query("SELECT `item_id` FROM `hardmode_selfcraft_exclude`");
+    QueryResult qResult = WorldDatabase.Query("SELECT `id` FROM `hardmode_selfcraft_exclude`");
 
     if (qResult)
     {
@@ -123,9 +142,9 @@ void DifficultyModeSelfCrafted::OnAfterConfigLoad(bool reload)
         do
         {
             Field* fields = qResult->Fetch();
-            uint32 itemId = fields[0].Get<uint32>();
+            int32 id = fields[0].Get<int32>();
 
-            excludedItemIds.push_back(itemId);
+            excludedItemIds.push_back(id);
             count++;
         } while (qResult->NextRow());
 

@@ -45,6 +45,8 @@ bool HardModePlayerScript::CanCastItemUseSpell(Player* player, Item* item, Spell
 
         if (!result)
         {
+            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot use that item while in {} mode.", sHardModeHandler->GetNameFromMode(i)));
+
             return false;
         }
     }
@@ -409,6 +411,8 @@ bool HardModePlayerScript::CanEquipItem(Player* player, uint8 slot, uint16& dest
 
         if (!result)
         {
+            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot equip that item while in {} mode.", sHardModeHandler->GetNameFromMode(i)));
+
             return false;
         }
     }

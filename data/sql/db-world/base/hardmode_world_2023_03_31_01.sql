@@ -16,9 +16,9 @@ INSERT INTO `creature_template` (`entry`, `difficulty_entry_1`, `difficulty_entr
 
 DROP TABLE IF EXISTS `hardmode_selfcraft_exclude`;
 CREATE TABLE IF NOT EXISTS `hardmode_selfcraft_exclude` (
-  `item_id` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
   `comment` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`item_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
