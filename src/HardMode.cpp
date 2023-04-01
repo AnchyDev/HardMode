@@ -513,6 +513,18 @@ bool HardModeGameObjectScript::OnGossipSelect(Player* player, GameObject* /*go*/
     {
         player->UpdatePlayerSetting("HardMode", action, isModeEnabled == 0 ? 1 : 0);
         CloseGossipMenuFor(player);
+
+        if (action == DifficultyModes::DIFFICULTY_MODE_HARDCORE)
+        {
+            if (!isModeEnabled)
+            {
+                player->AddAura(52670, player); // Add Red Glow
+            }
+            else
+            {
+                player->RemoveAura(52670); // Remove Red Glow
+            }
+        }
     }
 
     return true;
