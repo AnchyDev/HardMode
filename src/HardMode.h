@@ -6,6 +6,11 @@
 
 using namespace Acore::ChatCommands;
 
+enum HardModeConstants
+{
+    SPELL_AURA_RED_GLOW = 52670
+};
+
 class HardModeMiscScript : MiscScript
 {
 public:

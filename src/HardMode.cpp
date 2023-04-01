@@ -411,6 +411,18 @@ bool HardModeCommandScript::HandleHardModeSetModeCommand(ChatHandler* handler, O
     auto targetPlayer = target->GetConnectedPlayer();
     targetPlayer->UpdatePlayerSetting("HardMode", mode, value);
 
+    if (mode == DifficultyModes::DIFFICULTY_MODE_HARDCORE)
+    {
+        if (value)
+        {
+            targetPlayer->AddAura(SPELL_AURA_RED_GLOW, targetPlayer);
+        }
+        else
+        {
+            targetPlayer->RemoveAura(SPELL_AURA_RED_GLOW);
+        }
+    }
+
     handler->SendSysMessage(Acore::StringFormatFmt("Updated mode '{}' for player '{}' to '{}'.", sHardModeHandler->GetNameFromMode(mode), targetPlayer->GetName(), value));
 
     return true;
@@ -518,11 +530,11 @@ bool HardModeGameObjectScript::OnGossipSelect(Player* player, GameObject* /*go*/
         {
             if (!isModeEnabled)
             {
-                player->AddAura(52670, player); // Add Red Glow
+                player->AddAura(SPELL_AURA_RED_GLOW, player);
             }
             else
             {
-                player->RemoveAura(52670); // Remove Red Glow
+                player->RemoveAura(SPELL_AURA_RED_GLOW);
             }
         }
     }
