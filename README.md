@@ -5,3 +5,21 @@ This module is still a WIP.
 
 ## ⚠️ Attention ⚠️
 You _must_ enable `EnablePlayerSettings` in the World config to use this module.
+
+## Database Values
+When referencing the modes and reward types you have to use the id value.
+
+
+### Modes
+| Mode | Value |
+| --- | --- |
+| Self-Crafted | 0 |
+| HardCore | 1 |
+| LowXP | 2 |
+
+### Reward Types
+| Reward | Value |
+| --- | --- |
+| Item | 0 |
+| Title | 1 | 
+| Spell | 2 |
