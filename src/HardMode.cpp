@@ -552,7 +552,7 @@ bool HardModeGameObjectScript::OnGossipHello(Player* player, GameObject* go)
             }
             else if (sHardModeHandler->IsModeEnabledForPlayer(player, i))
             {
-                AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Disable {} Mode", sHardModeHandler->GetNameFromMode(i)), 0, i);
+                AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Disable {} Mode", sHardModeHandler->GetNameFromMode(i)), 0, i, Acore::StringFormatFmt("Are you sure you want to disable the {} mode?", sHardModeHandler->GetNameFromMode(i)), 0, false);
             }
         }
     }
