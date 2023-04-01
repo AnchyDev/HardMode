@@ -1,3 +1,4 @@
+#include "HardMode.h"
 #include "HardModeHandler.h"
 #include "HardModeReward.h"
 
@@ -93,7 +94,7 @@ void HardModeHandler::SendMailItems(Player* player, std::vector<std::pair<uint32
 
     CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
 
-    MailSender sender(MAIL_CREATURE, 34337 /* The Postmaster */);
+    MailSender sender(MAIL_CREATURE, HARDMODE_MAIL_SENDER);
     MailDraft draft(header, body);
 
     for (auto const& items : allItems)

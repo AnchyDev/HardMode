@@ -450,11 +450,11 @@ bool HardModeCommandScript::HandleHardModeSetModeCommand(ChatHandler* handler, O
     {
         if (value)
         {
-            targetPlayer->AddAura(SPELL_AURA_RED_GLOW, targetPlayer);
+            targetPlayer->AddAura(HARDMODE_SPELL_AURA_RED_GLOW, targetPlayer);
         }
         else
         {
-            targetPlayer->RemoveAura(SPELL_AURA_RED_GLOW);
+            targetPlayer->RemoveAura(HARDMODE_SPELL_AURA_RED_GLOW);
         }
     }
 
@@ -565,11 +565,11 @@ bool HardModeGameObjectScript::OnGossipSelect(Player* player, GameObject* /*go*/
         {
             if (!isModeEnabled)
             {
-                player->AddAura(SPELL_AURA_RED_GLOW, player);
+                player->AddAura(HARDMODE_SPELL_AURA_RED_GLOW, player);
             }
             else
             {
-                player->RemoveAura(SPELL_AURA_RED_GLOW);
+                player->RemoveAura(HARDMODE_SPELL_AURA_RED_GLOW);
             }
         }
     }
