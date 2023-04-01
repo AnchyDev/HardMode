@@ -12,14 +12,84 @@
 #        Description: Enables/disables the HardMode modes.
 #        Default:     0 - Disabled
 #                     1 - Enabled
+#        Type:        bool
 #
 
 HardMode.Enable = 0
+
+#
+#    HardMode.EnableSelfCrafted
+#        Description: Enables the Self-Crafted mode.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#        Type:        bool
+#
+
 HardMode.EnableSelfCrafted = 0
+
+#
+#    HardMode.EnableHardCore
+#        Description: Enables the HardCore mode.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#        Type:        bool
+#
+
 HardMode.EnableHardCore = 0
+
+#
+#    HardMode.EnableSlowXP
+#        Description: Enables the SlowXP mode.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#        Type:        bool
+#
+
 HardMode.EnableSlowXP = 0
+
+#
+#    HardMode.SlowXPMultiplier
+#        Description: Takes in a float to multiply the divider value when calculating XP loss.
+#                     A larger number = less XP.
+#        Default:     1
+#        Type:        Float
+#
+
 HardMode.SlowXPMultiplier = 1
+
+#
+#    HardMode.AnnounceModesOnLogin
+#        Description: Enable announcing the modes enabled into chat on login.
+#                     0 - Disabled
+#        Default:     1 - Enabled
+#        Type:        bool
+#
+
 HardMode.AnnounceModesOnLogin = 1
+
+#
+#    HardMode.AnnounceModesMaxLevel
+#        Description: Enable announcing the modes completed when hitting max level to the world chat.
+#                     0 - Disabled
+#        Default:     1 - Enabled
+#
+
 HardMode.AnnounceModesMaxLevel = 1
+
+#
+#    HardMode.AnnounceOnPvPKill
+#        Description: Enable announcing when a player kills another player with activated modes.
+#                     0 - Disabled
+#        Default:     1 - Enabled
+#
+
 HardMode.AnnounceOnPvPKill = 1
+
+#
+#    HardMode.PartyLevelRange
+#        Description: Set the level range that you have to be in to group together while in modes.
+#        Default:     3
+#        Type:        unsigned int
+#
+
 HardMode.PartyLevelRange = 3
