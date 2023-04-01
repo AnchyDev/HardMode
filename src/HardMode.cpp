@@ -213,6 +213,18 @@ bool HardModePlayerScript::CanInitTrade(Player* player, Player* target)
 
 bool HardModePlayerScript::CanSendMail(Player* player, ObjectGuid receiverGuid, ObjectGuid /*mailbox*/, std::string& /*subject*/, std::string& /*body*/, uint32 /*money*/, uint32 /*COD*/, Item* /*item*/)
 {
+    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
+    {
+        auto isMailable = sHardModeHandler->Modes[i]->IsMailable();
+
+        if (sHardModeHandler->IsModeEnabled(player, i) && !isMailable)
+        {
+            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot send mail while in the {} mode.", sHardModeHandler->GetNameFromMode(i)));
+
+            return false;
+        }
+    }
+
     auto targetPlayer = ObjectAccessor::FindPlayer(receiverGuid);
 
     bool canMail = true;
