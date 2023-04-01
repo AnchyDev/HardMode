@@ -41,7 +41,6 @@ private:
     bool OnBeforeTeleport(Player* player, uint32 mapId, float x, float y, float z, float orientation, uint32 options, Unit* target) override;
     void OnPVPKill(Player* killer, Player* victim) override;
     bool CanGroupInvite(Player* player, std::string& memberName) override;
-    bool CanGroupAccept(Player* player, Group* group) override;
 };
 
 class HardModeGuildScript : GuildScript

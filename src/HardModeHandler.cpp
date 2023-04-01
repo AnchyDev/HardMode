@@ -283,6 +283,21 @@ bool HardModeHandler::IsModeEnabledForPlayerAndServer(Player* player, uint8 mode
     return true;
 }
 
+uint32 HardModeHandler::GetEnabledModesAsMask(Player* player)
+{
+    uint32 mask = 0;
+
+    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (sHardModeHandler->IsModeEnabledForPlayerAndServer(player, i))
+        {
+            mask += (1 << i);
+        }
+    }
+
+    return mask;
+}
+
 std::string HardModeHandler::GetConfigNameFromMode(uint8 mode)
 {
     switch (mode)

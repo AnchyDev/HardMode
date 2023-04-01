@@ -24,11 +24,26 @@ void HardModePlayerScript::OnPVPKill(Player* killer, Player* victim)
 
 bool HardModePlayerScript::CanGroupInvite(Player* player, std::string& memberName)
 {
-    return true;
-}
+    Player* targetPlayer = ObjectAccessor::FindPlayerByName(memberName, true);
 
-bool HardModePlayerScript::CanGroupAccept(Player* player, Group* group)
-{
+    if (!targetPlayer)
+    {
+        return false;
+    }
+
+    uint32 playerMask = sHardModeHandler->GetEnabledModesAsMask(player);
+    uint32 targetPlayerMask = sHardModeHandler->GetEnabledModesAsMask(targetPlayer);
+
+    if (playerMask != targetPlayerMask)
+    {
+        ChatHandler(player->GetSession()).SendSysMessage("You cannot group with players that do not have the same hard modes enabled as you.");
+
+        return false;
+    }
+
+    sHardModeHandler->SetTainted(player, true);
+    sHardModeHandler->SetTainted(targetPlayer, true);
+
     return true;
 }
 

@@ -23,6 +23,7 @@ public:
     bool HasModesEnabled(Player* player);
     bool IsModeEnabledForPlayer(Player* player, uint8 mode);
     bool IsModeEnabledForPlayerAndServer(Player* player, uint8 mode);
+    uint32 GetEnabledModesAsMask(Player* player);
     std::string GetConfigNameFromMode(uint8 mode);
     PlayerSettingMap* GetPlayerSettingsFromDatabase(ObjectGuid guid);
 
