@@ -143,7 +143,7 @@ void HardModePlayerScript::OnLevelChanged(Player* player, uint8 /*oldLevel*/)
 
         if (sConfigMgr->GetOption<bool>("HardMode.AnnounceModesMaxLevel", true))
         {
-            sWorld->SendServerMessage(SERVER_MSG_STRING, Acore::StringFormatFmt("Congratulations, player {} reached max level in: {}!", player->GetName(), sHardModeHandler->GetNamesFromEnabledModes(player)));
+            sWorld->SendServerMessage(SERVER_MSG_STRING, Acore::StringFormatFmt("Congratulations, player {} reached level {} while in: {}!", player->GetName(), maxLevel, sHardModeHandler->GetNamesFromEnabledModes(player)));
         }
     }
 }
