@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "StringConvert.h"
 #include "DBCStore.h"
+#include "Mail.h"
 
 void HardModeHandler::LoadRewardsFromDatabase()
 {
@@ -44,19 +45,98 @@ void HardModeHandler::LoadRewardsFromDatabase()
     }
 }
 
-void HardModeHandler::RewardItem(Player* player, uint32 itemId, uint32 itemCount)
+void HardModeHandler::SendMailItems(Player* player, std::vector<std::pair<uint32, uint32>>& mailItems, std::string header, std::string body)
 {
-    ItemPosCountVec dest;
-    InventoryResult result = player->CanStoreNewItem(INVENTORY_SLOT_BAG_0, NULL_SLOT, dest, itemId, itemCount);
+    using SendMailTempateVector = std::vector<std::pair<uint32, uint32>>;
 
-    if (result == EQUIP_ERR_OK)
+    std::vector<SendMailTempateVector> allItems;
+
+    auto AddMailItem = [&allItems](uint32 itemEntry, uint32 itemCount)
     {
-        player->StoreNewItem(dest, itemId, true);
-    }
-    else
+        SendMailTempateVector toSendItems;
+
+        ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemEntry);
+        if (!itemTemplate)
+        {
+            LOG_ERROR("entities.player.items", "> HardModeHandler::SendMailItems: Item id {} is invalid", itemEntry);
+            return;
+        }
+
+        if (itemCount < 1 || (itemTemplate->MaxCount > 0 && itemCount > static_cast<uint32>(itemTemplate->MaxCount)))
+        {
+            LOG_ERROR("entities.player.items", "> HardModeHandler::SendMailItems: Incorrect item count ({}) for item id {}", itemEntry, itemCount);
+            return;
+        }
+
+        while (itemCount > itemTemplate->GetMaxStackSize())
+        {
+            if (toSendItems.size() <= MAX_MAIL_ITEMS)
+            {
+                toSendItems.emplace_back(itemEntry, itemTemplate->GetMaxStackSize());
+                itemCount -= itemTemplate->GetMaxStackSize();
+            }
+            else
+            {
+                allItems.emplace_back(toSendItems);
+                toSendItems.clear();
+            }
+        }
+
+        toSendItems.emplace_back(itemEntry, itemCount);
+        allItems.emplace_back(toSendItems);
+    };
+
+    for (auto& [itemEntry, itemCount] : mailItems)
     {
-        player->SendItemRetrievalMail(itemId, itemCount);
+        AddMailItem(itemEntry, itemCount);
     }
+
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
+
+    for (auto const& items : allItems)
+    {
+        MailSender sender(MAIL_CREATURE, 34337 /* The Postmaster */);
+        MailDraft draft(header, body); // This is the text used in Cataclysm, it probably wasn't changed.
+
+        for (auto const& [itemEntry, itemCount] : items)
+        {
+            if (Item* mailItem = Item::CreateItem(itemEntry, itemCount))
+            {
+                mailItem->SaveToDB(trans);
+                draft.AddItem(mailItem);
+            }
+        }
+
+        draft.SendMailTo(trans, MailReceiver(player, player->GetGUID().GetCounter()), sender);
+    }
+
+    CharacterDatabase.CommitTransaction(trans);
+}
+
+void HardModeHandler::RewardItems(Player* player, std::vector<HardModeReward> rewards)
+{
+    std::vector<std::pair<uint32, uint32>> mailItems;
+    uint8 mode = 0;
+
+    for (auto const& reward : rewards)
+    {
+        if (reward.Type == HardModeRewardType::HARDMODE_REWARD_TYPE_ITEM)
+        {
+            mailItems.push_back(std::make_pair(reward.RewardId, reward.RewardCount));
+            mode = reward.Mode;
+        }
+    }
+
+    if (mailItems.size() < 1)
+    {
+        return;
+    }
+
+    std::string hardModeName = sHardModeHandler->GetNameFromMode(mode);
+    std::string header = Acore::StringFormatFmt("{} Rewards", hardModeName);
+    std::string body = Acore::StringFormatFmt("Congratulations on reaching max level on {}, enjoy your rewards!", hardModeName);
+
+    SendMailItems(player, mailItems, header, body);
 }
 
 void HardModeHandler::RewardTitle(Player* player, uint32 titleId)
@@ -74,14 +154,11 @@ void HardModeHandler::RewardPlayerForMode(Player* player, uint8 mode)
 {
     std::vector<HardModeReward> rewards = GetRewardsForMode(mode);
 
+    // Reward non-item rewards, items are handled differently.
     for (auto const& reward : rewards)
     {
         switch (reward.Type)
         {
-        case HardModeRewardType::HARDMODE_REWARD_TYPE_ITEM:
-            RewardItem(player, reward.RewardId, reward.RewardCount);
-            break;
-
         case HardModeRewardType::HARDMODE_REWARD_TYPE_TITLE:
             RewardTitle(player, reward.RewardId);
             break;
@@ -91,6 +168,8 @@ void HardModeHandler::RewardPlayerForMode(Player* player, uint8 mode)
             break;
         }
     }
+
+    RewardItems(player, rewards);
 }
 
 std::vector<HardModeReward> HardModeHandler::GetRewardsForMode(uint8 mode)
