@@ -17,7 +17,7 @@ bool DifficultyModeSelfCrafted::CanGuildSendBankList(Guild const* /*guild*/, Wor
     return false;
 }
 
-bool DifficultyModeSelfCrafted::CanCastItemUseSpell(Player* player, Item* item, SpellCastTargets const& targets, uint8 castCount, uint32 glyphIndex)
+bool DifficultyModeSelfCrafted::CanCastItemUseSpell(Player* player, Item* item, SpellCastTargets const& /*targets*/, uint8 /*castCount*/, uint32 /*glyphIndex*/)
 {
     if (IsItemExcluded(item->GetTemplate()->ItemId))
     {
@@ -47,7 +47,7 @@ bool DifficultyModeSelfCrafted::CanCastItemUseSpell(Player* player, Item* item, 
     return false;
 }
 
-void DifficultyModeSelfCrafted::OnCreateItem(Player* player, Item* item, uint32 count)
+void DifficultyModeSelfCrafted::OnCreateItem(Player* player, Item* item, uint32 /*count*/)
 {
     auto itemProto = item->GetTemplate();
 
