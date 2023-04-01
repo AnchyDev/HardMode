@@ -46,7 +46,7 @@ bool HardModePlayerScript::OnBeforeTeleport(Player* player, uint32 mapId, float 
 
     for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
     {
-        if (!sHardModeHandler->IsModeEnabled(player, i))
+        if (!sHardModeHandler->IsModeEnabledForPlayerAndServer(player, i))
         {
             continue;
         }
@@ -76,7 +76,7 @@ bool HardModePlayerScript::CanRepopAtGraveyard(Player* player)
 
     for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
     {
-        if (!sHardModeHandler->IsModeEnabled(player, i))
+        if (!sHardModeHandler->IsModeEnabledForPlayerAndServer(player, i))
         {
             continue;
         }
@@ -101,7 +101,7 @@ void HardModePlayerScript::OnPlayerReleasedGhost(Player* player)
 
     for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
     {
-        if (!sHardModeHandler->IsModeEnabled(player, i))
+        if (!sHardModeHandler->IsModeEnabledForPlayerAndServer(player, i))
         {
             continue;
         }
@@ -119,7 +119,7 @@ void HardModePlayerScript::OnPlayerResurrect(Player* player, float restorePercen
 
     for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
     {
-        if (!sHardModeHandler->IsModeEnabled(player, i))
+        if (!sHardModeHandler->IsModeEnabledForPlayerAndServer(player, i))
         {
             continue;
         }
@@ -140,7 +140,7 @@ void HardModePlayerScript::OnLevelChanged(Player* player, uint8 /*oldLevel*/)
 
     for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
     {
-        if (sHardModeHandler->IsModeEnabled(player, i))
+        if (sHardModeHandler->IsModeEnabledForPlayer(player, i))
         {
             sHardModeHandler->RewardPlayerForMode(player, i);
         }
@@ -190,7 +190,7 @@ bool HardModePlayerScript::CanInitTrade(Player* player, Player* target)
 {
     for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
     {
-        if (sHardModeHandler->IsModeEnabled(player, i))
+        if (sHardModeHandler->IsModeEnabledForPlayer(player, i))
         {
             bool isTradable = sHardModeHandler->Modes[i]->IsTradable();
 
@@ -202,7 +202,7 @@ bool HardModePlayerScript::CanInitTrade(Player* player, Player* target)
             }
         }
 
-        if (sHardModeHandler->IsModeEnabled(target, i))
+        if (sHardModeHandler->IsModeEnabledForPlayer(target, i))
         {
             bool isTradable = sHardModeHandler->Modes[i]->IsTradable();
 
@@ -227,7 +227,7 @@ bool HardModePlayerScript::CanSendMail(Player* player, ObjectGuid receiverGuid, 
     {
         auto isMailable = sHardModeHandler->Modes[i]->IsMailable();
 
-        if (sHardModeHandler->IsModeEnabled(player, i) && !isMailable)
+        if (sHardModeHandler->IsModeEnabledForPlayer(player, i) && !isMailable)
         {
             ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot send mail while in the {} mode.", sHardModeHandler->GetNameFromMode(i)));
 
@@ -246,7 +246,7 @@ bool HardModePlayerScript::CanSendMail(Player* player, ObjectGuid receiverGuid, 
         {
             auto isMailable = sHardModeHandler->Modes[i]->IsMailable();
 
-            if (sHardModeHandler->IsModeEnabled(targetPlayer, i) && !isMailable)
+            if (sHardModeHandler->IsModeEnabledForPlayer(targetPlayer, i) && !isMailable)
             {
                 receiverMode = i;
                 canMail = false;
@@ -317,7 +317,7 @@ bool HardModePlayerScript::CanEquipItem(Player* player, uint8 slot, uint16& dest
 
     for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
     {
-        if (!sHardModeHandler->IsModeEnabled(player, i))
+        if (!sHardModeHandler->IsModeEnabledForPlayerAndServer(player, i))
         {
             continue;
         }
@@ -348,7 +348,7 @@ bool HardModeGuildScript::CanGuildSendBankList(Guild const* guild, WorldSession*
 
     for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
     {
-        if (!sHardModeHandler->IsModeEnabled(player, i))
+        if (!sHardModeHandler->IsModeEnabledForPlayerAndServer(player, i))
         {
             continue;
         }
@@ -381,7 +381,7 @@ bool HardModeMiscScript::CanSendAuctionHello(WorldSession const* session, Object
 
     for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
     {
-        if (!sHardModeHandler->IsModeEnabled(player, i))
+        if (!sHardModeHandler->IsModeEnabledForPlayerAndServer(player, i))
         {
             continue;
         }
@@ -546,11 +546,11 @@ bool HardModeGameObjectScript::OnGossipHello(Player* player, GameObject* go)
     {
         if (sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(i), false))
         {
-            if (!sHardModeHandler->IsModeEnabled(player, i) && !sHardModeHandler->IsTainted(player))
+            if (!sHardModeHandler->IsModeEnabledForPlayer(player, i) && !sHardModeHandler->IsTainted(player))
             {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Enable {} Mode", sHardModeHandler->GetNameFromMode(i)), 0, i);
             }
-            else if (sHardModeHandler->IsModeEnabled(player, i))
+            else if (sHardModeHandler->IsModeEnabledForPlayer(player, i))
             {
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Disable {} Mode", sHardModeHandler->GetNameFromMode(i)), 0, i);
             }
@@ -571,7 +571,7 @@ bool HardModeGameObjectScript::OnGossipHello(Player* player, GameObject* go)
 
 bool HardModeGameObjectScript::OnGossipSelect(Player* player, GameObject* /*go*/, uint32 /*sender*/, uint32 action)
 {
-    auto isModeEnabled = sHardModeHandler->IsModeEnabled(player, action);
+    auto isModeEnabled = sHardModeHandler->IsModeEnabledForPlayer(player, action);
 
     if (!isModeEnabled && sHardModeHandler->IsTainted(player))
     {
@@ -610,6 +610,11 @@ void HardModeWorldScript::OnAfterConfigLoad(bool reload)
 
     for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
     {
+        if (!sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(i), false))
+        {
+            continue;
+        }
+
         sHardModeHandler->Modes[i]->OnAfterConfigLoad(reload);
     }
 }

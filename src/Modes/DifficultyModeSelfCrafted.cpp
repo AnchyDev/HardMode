@@ -8,31 +8,16 @@ DifficultyModeSelfCrafted::DifficultyModeSelfCrafted() : DifficultyMode(/*canBeT
 
 bool DifficultyModeSelfCrafted::CanSendAuctionHello(WorldSession const* /*session*/, ObjectGuid /*guid*/, Creature* /*creature*/)
 {
-    if (!sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED), false))
-    {
-        return true;
-    }
-
     return false;
 }
 
 bool DifficultyModeSelfCrafted::CanGuildSendBankList(Guild const* /*guild*/, WorldSession* /*session*/, uint8 /*tabId*/, bool /*sendAllSlots*/)
 {
-    if (!sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED), false))
-    {
-        return true;
-    }
-
     return false;
 }
 
 bool DifficultyModeSelfCrafted::CanEquipItem(Player* player, uint8 /*slot*/, uint16& /*dest*/, Item* pItem, bool /*swap*/, bool /*notLoading*/)
 {
-    if (!sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED), false))
-    {
-        return true;
-    }
-
     // Allow fishing poles to be equipped since you cannot craft them.
     if (pItem->GetTemplate()->Class == ITEM_CLASS_WEAPON &&
         pItem->GetTemplate()->SubClass == ITEM_SUBCLASS_WEAPON_FISHING_POLE)

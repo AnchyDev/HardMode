@@ -13,7 +13,6 @@ private:
     HardModeHandler() { }
 
 public:
-    bool IsModeEnabled(Player* player, uint8 mode);
     void SetTainted(Player* player, bool value);
     bool IsTainted(Player* player);
     void SetShadowBanned(Player* player, bool value);
@@ -22,6 +21,8 @@ public:
     std::string GetNameFromMode(uint8 mode);
     std::string GetNamesFromEnabledModes(Player* player);
     bool HasModesEnabled(Player* player);
+    bool IsModeEnabledForPlayer(Player* player, uint8 mode);
+    bool IsModeEnabledForPlayerAndServer(Player* player, uint8 mode);
     std::string GetConfigNameFromMode(uint8 mode);
     PlayerSettingMap* GetPlayerSettingsFromDatabase(ObjectGuid guid);
 

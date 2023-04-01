@@ -7,6 +7,7 @@
 #include "StringConvert.h"
 #include "DBCStore.h"
 #include "Mail.h"
+#include "Config.h"
 
 void HardModeHandler::LoadRewardsFromDatabase()
 {
@@ -190,11 +191,6 @@ std::vector<HardModeReward> HardModeHandler::GetRewardsForMode(uint8 mode)
     return rewards;
 }
 
-bool HardModeHandler::IsModeEnabled(Player* player, uint8 mode)
-{
-    return player->GetPlayerSetting("HardMode", mode).value > 0;
-}
-
 void HardModeHandler::SetTainted(Player* player, bool value)
 {
     player->UpdatePlayerSetting("HardModeTainted", 0, value);
@@ -235,7 +231,7 @@ std::string HardModeHandler::GetNamesFromEnabledModes(Player* player)
 
     for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
     {
-        if (sHardModeHandler->IsModeEnabled(player, i))
+        if (sHardModeHandler->IsModeEnabledForPlayer(player, i))
         {
             modes.push_back(sHardModeHandler->GetNameFromMode(i));
         }
@@ -258,13 +254,33 @@ bool HardModeHandler::HasModesEnabled(Player* player)
 {
     for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
     {
-        if (sHardModeHandler->IsModeEnabled(player, i))
+        if (sHardModeHandler->IsModeEnabledForPlayer(player, i))
         {
             return true;
         }
     }
 
     return false;
+}
+
+bool HardModeHandler::IsModeEnabledForPlayer(Player* player, uint8 mode)
+{
+    return player->GetPlayerSetting("HardMode", mode).value > 0;
+}
+
+bool HardModeHandler::IsModeEnabledForPlayerAndServer(Player* player, uint8 mode)
+{
+    if (!sHardModeHandler->IsModeEnabledForPlayer(player, mode))
+    {
+        return false;
+    }
+
+    if (!sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(mode), false))
+    {
+        return false;
+    }
+
+    return true;
 }
 
 std::string HardModeHandler::GetConfigNameFromMode(uint8 mode)
