@@ -22,6 +22,54 @@ void HardModePlayerScript::OnPVPKill(Player* killer, Player* victim)
     }
 }
 
+bool HardModePlayerScript::CanCastItemUseSpell(Player* player, Item* item, SpellCastTargets const& targets, uint8 castCount, uint32 glyphIndex)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return true;
+    }
+
+    if (!player)
+    {
+        return true;
+    }
+
+    for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (!sHardModeHandler->IsModeEnabledForPlayerAndServer(player, i))
+        {
+            continue;
+        }
+
+        bool result = sHardModeHandler->Modes[i]->CanCastItemUseSpell(player, item, targets, castCount, glyphIndex);
+
+        if (!result)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+void HardModePlayerScript::OnCreateItem(Player* player, Item* item, uint32 count)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return;
+    }
+
+    for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (!sHardModeHandler->IsModeEnabledForPlayerAndServer(player, i))
+        {
+            continue;
+        }
+
+        sHardModeHandler->Modes[i]->OnCreateItem(player, item, count);
+    }
+}
+
 bool HardModePlayerScript::CanGroupInvite(Player* player, std::string& memberName)
 {
     Player* targetPlayer = ObjectAccessor::FindPlayerByName(memberName, true);
@@ -39,6 +87,18 @@ bool HardModePlayerScript::CanGroupInvite(Player* player, std::string& memberNam
         ChatHandler(player->GetSession()).SendSysMessage("You cannot group with players that do not have the same hard modes enabled as you.");
 
         return false;
+    }
+
+    uint32 levelRange = sConfigMgr->GetOption<uint32>("HardMode.PartyLevelRange", 3);
+    if (levelRange)
+    {
+        uint32 currentRange = std::abs(int32(player->GetLevel() - targetPlayer->GetLevel()));
+
+        if (currentRange > levelRange)
+        {
+            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot group with players who are further than {} levels from you.", levelRange));
+            return false;
+        }
     }
 
     sHardModeHandler->SetTainted(player, true);
@@ -653,7 +713,7 @@ void SC_AddHardModeScripts()
 {
     sHardModeHandler->Modes[DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED] = new DifficultyModeSelfCrafted();
     sHardModeHandler->Modes[DifficultyModes::DIFFICULTY_MODE_HARDCORE] = new DifficultyModeHardCore();
-    
+
     new HardModeMiscScript();
     new HardModeGuildScript();
     new HardModeWorldScript();

@@ -1,9 +1,15 @@
+AllModes
+- Can't group with other players unless they have matching modes.
+- Can't group with other players with matching modes unless they are in level range (default: 3).
+
 SelfCrafted:
 - Can't use auction house.
 - Can't use guild bank.
 - Can't trade other players.
 - Can't send or receive mail.
 - Can't equip items that aren't self crafted.
+- Can't eat food that is not self crafted.
+- Can't drink potions that are not self crafted.
 
 HardCore:
 - Can't use auction house.

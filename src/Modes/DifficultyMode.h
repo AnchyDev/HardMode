@@ -18,6 +18,8 @@ public:
     virtual bool CanSendAuctionHello(WorldSession const* /*session*/, ObjectGuid /*guid*/, Creature* /*creature*/) { return true; }
     virtual bool CanGuildSendBankList(Guild const* /*guild*/, WorldSession* /*session*/, uint8 /*tabId*/, bool /*sendAllSlots*/) { return true; }
     virtual bool CanEquipItem(Player* /*player*/, uint8 /*slot*/, uint16& /*dest*/, Item* /*pItem*/, bool /*swap*/, bool /*notLoading*/) { return true; }
+    virtual bool CanCastItemUseSpell(Player* /*player*/, Item* /*item*/, SpellCastTargets const& /*targets*/, uint8 /*castCount*/, uint32 /*glyphIndex*/) { return true; }
+    virtual void OnCreateItem(Player* /*player*/, Item* /*item*/, uint32 /*count*/) { }
     virtual void OnPlayerResurrect(Player* /*player*/, float /*restorePercent*/, bool /*applySickness*/) { }
     virtual void OnPlayerReleasedGhost(Player* /*player*/) { }
     virtual bool CanRepopAtGraveyard(Player* /*player*/) { return true; }

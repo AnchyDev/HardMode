@@ -3,6 +3,7 @@
 
 #include "Config.h"
 #include "Player.h"
+#include "Item.h"
 
 DifficultyModeSelfCrafted::DifficultyModeSelfCrafted() : DifficultyMode(/*canBeTraded*/ false, /*canSendOrReceiveMail*/ false) { }
 
@@ -14,6 +15,56 @@ bool DifficultyModeSelfCrafted::CanSendAuctionHello(WorldSession const* /*sessio
 bool DifficultyModeSelfCrafted::CanGuildSendBankList(Guild const* /*guild*/, WorldSession* /*session*/, uint8 /*tabId*/, bool /*sendAllSlots*/)
 {
     return false;
+}
+
+bool DifficultyModeSelfCrafted::CanCastItemUseSpell(Player* player, Item* item, SpellCastTargets const& targets, uint8 castCount, uint32 glyphIndex)
+{
+    if (IsItemExcluded(item->GetTemplate()->ItemId))
+    {
+        return true;
+    }
+
+    auto itemProto = item->GetTemplate();
+
+    if (itemProto->Class != ITEM_CLASS_CONSUMABLE)
+    {
+        return true;
+    }
+
+    if (itemProto->SubClass != ITEM_SUBCLASS_FOOD &&
+        itemProto->SubClass != ITEM_SUBCLASS_POTION &&
+        itemProto->SubClass != ITEM_SUBCLASS_ELIXIR &&
+        itemProto->SubClass != ITEM_SUBCLASS_FLASK)
+    {
+        return true;
+    }
+
+    if (item->GetGuidValue(ITEM_FIELD_CREATOR) == player->GetGUID())
+    {
+        return true;
+    }
+
+    return false;
+}
+
+void DifficultyModeSelfCrafted::OnCreateItem(Player* player, Item* item, uint32 count)
+{
+    auto itemProto = item->GetTemplate();
+
+    if (itemProto->Class != ITEM_CLASS_CONSUMABLE)
+    {
+        return;
+    }
+
+    if (itemProto->SubClass != ITEM_SUBCLASS_FOOD &&
+        itemProto->SubClass != ITEM_SUBCLASS_POTION &&
+        itemProto->SubClass != ITEM_SUBCLASS_ELIXIR &&
+        itemProto->SubClass != ITEM_SUBCLASS_FLASK)
+    {
+        return;
+    }
+
+    item->SetGuidValue(ITEM_FIELD_CREATOR, player->GetGUID());
 }
 
 bool DifficultyModeSelfCrafted::CanEquipItem(Player* player, uint8 /*slot*/, uint16& /*dest*/, Item* pItem, bool /*swap*/, bool /*notLoading*/)

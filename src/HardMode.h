@@ -35,6 +35,8 @@ private:
     bool CanInitTrade(Player* player, Player* target) override;
     bool CanSendMail(Player* player, ObjectGuid receiverGuid, ObjectGuid mailbox, std::string& subject, std::string& body, uint32 money, uint32 COD, Item* item) override;
     bool CanEquipItem(Player* player, uint8 slot, uint16& dest, Item* pItem, bool swap, bool notLoading) override;
+    bool CanCastItemUseSpell(Player* player, Item* item, SpellCastTargets const& targets, uint8 castCount, uint32 glyphIndex) override;
+    void OnCreateItem(Player* player, Item* item, uint32 count) override;
     void OnLogin(Player* player) override;
     void OnLevelChanged(Player* player, uint8 oldlevel) override;
     void OnPlayerResurrect(Player* player, float restorePercent, bool applySickness) override;

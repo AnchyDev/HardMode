@@ -14,6 +14,8 @@ public:
     bool CanSendAuctionHello(WorldSession const* session, ObjectGuid guid, Creature* creature) override;
     bool CanGuildSendBankList(Guild const* guild, WorldSession* session, uint8 tabId, bool sendAllSlots) override;
     bool CanEquipItem(Player* player, uint8 slot, uint16& dest, Item* pItem, bool swap, bool notLoading) override;
+    bool CanCastItemUseSpell(Player* player, Item* item, SpellCastTargets const& targets, uint8 castCount, uint32 glyphIndex) override;
+    void OnCreateItem(Player* player, Item* item, uint32 count) override;
     bool IsItemExcluded(uint32 itemId);
     void OnAfterConfigLoad(bool reload) override;
 
