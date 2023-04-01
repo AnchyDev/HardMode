@@ -22,6 +22,16 @@ void HardModePlayerScript::OnPVPKill(Player* killer, Player* victim)
     }
 }
 
+bool HardModePlayerScript::CanGroupInvite(Player* player, std::string& memberName)
+{
+    return true;
+}
+
+bool HardModePlayerScript::CanGroupAccept(Player* player, Group* group)
+{
+    return true;
+}
+
 bool HardModePlayerScript::OnBeforeTeleport(Player* player, uint32 mapId, float x, float y, float z, float orientation, uint32 options, Unit* target)
 {
     if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
