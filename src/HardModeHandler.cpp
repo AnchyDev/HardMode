@@ -93,11 +93,11 @@ void HardModeHandler::SendMailItems(Player* player, std::vector<std::pair<uint32
 
     CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
 
+    MailSender sender(MAIL_CREATURE, 34337 /* The Postmaster */);
+    MailDraft draft(header, body);
+
     for (auto const& items : allItems)
     {
-        MailSender sender(MAIL_CREATURE, 34337 /* The Postmaster */);
-        MailDraft draft(header, body); // This is the text used in Cataclysm, it probably wasn't changed.
-
         for (auto const& [itemEntry, itemCount] : items)
         {
             if (Item* mailItem = Item::CreateItem(itemEntry, itemCount))
@@ -106,9 +106,9 @@ void HardModeHandler::SendMailItems(Player* player, std::vector<std::pair<uint32
                 draft.AddItem(mailItem);
             }
         }
-
-        draft.SendMailTo(trans, MailReceiver(player, player->GetGUID().GetCounter()), sender);
     }
+
+    draft.SendMailTo(trans, MailReceiver(player, player->GetGUID().GetCounter()), sender);
 
     CharacterDatabase.CommitTransaction(trans);
 }
