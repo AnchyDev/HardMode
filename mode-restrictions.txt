@@ -10,3 +10,4 @@ HardCore:
 - Can't be traded by other players.
 - Teleported to shadow realm on death.
 - Can't teleport while shadow banned.
+- Gains a red aura, notifying players of hardcore.
