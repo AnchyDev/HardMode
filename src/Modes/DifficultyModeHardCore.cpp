@@ -1,4 +1,5 @@
 #include "DifficultyModeHardCore.h"
+#include "HardMode.h"
 #include "HardModeHandler.h"
 
 #include "Config.h"
@@ -46,7 +47,7 @@ void DifficultyModeHardCore::OnPlayerReleasedGhost(Player* player)
     player->SetHomebind(worldLoc, 198 /* The Weeping Cave */);
     player->ResurrectPlayer(100, false);
 
-    player->AddAura(45681, player); // Ghost effect, cannot be removed.
+    player->AddAura(HARDMODE_SPELL_AURA_SHADOWBAN, player); // Ghost effect, cannot be removed.
 
     sHardModeHandler->SetShadowBanned(player, true);
 }
