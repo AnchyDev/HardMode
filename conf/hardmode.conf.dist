@@ -72,6 +72,7 @@ HardMode.AnnounceModesOnLogin = 1
 #        Description: Enable announcing the modes completed when hitting max level to the world chat.
 #                     0 - Disabled
 #        Default:     1 - Enabled
+#        Type:        bool
 #
 
 HardMode.AnnounceModesMaxLevel = 1
@@ -81,6 +82,7 @@ HardMode.AnnounceModesMaxLevel = 1
 #        Description: Enable announcing when a player kills another player with activated modes.
 #                     0 - Disabled
 #        Default:     1 - Enabled
+#        Type:        bool
 #
 
 HardMode.AnnounceOnPvPKill = 1
