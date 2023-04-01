@@ -9,7 +9,7 @@ using namespace Acore::ChatCommands;
 enum HardModeConstants
 {
     HARDMODE_SPELL_AURA_HARDCORE = 52670, // Red Glow
-    HARDMODE_MAIL_SENDER = 34337 // The Postmaster
+    HARDMODE_MAIL_SENDER = 441102 // The Postmaster
 };
 
 class HardModeMiscScript : MiscScript
