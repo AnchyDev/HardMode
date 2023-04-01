@@ -335,6 +335,8 @@ bool HardModeMiscScript::CanSendAuctionHello(WorldSession const* session, Object
 
         if (!result)
         {
+            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot use the auction house while in {} mode.", sHardModeHandler->GetNameFromMode(i)));
+
             return false;
         }
     }
