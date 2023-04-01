@@ -10,6 +10,7 @@ public:
 
 public:
     bool CanSendAuctionHello(WorldSession const* session, ObjectGuid guid, Creature* creature) override;
+    bool CanGuildSendBankList(Guild const* guild, WorldSession* session, uint8 tabId, bool sendAllSlots) override;
     void OnPlayerResurrect(Player* player, float restorePercent, bool applySickness) override;
     void OnPlayerReleasedGhost(Player* player) override;
     bool CanRepopAtGraveyard(Player* player) override;

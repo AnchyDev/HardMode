@@ -40,6 +40,15 @@ private:
     void OnPVPKill(Player* killer, Player* victim) override;
 };
 
+class HardModeGuildScript : GuildScript
+{
+public:
+    HardModeGuildScript() : GuildScript("HardModeGuildScript") { }
+
+private:
+    bool CanGuildSendBankList(Guild const* guild, WorldSession* session, uint8 tabId, bool sendAllSlots) override;
+};
+
 class HardModeCommandScript : public CommandScript
 {
 public:

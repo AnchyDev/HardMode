@@ -16,6 +16,16 @@ bool DifficultyModeHardCore::CanSendAuctionHello(WorldSession const* /*session*/
     return false;
 }
 
+bool DifficultyModeHardCore::CanGuildSendBankList(Guild const* /*guild*/, WorldSession* /*session*/, uint8 /*tabId*/, bool /*sendAllSlots*/)
+{
+    if (!sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(DifficultyModes::DIFFICULTY_MODE_HARDCORE), false))
+    {
+        return true;
+    }
+
+    return false;
+}
+
 void DifficultyModeHardCore::OnPlayerResurrect(Player* /*player*/, float /*restorePercent*/, bool /*applySickness*/)
 {
     if (!sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(DifficultyModes::DIFFICULTY_MODE_HARDCORE), false))

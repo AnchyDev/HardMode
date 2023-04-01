@@ -311,6 +311,39 @@ bool HardModePlayerScript::CanEquipItem(Player* player, uint8 slot, uint16& dest
     return true;
 }
 
+bool HardModeGuildScript::CanGuildSendBankList(Guild const* guild, WorldSession* session, uint8 tabId, bool sendAllSlots)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return true;
+    }
+
+    Player* player = session->GetPlayer();
+    if (!player)
+    {
+        return true;
+    }
+
+    for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (!sHardModeHandler->IsModeEnabled(player, i))
+        {
+            continue;
+        }
+
+        bool result = sHardModeHandler->Modes[i]->CanGuildSendBankList(guild, session, tabId, sendAllSlots);
+
+        if (!result)
+        {
+            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot use the guild bank while in {} mode.", sHardModeHandler->GetNameFromMode(i)));
+
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool HardModeMiscScript::CanSendAuctionHello(WorldSession const* session, ObjectGuid guid, Creature* creature)
 {
     if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
@@ -563,8 +596,9 @@ void SC_AddHardModeScripts()
 {
     sHardModeHandler->Modes[DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED] = new DifficultyModeSelfCrafted();
     sHardModeHandler->Modes[DifficultyModes::DIFFICULTY_MODE_HARDCORE] = new DifficultyModeHardCore();
-
+    
     new HardModeMiscScript();
+    new HardModeGuildScript();
     new HardModeWorldScript();
     new HardModePlayerScript();
     new HardModeCommandScript();

@@ -1,11 +1,13 @@
 SelfCrafted:
 - Can't use auction house.
-- Can't equip items that aren't self crafted.
+- Can't use guild bank.
 - Can't trade other players.
 - Can't be traded by other players.
+- Can't equip items that aren't self crafted.
 
 HardCore:
 - Can't use auction house.
+- Can't use guild bank.
 - Can't trade other players.
 - Can't be traded by other players.
 - Teleported to shadow realm on death.
