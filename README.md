@@ -1,5 +1,5 @@
 # HardMode
-HardMode is a module heavily inspired by mod-challenge-modes. The purpose of this module is to develop extra functionality with a difference in code architecture. This makes it easier for me to develop on existing or expanding modes.
+HardMode is a module heavily inspired by [mod-challenge-modes](https://github.com/ZhengPeiRu21/mod-challenge-modes). The purpose of this module is to develop extra functionality with a difference in code architecture. This makes it easier for me to develop on existing or expanding modes.
 
 This module is still a WIP.
 
@@ -25,3 +25,6 @@ When referencing the modes and reward types you have to use the id value.
 | Self-Crafted | 0 | | Item | 0 |
 | HardCore | 1 | | Title | 1 |
 | SlowXP | 2 | | Spell | 2 |
+
+## Credits
+Thanks to [ZhengPeiRu21](https://github.com/ZhengPeiRu21) for creating the original module which inspired this one.
