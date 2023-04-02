@@ -1,5 +1,5 @@
 AllModes
-- Can't group with other players unless they have matching modes.
+- Can't group with other players unless they have matching modes (excluding SlowXP).
 - Can't group with other players with matching modes unless they are in level range (default: 3).
 
 SelfCrafted:
@@ -22,3 +22,4 @@ HardCore:
 
 LowXP:
 - Exp scaled back to 1x (may be futher reduced if configured).
+- Can group with normal players.

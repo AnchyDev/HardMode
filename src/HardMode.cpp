@@ -85,6 +85,15 @@ bool HardModePlayerScript::CanGroupInvite(Player* player, std::string& memberNam
     uint32 playerMask = sHardModeHandler->GetEnabledModesAsMask(player);
     uint32 targetPlayerMask = sHardModeHandler->GetEnabledModesAsMask(targetPlayer);
 
+    uint32 slowXPMask = (1 << DifficultyModes::DIFFICULTY_MODE_SLOWXP);
+
+    // Allow normal players and SlowXP to group together.
+    if ((playerMask == slowXPMask || playerMask == 0) &&
+        (targetPlayerMask == slowXPMask || targetPlayerMask == 0))
+    {
+        return true;
+    }
+
     if (playerMask != targetPlayerMask)
     {
         ChatHandler(player->GetSession()).SendSysMessage("|cffFFFFFFYou cannot group with players that do not have the same hard modes enabled as you.");
