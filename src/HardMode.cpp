@@ -251,6 +251,14 @@ void HardModePlayerScript::OnLogin(Player* player)
     if (sHardModeHandler->HasModesEnabled(player))
     {
         ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("Enabled Difficulty Modes: {}", sHardModeHandler->GetNamesFromEnabledModes(player)));
+
+        if (sHardModeHandler->IsModeEnabledForPlayerAndServer(player, DifficultyModes::DIFFICULTY_MODE_HARDCORE))
+        {
+            if (player->HasAura(HARDMODE_SPELL_AURA_HARDCORE))
+            {
+                player->AddAura(HARDMODE_SPELL_AURA_HARDCORE, player);
+            }
+        }
     }
 }
 
