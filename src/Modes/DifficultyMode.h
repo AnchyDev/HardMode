@@ -30,6 +30,9 @@ public:
     virtual void OnQuestComputeXP(Player* /*player*/, Quest const* /*quest*/, uint32& /*xpValue*/) { }
     virtual void OnAfterConfigLoad(bool /*reload*/) { }
 
+    virtual void AddEffectsForPlayer(Player* /*player*/) { }
+    virtual void RemoveEffectsForPlayer(Player* /*player*/) { }
+
     bool IsTradable() { return _canBeTraded; }
     bool IsMailable() { return _canSendOrReceiveMail; }
 protected:

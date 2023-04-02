@@ -8,8 +8,6 @@ using namespace Acore::ChatCommands;
 
 enum HardModeConstants
 {
-    HARDMODE_SPELL_AURA_HARDCORE = 52670, // Red Glow
-    HARDMODE_SPELL_AURA_SHADOWBAN = 45681, // Ghost Effect
     HARDMODE_MAIL_SENDER = 441102, // The Postmaster
     HARDMODE_DEATHKNIGHT_INITIAL_QUEST = 12593, // In Service Of The Lich King
     HARDMODE_ZONE_EBONHOLD = 609

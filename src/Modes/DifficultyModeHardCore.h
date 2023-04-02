@@ -3,6 +3,12 @@
 
 #include "DifficultyMode.h"
 
+enum HardModeHardCoreConstants
+{
+    HARDMODE_SPELL_AURA_HARDCORE = 52670,
+    HARDMODE_SPELL_AURA_SHADOWBAN = 45681
+};
+
 class DifficultyModeHardCore : public DifficultyMode
 {
 public:
@@ -16,6 +22,8 @@ public:
     void OnPlayerReleasedGhost(Player* player) override;
     bool CanRepopAtGraveyard(Player* player) override;
     bool OnBeforeTeleport(Player* player, uint32 mapId, float x, float y, float z, float orientation, uint32 options, Unit* target) override;
+    void AddEffectsForPlayer(Player* player) override;
+    void RemoveEffectsForPlayer(Player* player) override;
 };
 
 #endif // MODULE_HARDMODE_MODE_HARDCORE_H

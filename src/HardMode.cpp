@@ -261,13 +261,7 @@ void HardModePlayerScript::OnLogin(Player* player)
     {
         ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFEnabled Difficulty Modes: {}", sHardModeHandler->GetNamesFromEnabledModes(player, true)));
 
-        if (sHardModeHandler->IsModeEnabledForPlayerAndServer(player, DifficultyModes::DIFFICULTY_MODE_HARDCORE))
-        {
-            if (!player->HasAura(HARDMODE_SPELL_AURA_HARDCORE))
-            {
-                player->AddAura(HARDMODE_SPELL_AURA_HARDCORE, player);
-            }
-        }
+        sHardModeHandler->UpdateAllModeEffects(player);
     }
 }
 
@@ -610,17 +604,7 @@ bool HardModeCommandScript::HandleHardModeSetModeCommand(ChatHandler* handler, O
     auto targetPlayer = target->GetConnectedPlayer();
     targetPlayer->UpdatePlayerSetting("HardMode", mode, value);
 
-    if (mode == DifficultyModes::DIFFICULTY_MODE_HARDCORE)
-    {
-        if (value)
-        {
-            targetPlayer->AddAura(HARDMODE_SPELL_AURA_HARDCORE, targetPlayer);
-        }
-        else
-        {
-            targetPlayer->RemoveAura(HARDMODE_SPELL_AURA_HARDCORE);
-        }
-    }
+    sHardModeHandler->UpdateAllModeEffects(targetPlayer);
 
     handler->SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFUpdated mode '{}{}|cffFFFFFF' for player '|cff00FF00{}|cffFFFFFF' to '|r{}|cffFFFFFF'.", sHardModeHandler->GetColorFromMode(mode), sHardModeHandler->GetNameFromMode(mode), targetPlayer->GetName(), value));
 
@@ -732,17 +716,7 @@ bool HardModeGameObjectScript::OnGossipSelect(Player* player, GameObject* /*go*/
         player->UpdatePlayerSetting("HardMode", action, isModeEnabled == 0 ? 1 : 0);
         CloseGossipMenuFor(player);
 
-        if (action == DifficultyModes::DIFFICULTY_MODE_HARDCORE)
-        {
-            if (!isModeEnabled)
-            {
-                player->AddAura(HARDMODE_SPELL_AURA_HARDCORE, player);
-            }
-            else
-            {
-                player->RemoveAura(HARDMODE_SPELL_AURA_HARDCORE);
-            }
-        }
+        sHardModeHandler->UpdateAllModeEffects(player);
     }
 
     return true;

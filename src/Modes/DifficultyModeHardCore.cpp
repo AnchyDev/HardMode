@@ -61,3 +61,44 @@ bool DifficultyModeHardCore::OnBeforeTeleport(Player* player, uint32 mapId, floa
 
     return true;
 }
+
+void DifficultyModeHardCore::AddEffectsForPlayer(Player* player)
+{
+    if (!player)
+    {
+        return;
+    }
+
+    if (!sHardModeHandler->IsShadowBanned(player))
+    {
+        if (!player->HasAura(HARDMODE_SPELL_AURA_HARDCORE))
+        {
+            player->AddAura(HARDMODE_SPELL_AURA_HARDCORE, player);
+        }
+    }
+    else
+    {
+        if (!player->HasAura(HARDMODE_SPELL_AURA_SHADOWBAN))
+        {
+            player->AddAura(HARDMODE_SPELL_AURA_SHADOWBAN, player);
+        }
+    }
+}
+
+void DifficultyModeHardCore::RemoveEffectsForPlayer(Player* player)
+{
+    if (!player)
+    {
+        return;
+    }
+
+    if (player->HasAura(HARDMODE_SPELL_AURA_HARDCORE))
+    {
+        player->RemoveAura(HARDMODE_SPELL_AURA_HARDCORE);
+    }
+
+    if (player->HasAura(HARDMODE_SPELL_AURA_SHADOWBAN))
+    {
+        player->RemoveAura(HARDMODE_SPELL_AURA_SHADOWBAN);
+    }
+}

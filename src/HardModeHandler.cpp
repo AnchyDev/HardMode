@@ -334,6 +334,21 @@ bool HardModeHandler::IsModeEnabledForPlayerAndServer(Player* player, uint8 mode
     return true;
 }
 
+void HardModeHandler::UpdateAllModeEffects(Player* player)
+{
+    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (sHardModeHandler->IsModeEnabledForPlayerAndServer(player, i))
+        {
+            sHardModeHandler->Modes[i]->AddEffectsForPlayer(player);
+        }
+        else
+        {
+            sHardModeHandler->Modes[i]->RemoveEffectsForPlayer(player);
+        }
+    }
+}
+
 uint32 HardModeHandler::GetEnabledModesAsMask(Player* player)
 {
     uint32 mask = 0;
