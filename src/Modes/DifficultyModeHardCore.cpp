@@ -17,9 +17,14 @@ bool DifficultyModeHardCore::CanGuildSendBankList(Guild const* /*guild*/, WorldS
     return false;
 }
 
-void DifficultyModeHardCore::OnPlayerResurrect(Player* /*player*/, float /*restorePercent*/, bool /*applySickness*/)
+void DifficultyModeHardCore::OnPlayerResurrect(Player* player, float /*restorePercent*/, bool /*applySickness*/)
 {
-    return;
+    if (sHardModeHandler->IsShadowBanned(player))
+    {
+        return;
+    }
+
+    OnPlayerReleasedGhost(player); // Shadowban the player.
 }
 
 void DifficultyModeHardCore::OnPlayerReleasedGhost(Player* player)
@@ -27,11 +32,15 @@ void DifficultyModeHardCore::OnPlayerReleasedGhost(Player* player)
     WorldLocation worldLoc(37, -614.38, -239.69, 379.35, 0.69); // Azshara Crater Shadow Realm
     player->TeleportTo(worldLoc);
     player->SetHomebind(worldLoc, 198 /* The Weeping Cave */);
-    player->ResurrectPlayer(100, false);
+
+    sHardModeHandler->SetShadowBanned(player, true); // Shadowban after teleport, otherwise it won't teleport.
+
+    if (!player->IsAlive())
+    {
+        player->ResurrectPlayer(100, false);
+    }
 
     player->AddAura(HARDMODE_SPELL_AURA_SHADOWBAN, player); // Ghost effect, cannot be removed.
-
-    sHardModeHandler->SetShadowBanned(player, true);
 }
 
 bool DifficultyModeHardCore::CanRepopAtGraveyard(Player* /*player*/)
