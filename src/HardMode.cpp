@@ -18,7 +18,9 @@ void HardModePlayerScript::OnPVPKill(Player* killer, Player* victim)
     {
         if (sConfigMgr->GetOption<bool>("HardMode.AnnounceOnPvPKill", true))
         {
-            sWorld->SendServerMessage(SERVER_MSG_STRING, Acore::StringFormatFmt("Player {} killed {} while they were doing the {} challenge(s)!", killer->GetName(), victim->GetName(), sHardModeHandler->GetNamesFromEnabledModes(victim)));
+            std::string formatMsg = Acore::StringFormatFmt("|cffFFFFFFPlayer |cff00FF00{}|cffFFFFFF killed |cff00FF00{}|cffFFFFFF while they were doing the {}|cffFFFFFF challenge(s)!", killer->GetName(), victim->GetName(), sHardModeHandler->GetNamesFromEnabledModes(victim, true));
+
+            sWorld->SendServerMessage(SERVER_MSG_STRING, formatMsg);
         }
     }
 }
