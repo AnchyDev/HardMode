@@ -254,7 +254,7 @@ void HardModePlayerScript::OnLogin(Player* player)
 
         if (sHardModeHandler->IsModeEnabledForPlayerAndServer(player, DifficultyModes::DIFFICULTY_MODE_HARDCORE))
         {
-            if (player->HasAura(HARDMODE_SPELL_AURA_HARDCORE))
+            if (!player->HasAura(HARDMODE_SPELL_AURA_HARDCORE))
             {
                 player->AddAura(HARDMODE_SPELL_AURA_HARDCORE, player);
             }
