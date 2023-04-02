@@ -19,16 +19,9 @@ You _must_ enable `EnablePlayerSettings` in the World config to use this module.
 When referencing the modes and reward types you have to use the id value.
 
 
-### Modes
-| Mode | Value |
-| --- | --- |
-| Self-Crafted | 0 |
-| HardCore | 1 |
-| LowXP | 2 |
-
-### Reward Types
-| Reward | Value |
-| --- | --- |
-| Item | 0 |
-| Title | 1 | 
-| Spell | 2 |
+### Modes / Rewards
+| Mode | Value | | Reward | Value |
+| --- | --- | --- | --- | --- |
+| Self-Crafted | 0 | | Item | 0 |
+| HardCore | 1 | | Title | 1 |
+| LowXP | 2 | | Spell | 2 |
