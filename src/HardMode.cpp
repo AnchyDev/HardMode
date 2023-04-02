@@ -683,7 +683,7 @@ bool HardModeGameObjectScript::OnGossipHello(Player* player, GameObject* go)
             {
                 if (sHardModeHandler->IsTainted(player))
                 {
-                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Disable {} Mode", sHardModeHandler->GetNameFromMode(i)), 0, i, Acore::StringFormatFmt("Are you sure you want to disable the {}{}|r mode?|n|nYou won't be able to re-enable this mode.", sHardModeHandler->GetColorFromMode(i), sHardModeHandler->GetNameFromMode(i)), 0, false);
+                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Disable {}{}|r Mode", sHardModeHandler->GetColorFromMode(i), sHardModeHandler->GetNameFromMode(i)), 0, i, Acore::StringFormatFmt("Are you sure you want to disable the {}{}|r mode?|n|nYou won't be able to re-enable this mode.", sHardModeHandler->GetColorFromMode(i), sHardModeHandler->GetNameFromMode(i)), 0, false);
                 }
                 else
                 {
