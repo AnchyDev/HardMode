@@ -18,8 +18,9 @@ public:
     void SetShadowBanned(Player* player, bool value);
     bool IsShadowBanned(Player* player);
 
+    std::string GetColorFromMode(uint8 mode);
     std::string GetNameFromMode(uint8 mode);
-    std::string GetNamesFromEnabledModes(Player* player);
+    std::string GetNamesFromEnabledModes(Player* player, bool colored = false);
     bool HasModesEnabled(Player* player);
     bool IsModeEnabledForPlayer(Player* player, uint8 mode);
     bool IsModeEnabledForPlayerAndServer(Player* player, uint8 mode);

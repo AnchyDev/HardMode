@@ -227,6 +227,21 @@ bool HardModeHandler::IsShadowBanned(Player* player)
     return player->GetPlayerSetting("HardModeShadowBanned", 0).value > 0;
 }
 
+std::string HardModeHandler::GetColorFromMode(uint8 mode)
+{
+    switch (mode)
+    {
+    case DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED:
+        return "|cff01F91E";
+    case DifficultyModes::DIFFICULTY_MODE_HARDCORE:
+        return "|cffFF2600";
+    case DifficultyModes::DIFFICULTY_MODE_SLOWXP:
+        return "|cff0094FF";
+    }
+
+    return "ERROR";
+}
+
 std::string HardModeHandler::GetNameFromMode(uint8 mode)
 {
     switch (mode)
@@ -242,25 +257,43 @@ std::string HardModeHandler::GetNameFromMode(uint8 mode)
     return "ERROR";
 }
 
-std::string HardModeHandler::GetNamesFromEnabledModes(Player* player)
+std::string HardModeHandler::GetNamesFromEnabledModes(Player* player, bool colored)
 {
+    struct difficultyMode
+    {
+        uint8 mode;
+        std::string name;
+    };
+
     std::stringstream ss;
-    std::vector<std::string> modes;
+    std::vector<difficultyMode> modes;
 
     for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
     {
         if (sHardModeHandler->IsModeEnabledForPlayer(player, i))
         {
-            modes.push_back(sHardModeHandler->GetNameFromMode(i));
+            difficultyMode mode;
+            mode.mode = i;
+            mode.name = sHardModeHandler->GetNameFromMode(i);
+
+            modes.push_back(mode);
         }
     }
 
     for (uint8 i = 0; i < modes.size(); ++i)
     {
-        ss << modes[i];
+        if (colored)
+        {
+            ss << sHardModeHandler->GetColorFromMode(modes[i].mode);
+        }
+        ss << modes[i].name;
 
         if (i != modes.size() - 1)
         {
+            if (colored)
+            {
+                ss << "|cffFFFFFF";
+            }
             ss << ", ";
         }
     }

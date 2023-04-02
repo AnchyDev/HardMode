@@ -46,7 +46,7 @@ bool HardModePlayerScript::CanCastItemUseSpell(Player* player, Item* item, Spell
 
         if (!result)
         {
-            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot use that item while in {} mode.", sHardModeHandler->GetNameFromMode(i)));
+            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFYou cannot use that item while in {}{} |cffFFFFFFmode.", sHardModeHandler->GetColorFromMode(i), sHardModeHandler->GetNameFromMode(i)));
 
             return false;
         }
@@ -250,7 +250,7 @@ void HardModePlayerScript::OnLogin(Player* player)
 
     if (sHardModeHandler->HasModesEnabled(player))
     {
-        ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("Enabled Difficulty Modes: {}", sHardModeHandler->GetNamesFromEnabledModes(player)));
+        ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFEnabled Difficulty Modes: {}", sHardModeHandler->GetNamesFromEnabledModes(player, true)));
 
         if (sHardModeHandler->IsModeEnabledForPlayerAndServer(player, DifficultyModes::DIFFICULTY_MODE_HARDCORE))
         {
@@ -323,7 +323,7 @@ bool HardModePlayerScript::CanInitTrade(Player* player, Player* target)
 
             if (!isTradable)
             {
-                ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot trade players while in the {} mode.", sHardModeHandler->GetNameFromMode(i)));
+                ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFYou cannot trade players while in the {}{} |cffFFFFFFmode.", sHardModeHandler->GetColorFromMode(i), sHardModeHandler->GetNameFromMode(i)));
 
                 return false;
             }
@@ -335,7 +335,7 @@ bool HardModePlayerScript::CanInitTrade(Player* player, Player* target)
 
             if (!isTradable)
             {
-                ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot trade players that are in the {} mode.", sHardModeHandler->GetNameFromMode(i)));
+                ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFYou cannot trade players that are in the {}{} |cffFFFFFFmode.", sHardModeHandler->GetColorFromMode(i), sHardModeHandler->GetNameFromMode(i)));
 
                 return false;
             }
@@ -356,7 +356,7 @@ bool HardModePlayerScript::CanSendMail(Player* player, ObjectGuid receiverGuid, 
 
         if (sHardModeHandler->IsModeEnabledForPlayer(player, i) && !isMailable)
         {
-            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot send mail while in the {} mode.", sHardModeHandler->GetNameFromMode(i)));
+            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFYou cannot send mail while in the {}{} |cffFFFFFFmode.", sHardModeHandler->GetColorFromMode(i), sHardModeHandler->GetNameFromMode(i)));
 
             return false;
         }
@@ -411,7 +411,7 @@ bool HardModePlayerScript::CanSendMail(Player* player, ObjectGuid receiverGuid, 
 
     if (!canMail)
     {
-        ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot send mail to a {} mode player.", sHardModeHandler->GetNameFromMode(receiverMode)));
+        ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFYou cannot send mail to a {}{} |cffFFFFFFmode player.", sHardModeHandler->GetColorFromMode(receiverMode), sHardModeHandler->GetNameFromMode(receiverMode)));
 
         return false;
     }
@@ -453,7 +453,7 @@ bool HardModePlayerScript::CanEquipItem(Player* player, uint8 slot, uint16& dest
 
         if (!result)
         {
-            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot equip that item while in {} mode.", sHardModeHandler->GetNameFromMode(i)));
+            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFYou cannot equip that item while in {}{} |cffFFFFFFmode.", sHardModeHandler->GetColorFromMode(i), sHardModeHandler->GetNameFromMode(i)));
 
             return false;
         }
@@ -486,7 +486,7 @@ bool HardModeGuildScript::CanGuildSendBankList(Guild const* guild, WorldSession*
 
         if (!result)
         {
-            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot use the guild bank while in {} mode.", sHardModeHandler->GetNameFromMode(i)));
+            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFYou cannot use the guild bank while in {}{} |cffFFFFFFmode.", sHardModeHandler->GetColorFromMode(i), sHardModeHandler->GetNameFromMode(i)));
 
             return false;
         }
@@ -519,7 +519,7 @@ bool HardModeMiscScript::CanSendAuctionHello(WorldSession const* session, Object
 
         if (!result)
         {
-            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot use the auction house while in {} mode.", sHardModeHandler->GetNameFromMode(i)));
+            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFYou cannot use the auction house while in {}{} |cffFFFFFFmode.", sHardModeHandler->GetColorFromMode(i), sHardModeHandler->GetNameFromMode(i)));
 
             return false;
         }
@@ -565,9 +565,9 @@ bool HardModeCommandScript::HandleHardModeInfoCommand(ChatHandler* handler, Opti
 
     auto targetPlayer = target->GetConnectedPlayer();
 
-    handler->SendSysMessage(Acore::StringFormatFmt("Enabled Difficulty Modes: {}", sHardModeHandler->GetNamesFromEnabledModes(targetPlayer)));
-    handler->SendSysMessage(Acore::StringFormatFmt("IsTainted: {}", sHardModeHandler->IsTainted(targetPlayer)));
-    handler->SendSysMessage(Acore::StringFormatFmt("IsShadowBanned: {}", sHardModeHandler->IsShadowBanned(targetPlayer)));
+    handler->SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFEnabled Difficulty Modes: {}", sHardModeHandler->GetNamesFromEnabledModes(targetPlayer, true)));
+    handler->SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFIsTainted: |r{}", sHardModeHandler->IsTainted(targetPlayer)));
+    handler->SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFIsShadowBanned: |r{}", sHardModeHandler->IsShadowBanned(targetPlayer)));
 
     return true;
 }
@@ -609,7 +609,7 @@ bool HardModeCommandScript::HandleHardModeSetModeCommand(ChatHandler* handler, O
         }
     }
 
-    handler->SendSysMessage(Acore::StringFormatFmt("Updated mode '{}' for player '{}' to '{}'.", sHardModeHandler->GetNameFromMode(mode), targetPlayer->GetName(), value));
+    handler->SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFUpdated mode '{}{}|cffFFFFFF' for player '|cff00FF00{}' to '|r{}|cffFFFFFF'.", sHardModeHandler->GetColorFromMode(mode), sHardModeHandler->GetNameFromMode(mode), targetPlayer->GetName(), value));
 
     return true;
 }
@@ -634,7 +634,7 @@ bool HardModeCommandScript::HandleHardModeSetTaintCommand(ChatHandler* handler, 
     auto targetPlayer = target->GetConnectedPlayer();
     sHardModeHandler->SetTainted(targetPlayer, value);
 
-    handler->SendSysMessage(Acore::StringFormatFmt("Updated taint for player '{}' to '{}'.", targetPlayer->GetName(), value));
+    handler->SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFUpdated taint for player '|cff00FF00{}|cffFFFFFF' to '|r{}|cffFFFFFF'.", targetPlayer->GetName(), value));
 
     return true;
 }
@@ -659,7 +659,7 @@ bool HardModeCommandScript::HandleHardModeSetShadowBanCommand(ChatHandler* handl
     auto targetPlayer = target->GetConnectedPlayer();
     sHardModeHandler->SetShadowBanned(targetPlayer, value);
 
-    handler->SendSysMessage(Acore::StringFormatFmt("Updated shadow ban for player '{}' to '{}'.", targetPlayer->GetName(), value));
+    handler->SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFUpdated shadow ban for player '|cff00FF00{}|cffFFFFFF' to '|r{}|cffFFFFFF'.", targetPlayer->GetName(), value));
 
     return true;
 }
@@ -677,17 +677,17 @@ bool HardModeGameObjectScript::OnGossipHello(Player* player, GameObject* go)
         {
             if (!sHardModeHandler->IsModeEnabledForPlayer(player, i) && !sHardModeHandler->IsTainted(player))
             {
-                AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Enable {} Mode", sHardModeHandler->GetNameFromMode(i)), 0, i);
+                AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Enable {}{}|r Mode", sHardModeHandler->GetColorFromMode(i), sHardModeHandler->GetNameFromMode(i)), 0, i);
             }
             else if (sHardModeHandler->IsModeEnabledForPlayer(player, i))
             {
                 if (sHardModeHandler->IsTainted(player))
                 {
-                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Disable {} Mode", sHardModeHandler->GetNameFromMode(i)), 0, i, Acore::StringFormatFmt("Are you sure you want to disable the {} mode?|n|nYou won't be able to re-enable this mode.", sHardModeHandler->GetNameFromMode(i)), 0, false);
+                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Disable {} Mode", sHardModeHandler->GetNameFromMode(i)), 0, i, Acore::StringFormatFmt("Are you sure you want to disable the {}{}|r mode?|n|nYou won't be able to re-enable this mode.", sHardModeHandler->GetColorFromMode(i), sHardModeHandler->GetNameFromMode(i)), 0, false);
                 }
                 else
                 {
-                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Disable {} Mode", sHardModeHandler->GetNameFromMode(i)), 0, i);
+                    AddGossipItemFor(player, GOSSIP_ICON_CHAT, Acore::StringFormatFmt("Disable {}{}|r Mode", sHardModeHandler->GetColorFromMode(i), sHardModeHandler->GetNameFromMode(i)), 0, i);
                 }
             }
         }
