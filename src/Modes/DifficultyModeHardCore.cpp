@@ -7,6 +7,14 @@
 
 DifficultyModeHardCore::DifficultyModeHardCore() : DifficultyMode(/*canBeTraded*/ false, /*canSendOrReceiveMail*/ false) { }
 
+bool DifficultyModeHardCore::CanGroupInvite(Player* player, Player* targetPlayer)
+{
+    bool flag1 = sHardModeHandler->IsModeEnabledForPlayer(player, DifficultyModes::DIFFICULTY_MODE_HARDCORE);
+    bool flag2 = sHardModeHandler->IsModeEnabledForPlayer(targetPlayer, DifficultyModes::DIFFICULTY_MODE_HARDCORE);
+
+    return flag1 == flag2;
+}
+
 bool DifficultyModeHardCore::CanSendAuctionHello(WorldSession const* /*session*/, ObjectGuid /*guid*/, Creature* /*creature*/)
 {
     return false;

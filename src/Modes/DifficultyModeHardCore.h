@@ -9,6 +9,7 @@ public:
     DifficultyModeHardCore();
 
 public:
+    bool CanGroupInvite(Player* player, Player* targetPlayer) override;
     bool CanSendAuctionHello(WorldSession const* session, ObjectGuid guid, Creature* creature) override;
     bool CanGuildSendBankList(Guild const* guild, WorldSession* session, uint8 tabId, bool sendAllSlots) override;
     void OnPlayerResurrect(Player* player, float restorePercent, bool applySickness) override;

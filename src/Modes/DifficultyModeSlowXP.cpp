@@ -6,6 +6,11 @@
 
 DifficultyModeSlowXP::DifficultyModeSlowXP() : DifficultyMode(/*canBeTraded*/ true, /*canSendOrReceiveMail*/ true) { }
 
+bool DifficultyModeSlowXP::CanGroupInvite(Player* player, Player* targetPlayer)
+{
+    return true;
+}
+
 void DifficultyModeSlowXP::OnGiveXP(Player* player, uint32& amount, Unit* victim)
 {
     if (!player)
