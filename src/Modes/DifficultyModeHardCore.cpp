@@ -19,11 +19,6 @@ bool DifficultyModeHardCore::CanGuildSendBankList(Guild const* /*guild*/, WorldS
 
 void DifficultyModeHardCore::OnPlayerResurrect(Player* player, float /*restorePercent*/, bool /*applySickness*/)
 {
-    if (sHardModeHandler->IsShadowBanned(player))
-    {
-        return;
-    }
-
     OnPlayerReleasedGhost(player); // Shadowban the player.
 }
 
@@ -38,6 +33,7 @@ void DifficultyModeHardCore::OnPlayerReleasedGhost(Player* player)
     if (!player->IsAlive())
     {
         player->ResurrectPlayer(100, false);
+        player->RemoveCorpse();
     }
 
     player->AddAura(HARDMODE_SPELL_AURA_SHADOWBAN, player); // Ghost effect, cannot be removed.
@@ -48,11 +44,11 @@ bool DifficultyModeHardCore::CanRepopAtGraveyard(Player* /*player*/)
     return false;
 }
 
-bool DifficultyModeHardCore::OnBeforeTeleport(Player* player, uint32 /*mapId*/, float /*x*/, float /*y*/, float /*z*/, float /*orientation*/, uint32 /*options*/, Unit* /*target*/)
+bool DifficultyModeHardCore::OnBeforeTeleport(Player* player, uint32 mapId, float /*x*/, float /*y*/, float /*z*/, float /*orientation*/, uint32 /*options*/, Unit* /*target*/)
 {
     if (sHardModeHandler->IsShadowBanned(player))
     {
-        return false;
+        return (mapId == 37); // Only allow teleports for Shadowban players if it's to the shadow realm.
     }
 
     return true;
