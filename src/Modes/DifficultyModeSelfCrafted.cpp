@@ -86,9 +86,10 @@ bool DifficultyModeSelfCrafted::CanEquipItem(Player* player, uint8 /*slot*/, uin
         return true;
     }
 
-    if (!pItem->GetTemplate()->HasSignature())
+    auto itemProto = pItem->GetTemplate();
+    if (itemProto->Class == ITEM_CLASS_QUEST)
     {
-        return false;
+        return true;
     }
 
     if (pItem->GetGuidValue(ITEM_FIELD_CREATOR) != player->GetGUID())
