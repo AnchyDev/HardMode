@@ -530,17 +530,21 @@ bool HardModeMiscScript::CanSendAuctionHello(WorldSession const* session, Object
 
 ChatCommandTable HardModeCommandScript::GetCommands() const
 {
-    static ChatCommandTable sbCommandTable =
+    static ChatCommandTable hmSetCommandTable =
+    {
+        { "mode", HandleHardModeSetModeCommand, SEC_ADMINISTRATOR, Console::No },
+        { "taint", HandleHardModeSetTaintCommand, SEC_ADMINISTRATOR, Console::No },
+        { "shadowban", HandleHardModeSetShadowBanCommand, SEC_ADMINISTRATOR, Console::No }
+    };
+    static ChatCommandTable hmCommandTable =
     {
         { "info", HandleHardModeInfoCommand, SEC_ADMINISTRATOR, Console::No },
-        { "setmode", HandleHardModeSetModeCommand, SEC_ADMINISTRATOR, Console::No },
-        { "settaint", HandleHardModeSetTaintCommand, SEC_ADMINISTRATOR, Console::No },
-        { "setshadowban", HandleHardModeSetShadowBanCommand, SEC_ADMINISTRATOR, Console::No }
+        { "set", hmSetCommandTable }
     };
 
     static ChatCommandTable commandTable =
     {
-        { "hardmode", sbCommandTable }
+        { "hardmode", hmCommandTable }
     };
 
     return commandTable;
@@ -609,7 +613,7 @@ bool HardModeCommandScript::HandleHardModeSetModeCommand(ChatHandler* handler, O
         }
     }
 
-    handler->SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFUpdated mode '{}{}|cffFFFFFF' for player '|cff00FF00{}' to '|r{}|cffFFFFFF'.", sHardModeHandler->GetColorFromMode(mode), sHardModeHandler->GetNameFromMode(mode), targetPlayer->GetName(), value));
+    handler->SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFUpdated mode '{}{}|cffFFFFFF' for player '|cff00FF00{}|cffFFFFFF' to '|r{}|cffFFFFFF'.", sHardModeHandler->GetColorFromMode(mode), sHardModeHandler->GetNameFromMode(mode), targetPlayer->GetName(), value));
 
     return true;
 }
