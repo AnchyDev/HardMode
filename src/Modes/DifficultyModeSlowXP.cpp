@@ -4,7 +4,7 @@
 #include "Config.h"
 #include "Player.h"
 
-DifficultyModeSlowXP::DifficultyModeSlowXP() : DifficultyMode(/*canBeTraded*/ true, /*canSendOrReceiveMail*/ true) { }
+DifficultyModeSlowXP::DifficultyModeSlowXP() : DifficultyMode(/*canBeTraded*/ true, /*canSendOrReceiveMail*/ true, /*canBeAttacked*/ true) { }
 
 bool DifficultyModeSlowXP::CanGroupInvite(Player* player, Player* targetPlayer)
 {

@@ -5,7 +5,7 @@
 #include "Config.h"
 #include "Player.h"
 
-DifficultyModeHardCore::DifficultyModeHardCore() : DifficultyMode(/*canBeTraded*/ false, /*canSendOrReceiveMail*/ false) { }
+DifficultyModeHardCore::DifficultyModeHardCore() : DifficultyMode(/*canBeTraded*/ false, /*canSendOrReceiveMail*/ false, /*canBeAttacked*/ false) { }
 
 bool DifficultyModeHardCore::CanGroupInvite(Player* player, Player* targetPlayer)
 {

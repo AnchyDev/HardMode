@@ -5,7 +5,7 @@
 #include "Player.h"
 #include "Item.h"
 
-DifficultyModeSelfCrafted::DifficultyModeSelfCrafted() : DifficultyMode(/*canBeTraded*/ false, /*canSendOrReceiveMail*/ false) { }
+DifficultyModeSelfCrafted::DifficultyModeSelfCrafted() : DifficultyMode(/*canBeTraded*/ false, /*canSendOrReceiveMail*/ false, /*canBeAttacked*/ false) { }
 
 bool DifficultyModeSelfCrafted::CanGroupInvite(Player* player, Player* targetPlayer)
 {

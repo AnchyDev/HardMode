@@ -349,6 +349,34 @@ void HardModeHandler::UpdateAllModeEffects(Player* player)
     }
 }
 
+bool HardModeHandler::TestForCrossplay(Player* target, Player* player)
+{
+    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
+    {
+        bool result = sHardModeHandler->Modes[i]->CanCrossplay();
+        bool attackerResult = sHardModeHandler->IsModeEnabledForPlayer(player, i);
+        bool victimResult = sHardModeHandler->IsModeEnabledForPlayer(target, i);
+
+        if (!result)
+        {
+            if (attackerResult != victimResult)
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+void HardModeHandler::SendAlert(Player* player, std::string message)
+{
+    WorldPacket data(SMSG_NOTIFICATION, (message.size() + 1));
+    data << message;
+
+    player->SendDirectMessage(&data);
+}
+
 uint32 HardModeHandler::GetEnabledModesAsMask(Player* player)
 {
     uint32 mask = 0;

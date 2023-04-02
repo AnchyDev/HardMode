@@ -46,6 +46,29 @@ private:
     bool CanGroupInvite(Player* player, std::string& memberName) override;
 };
 
+class HardModeUnitScript : UnitScript
+{
+public:
+    HardModeUnitScript() : UnitScript("HardModeUnitScript") { }
+
+private:
+    void OnHeal(Unit* healer, Unit* receiver, uint32& gain) override;
+    void ModifyHealReceived(Unit* receiver, Unit* healer, uint32& gain, SpellInfo const* spellInfo) override;
+    void OnDamage(Unit* attacker, Unit* victim, uint32& damage) override;
+    void ModifyPeriodicDamageAurasTick(Unit* victim, Unit* attacker, uint32& damage, SpellInfo const* spellInfo) override;
+    void ModifyMeleeDamage(Unit* victim, Unit* attacker, uint32& damage) override;
+    void ModifySpellDamageTaken(Unit* victim, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override;
+    uint32 DealDamage(Unit* attacker, Unit* victim, uint32 damage, DamageEffectType damagetype) override;
+};
+
+class HardModeSpellScript : SpellSC
+{
+public:
+    HardModeSpellScript() : SpellSC("HardModeSpellScript") { }
+private:
+    bool CanPrepare(Spell* spell, SpellCastTargets const* targets, AuraEffect const* triggeredByAura) override;
+};
+
 class HardModeGuildScript : GuildScript
 {
 public:

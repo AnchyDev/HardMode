@@ -21,10 +21,12 @@ public:
     std::string GetColorFromMode(uint8 mode);
     std::string GetNameFromMode(uint8 mode);
     std::string GetNamesFromEnabledModes(Player* player, bool colored = false);
+    void SendAlert(Player* player, std::string message);
     bool HasModesEnabled(Player* player);
     bool IsModeEnabledForPlayer(Player* player, uint8 mode);
     bool IsModeEnabledForPlayerAndServer(Player* player, uint8 mode);
     void UpdateAllModeEffects(Player* player);
+    bool TestForCrossplay(Player* target, Player* player);
     uint32 GetEnabledModesAsMask(Player* player);
     std::string GetConfigNameFromMode(uint8 mode);
     PlayerSettingMap* GetPlayerSettingsFromDatabase(ObjectGuid guid);

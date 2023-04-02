@@ -8,6 +8,7 @@
 #include "Chat.h"
 #include "Config.h"
 #include "Player.h"
+#include "Spell.h"
 #include "ScriptedGossip.h"
 
 #include <sstream>
@@ -117,6 +118,193 @@ bool HardModePlayerScript::CanGroupInvite(Player* player, std::string& memberNam
     sHardModeHandler->SetTainted(targetPlayer, true);
 
     return true;
+}
+
+void HardModeUnitScript::OnDamage(Unit* attacker, Unit* victim, uint32& damage)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return;
+    }
+
+    if (!attacker->IsPlayer() || !victim->IsPlayer())
+    {
+        return;
+    }
+
+    Player* pAttacker = (Player*)attacker;
+    Player* pVictim = (Player*)victim;
+
+    if (!sHardModeHandler->TestForCrossplay(pVictim, pAttacker))
+    {
+        damage = 0;
+    }
+}
+
+bool HardModeSpellScript::CanPrepare(Spell* spell, SpellCastTargets const* targets, AuraEffect const* /*triggeredByAura*/)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return true;
+    }
+
+    Unit* target = targets->GetUnitTarget();
+    Unit* caster = spell->GetCaster();
+
+    if (!target || !caster)
+    {
+        return true;
+    }
+
+    if (!target->IsPlayer() || !caster->IsPlayer())
+    {
+        return true;
+    }
+
+    Player* pTarget = (Player*)target;
+    Player* pCaster = (Player*)caster;
+
+    if (!sHardModeHandler->TestForCrossplay(pTarget, pCaster))
+    {
+        sHardModeHandler->SendAlert(pCaster, "You cannot cast spells at players in modes other than your own.");
+        return false;
+    }
+
+    return true;
+}
+
+void HardModeUnitScript::OnHeal(Unit* healer, Unit* receiver, uint32& gain)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return;
+    }
+
+    if (!healer->IsPlayer() || !receiver->IsPlayer())
+    {
+        return;
+    }
+
+    Player* pHealer = (Player*)healer;
+    Player* pReceiver = (Player*)receiver;
+
+    if (!sHardModeHandler->TestForCrossplay(pReceiver, pHealer))
+    {
+        sHardModeHandler->SendAlert(pHealer, "You cannot heal players in modes other than your own.");
+        gain = 0;
+    }
+}
+
+void HardModeUnitScript::ModifyHealReceived(Unit* receiver, Unit* healer, uint32& gain, SpellInfo const* /*spellInfo*/)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return;
+    }
+
+    if (!healer->IsPlayer() || !receiver->IsPlayer())
+    {
+        return;
+    }
+
+    Player* pHealer = (Player*)healer;
+    Player* pReceiver = (Player*)receiver;
+
+    if (!sHardModeHandler->TestForCrossplay(pReceiver, pHealer))
+    {
+        sHardModeHandler->SendAlert(pHealer, "You cannot heal players in modes other than your own.");
+        gain = 0;
+    }
+}
+
+void HardModeUnitScript::ModifyPeriodicDamageAurasTick(Unit* victim, Unit* attacker, uint32& damage, SpellInfo const* /*spellInfo*/)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return;
+    }
+
+    if (!attacker->IsPlayer() || !victim->IsPlayer())
+    {
+        return;
+    }
+
+    Player* pAttacker = (Player*)attacker;
+    Player* pVictim = (Player*)victim;
+
+    if (!sHardModeHandler->TestForCrossplay(pVictim, pAttacker))
+    {
+        sHardModeHandler->SendAlert(pAttacker, "You cannot attack players in modes other than your own.");
+        damage = 0;
+    }
+}
+
+void HardModeUnitScript::ModifyMeleeDamage(Unit* victim, Unit* attacker, uint32& damage)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return;
+    }
+
+    if (!attacker->IsPlayer() || !victim->IsPlayer())
+    {
+        return;
+    }
+
+    Player* pAttacker = (Player*)attacker;
+    Player* pVictim = (Player*)victim;
+
+    if (!sHardModeHandler->TestForCrossplay(pVictim, pAttacker))
+    {
+        sHardModeHandler->SendAlert(pAttacker, "You cannot attack players in modes other than your own.");
+        damage = 0;
+    }
+}
+
+void HardModeUnitScript::ModifySpellDamageTaken(Unit* victim, Unit* attacker, int32& damage, SpellInfo const* /*spellInfo*/)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return;
+    }
+
+    if (!attacker->IsPlayer() || !victim->IsPlayer())
+    {
+        return;
+    }
+
+    Player* pAttacker = (Player*)attacker;
+    Player* pVictim = (Player*)victim;
+
+    if (!sHardModeHandler->TestForCrossplay(pVictim, pAttacker))
+    {
+        sHardModeHandler->SendAlert(pAttacker, "You cannot attack players in modes other than your own.");
+        damage = 0;
+    }
+}
+
+uint32 HardModeUnitScript::DealDamage(Unit* attacker, Unit* victim, uint32 damage, DamageEffectType /*damagetype*/)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return damage;
+    }
+
+    if (!attacker->IsPlayer() || !victim->IsPlayer())
+    {
+        return damage;
+    }
+
+    Player* pAttacker = (Player*)attacker;
+    Player* pVictim = (Player*)victim;
+
+    if (!sHardModeHandler->TestForCrossplay(pVictim, pAttacker))
+    {
+        sHardModeHandler->SendAlert(pAttacker, "You cannot attack players in modes other than your own.");
+        damage = 0;
+    }
+
+    return damage;
 }
 
 bool HardModePlayerScript::OnBeforeTeleport(Player* player, uint32 mapId, float x, float y, float z, float orientation, uint32 options, Unit* target)
@@ -748,7 +936,9 @@ void SC_AddHardModeScripts()
     sHardModeHandler->Modes[DifficultyModes::DIFFICULTY_MODE_HARDCORE] = new DifficultyModeHardCore();
     sHardModeHandler->Modes[DifficultyModes::DIFFICULTY_MODE_SLOWXP] = new DifficultyModeSlowXP();
 
+    new HardModeUnitScript();
     new HardModeMiscScript();
+    new HardModeSpellScript();
     new HardModeGuildScript();
     new HardModeWorldScript();
     new HardModePlayerScript();

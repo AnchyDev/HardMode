@@ -14,7 +14,7 @@ enum DifficultyModes
 class DifficultyMode
 {
 public:
-    DifficultyMode(bool canBeTraded, bool canSendOrReceiveMail) : _canBeTraded(canBeTraded), _canSendOrReceiveMail(canSendOrReceiveMail) { }
+    DifficultyMode(bool canBeTraded, bool canSendOrReceiveMail, bool canCrossplay) : _canBeTraded(canBeTraded), _canSendOrReceiveMail(canSendOrReceiveMail), _canCrossplay(canCrossplay) { }
 public:
     virtual bool CanGroupInvite(Player* /*player*/, Player* /*targetPlayer*/) { return true; }
     virtual bool CanSendAuctionHello(WorldSession const* /*session*/, ObjectGuid /*guid*/, Creature* /*creature*/) { return true; }
@@ -35,9 +35,11 @@ public:
 
     bool IsTradable() { return _canBeTraded; }
     bool IsMailable() { return _canSendOrReceiveMail; }
+    bool CanCrossplay() { return _canCrossplay; }
 protected:
     bool _canBeTraded;
     bool _canSendOrReceiveMail;
+    bool _canCrossplay;
 };
 
 #endif // MODULE_HARDMODE_MODE_H
