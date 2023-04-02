@@ -8,6 +8,7 @@
 #include "DBCStore.h"
 #include "Mail.h"
 #include "Config.h"
+#include "Spell.h"
 
 void HardModeHandler::LoadRewardsFromDatabase()
 {
@@ -144,11 +145,26 @@ void HardModeHandler::RewardItems(Player* player, std::vector<HardModeReward> re
 void HardModeHandler::RewardTitle(Player* player, uint32 titleId)
 {
     auto titleEntry = sCharTitlesStore.LookupEntry(titleId);
+
+    if (!titleEntry)
+    {
+        LOG_ERROR("module", "No title with entry '{}' found while rewarding player '{}'.", titleId, player->GetName());
+        return;
+    }
+
     player->SetTitle(titleEntry);
 }
 
 void HardModeHandler::RewardSpell(Player* player, uint32 spellId)
 {
+    auto spellEntry = sSpellStore.LookupEntry(spellId);
+
+    if (!spellEntry)
+    {
+        LOG_ERROR("module", "No spell with entry '{}' found while rewarding player '{}'.", spellId, player->GetName());
+        return;
+    }
+
     player->learnSpell(spellId);
 }
 
