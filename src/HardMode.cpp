@@ -87,7 +87,7 @@ bool HardModePlayerScript::CanGroupInvite(Player* player, std::string& memberNam
 
     if (playerMask != targetPlayerMask)
     {
-        ChatHandler(player->GetSession()).SendSysMessage("You cannot group with players that do not have the same hard modes enabled as you.");
+        ChatHandler(player->GetSession()).SendSysMessage("|cffFFFFFFYou cannot group with players that do not have the same hard modes enabled as you.");
 
         return false;
     }
@@ -99,7 +99,7 @@ bool HardModePlayerScript::CanGroupInvite(Player* player, std::string& memberNam
 
         if (currentRange > levelRange)
         {
-            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You cannot group with players who are further than {} levels from you.", levelRange));
+            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFYou cannot group with players who are further than |r{}|cffFFFFFF levels from you.", levelRange));
             return false;
         }
     }
