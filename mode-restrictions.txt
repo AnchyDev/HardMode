@@ -20,6 +20,6 @@ HardCore:
 - Can't teleport while shadow banned.
 - Gains a red aura, notifying players of hardcore.
 
-LowXP:
+SlowXP:
 - Exp scaled back to 1x (may be futher reduced if configured).
 - Can group with normal players.

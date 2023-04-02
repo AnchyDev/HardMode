@@ -8,7 +8,7 @@ This module is still a WIP.
   - You can only equip and use items crafted by the player.
 - **HardCore Mode**
    - Dying means you get sent to the shadow realm (permadeath).
-- **LowXP Mode**
+- **SlowXP Mode**
    - Your kill and quest exp is reduced to 1x rates.
 
 Read the `mode-restrictions.txt` file for a list of restrictions.
@@ -24,4 +24,4 @@ When referencing the modes and reward types you have to use the id value.
 | --- | --- | --- | --- | --- |
 | Self-Crafted | 0 | | Item | 0 |
 | HardCore | 1 | | Title | 1 |
-| LowXP | 2 | | Spell | 2 |
+| SlowXP | 2 | | Spell | 2 |
