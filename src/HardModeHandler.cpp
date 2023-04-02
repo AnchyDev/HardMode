@@ -351,6 +351,11 @@ void HardModeHandler::UpdateAllModeEffects(Player* player)
 
 bool HardModeHandler::TestForCrossplay(Player* target, Player* player)
 {
+    if (!sConfigMgr->GetOption<bool>("HardMode.BlockCrossPlay", true))
+    {
+        return true;
+    }
+
     for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
     {
         bool result = sHardModeHandler->Modes[i]->CanCrossplay();

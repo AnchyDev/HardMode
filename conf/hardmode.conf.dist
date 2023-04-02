@@ -95,3 +95,13 @@ HardMode.AnnounceOnPvPKill = 1
 #
 
 HardMode.PartyLevelRange = 3
+
+#
+#    HardMode.BlockCrossPlay
+#        Description: Disables damage and healing on players without matching hard modes.
+#                     0 - Disabled
+#        Default:     1 - Enabled
+#        Type:        bool
+#
+
+HardMode.BlockCrossPlay = 1
