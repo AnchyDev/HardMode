@@ -3,6 +3,15 @@ HardMode is a module heavily inspired by mod-challenge-modes. The purpose of thi
 
 This module is still a WIP.
 
+## Features
+- **Self-Crafted Mode**
+  - You can only equip and use items crafted by the player.
+- **HardCore Mode**
+   - Dying means you get sent to the shadow realm (permadeath).
+- **LowXP Mode**
+   - Your kill and quest exp is reduced to 1x rates.
+
+Read the `mode-restrictions.txt` file for a list of restrictions.
 ## ⚠️ Attention ⚠️
 You _must_ enable `EnablePlayerSettings` in the World config to use this module.
 
