@@ -35,7 +35,7 @@ void DifficultyModeSlowXP::OnQuestComputeXP(Player* player, Quest const* /*quest
     xpValue = (xpValue / (sConfigMgr->GetOption<float>("Rate.XP.Quest", 1) * sConfigMgr->GetOption<float>("HardMode.SlowXP.Multiplier", 1)));
 }
 
-void DifficultyModeSlowXP::OnAfterConfigLoad(bool reload)
+void DifficultyModeSlowXP::OnAfterConfigLoad(bool /*reload*/)
 {
     _canBeTraded = sConfigMgr->GetOption<bool>("HardMode.SlowXP.CanBeTraded", true);
     _canSendOrReceiveMail = sConfigMgr->GetOption<bool>("HardMode.SlowXP.CanSendRecMail", true);

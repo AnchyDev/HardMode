@@ -103,7 +103,7 @@ void DifficultyModeHardCore::RemoveEffectsForPlayer(Player* player)
     }
 }
 
-void DifficultyModeHardCore::OnAfterConfigLoad(bool reload)
+void DifficultyModeHardCore::OnAfterConfigLoad(bool /*reload*/)
 {
     _canBeTraded = sConfigMgr->GetOption<bool>("HardMode.HardCore.CanBeTraded", false);
     _canSendOrReceiveMail = sConfigMgr->GetOption<bool>("HardMode.HardCore.CanSendRecMail", false);
