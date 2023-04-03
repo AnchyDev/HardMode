@@ -358,7 +358,7 @@ bool HardModeHandler::TestForCrossplay(Player* target, Player* player)
 
     for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
     {
-        bool result = sHardModeHandler->Modes[i]->CanCrossplay();
+        bool result = sHardModeHandler->Modes[i]->CanCrossPlay();
         bool attackerResult = sHardModeHandler->IsModeEnabledForPlayer(player, i);
         bool victimResult = sHardModeHandler->IsModeEnabledForPlayer(target, i);
 
@@ -402,11 +402,11 @@ std::string HardModeHandler::GetConfigNameFromMode(uint8 mode)
     switch (mode)
     {
     case DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED:
-        return "HardMode.EnableSelfCrafted";
+        return "HardMode.SelfCrafted.Enable";
     case DifficultyModes::DIFFICULTY_MODE_HARDCORE:
-        return "HardMode.EnableHardCore";
+        return "HardMode.HardCore.Enable";
     case DifficultyModes::DIFFICULTY_MODE_SLOWXP:
-        return "HardMode.EnableSlowXP";
+        return "HardMode.SlowXP.Enable";
     }
 
     return "ERROR";

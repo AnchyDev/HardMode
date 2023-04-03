@@ -18,34 +18,125 @@
 HardMode.Enable = 0
 
 #
-#    HardMode.EnableSelfCrafted
+#    HardMode.SelfCrafted.Enable
 #        Description: Enables the Self-Crafted mode.
 #        Default:     0 - Disabled
 #                     1 - Enabled
 #        Type:        bool
 #
 
-HardMode.EnableSelfCrafted = 0
+HardMode.SelfCrafted.Enable = 0
 
 #
-#    HardMode.EnableHardCore
+#    HardMode.SelfCrafted.CanBeTraded
+#        Description: Allows SelfCrafted players to trade non-SelfCrafted players.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#        Type:        bool
+#
+
+HardMode.SelfCrafted.CanBeTraded = 0
+
+#
+#    HardMode.SelfCrafted.CanSendRecMail
+#        Description: Allows SelfCrafted players to send/receive mail to/from non-SelfCrafted players.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#        Type:        bool
+#
+
+HardMode.SelfCrafted.CanSendRecMail = 0
+
+#
+#    HardMode.SelfCrafted.CanCrossPlay
+#        Description: Allows SelfCrafted players to group with non-SelfCrafted players.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#        Type:        bool
+#
+
+HardMode.SelfCrafted.CanCrossPlay = 0
+
+#
+#    HardMode.HardCore.Enable
 #        Description: Enables the HardCore mode.
 #        Default:     0 - Disabled
 #                     1 - Enabled
 #        Type:        bool
 #
 
-HardMode.EnableHardCore = 0
+HardMode.HardCore.Enable = 0
 
 #
-#    HardMode.EnableSlowXP
+#    HardMode.HardCore.CanBeTraded
+#        Description: Allows HardCore players to trade non-HardCore players.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#        Type:        bool
+#
+
+HardMode.HardCore.CanBeTraded = 0
+
+#
+#    HardMode.HardCore.CanSendRecMail
+#        Description: Allows HardCore players to send/receive mail to/from non-HardCore players.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#        Type:        bool
+#
+
+HardMode.HardCore.CanSendRecMail = 0
+
+#
+#    HardMode.HardCore.CanCrossPlay
+#        Description: Allows HardCore players to group with non-HardCore players.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#        Type:        bool
+#
+
+
+HardMode.HardCore.CanCrossPlay = 0
+
+#
+#    HardMode.SlowXP.Enable
 #        Description: Enables the SlowXP mode.
 #        Default:     0 - Disabled
 #                     1 - Enabled
 #        Type:        bool
 #
 
-HardMode.EnableSlowXP = 0
+HardMode.SlowXP.Enable = 0
+
+#
+#    HardMode.SlowXP.CanBeTraded
+#        Description: Allows SlowXP players to trade non-SlowXP players.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#        Type:        bool
+#
+
+HardMode.SlowXP.CanBeTraded = 1
+
+#
+#    HardMode.SlowXP.CanSendRecMail
+#        Description: Allows SlowXP players to send/receive mail to/from non-SlowXP players.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#        Type:        bool
+#
+
+HardMode.SlowXP.CanSendRecMail = 1
+
+#
+#    HardMode.SlowXP.CanCrossPlay
+#        Description: Allows SlowXP players to group with non-SlowXP players.
+#        Default:     0 - Disabled
+#                     1 - Enabled
+#        Type:        bool
+#
+
+HardMode.SlowXP.CanCrossPlay = 1
 
 #
 #    HardMode.SlowXPMultiplier
@@ -55,7 +146,7 @@ HardMode.EnableSlowXP = 0
 #        Type:        Float
 #
 
-HardMode.SlowXPMultiplier = 1
+HardMode.SlowXP.Multiplier = 1
 
 #
 #    HardMode.AnnounceModesOnLogin
@@ -68,24 +159,24 @@ HardMode.SlowXPMultiplier = 1
 HardMode.AnnounceModesOnLogin = 1
 
 #
-#    HardMode.AnnounceModesMaxLevel
+#    HardMode.Announce.MaxLevel
 #        Description: Enable announcing the modes completed when hitting max level to the world chat.
 #                     0 - Disabled
 #        Default:     1 - Enabled
 #        Type:        bool
 #
 
-HardMode.AnnounceModesMaxLevel = 1
+HardMode.Announce.MaxLevel = 1
 
 #
-#    HardMode.AnnounceOnPvPKill
+#    HardMode.Announce.OnPvPKill
 #        Description: Enable announcing when a player kills another player with activated modes.
 #                     0 - Disabled
 #        Default:     1 - Enabled
 #        Type:        bool
 #
 
-HardMode.AnnounceOnPvPKill = 1
+HardMode.Announce.OnPvPKill = 1
 
 #
 #    HardMode.PartyLevelRange

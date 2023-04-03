@@ -5,7 +5,7 @@
 #include "Config.h"
 #include "Player.h"
 
-DifficultyModeHardCore::DifficultyModeHardCore() : DifficultyMode(/*canBeTraded*/ false, /*canSendOrReceiveMail*/ false, /*canBeAttacked*/ false) { }
+DifficultyModeHardCore::DifficultyModeHardCore() : DifficultyMode(/*canBeTraded*/ false, /*canSendOrReceiveMail*/ false, /*canCrossPlay*/ false) { }
 
 bool DifficultyModeHardCore::CanGroupInvite(Player* player, Player* targetPlayer)
 {
@@ -101,4 +101,11 @@ void DifficultyModeHardCore::RemoveEffectsForPlayer(Player* player)
     {
         player->RemoveAura(HARDMODE_SPELL_AURA_SHADOWBAN);
     }
+}
+
+void DifficultyModeHardCore::OnAfterConfigLoad(bool reload)
+{
+    _canBeTraded = sConfigMgr->GetOption<bool>("HardMode.HardCore.CanBeTraded", false);
+    _canSendOrReceiveMail = sConfigMgr->GetOption<bool>("HardMode.HardCore.CanSendRecMail", false);
+    _canCrossPlay = sConfigMgr->GetOption<bool>("HardMode.HardCore.CanCrossPlay", false);
 }

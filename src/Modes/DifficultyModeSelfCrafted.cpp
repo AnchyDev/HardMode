@@ -5,7 +5,7 @@
 #include "Player.h"
 #include "Item.h"
 
-DifficultyModeSelfCrafted::DifficultyModeSelfCrafted() : DifficultyMode(/*canBeTraded*/ false, /*canSendOrReceiveMail*/ false, /*canBeAttacked*/ false) { }
+DifficultyModeSelfCrafted::DifficultyModeSelfCrafted() : DifficultyMode(/*canBeTraded*/ false, /*canSendOrReceiveMail*/ false, /*canCrossPlay*/ false) { }
 
 bool DifficultyModeSelfCrafted::CanGroupInvite(Player* player, Player* targetPlayer)
 {
@@ -141,6 +141,10 @@ void DifficultyModeSelfCrafted::OnAfterConfigLoad(bool reload)
     {
         excludedItemIds.clear();
     }
+
+    _canBeTraded = sConfigMgr->GetOption<bool>("HardMode.SelfCrafted.CanBeTraded", false);
+    _canSendOrReceiveMail = sConfigMgr->GetOption<bool>("HardMode.SelfCrafted.CanSendRecMail", false);
+    _canCrossPlay = sConfigMgr->GetOption<bool>("HardMode.SelfCrafted.CanCrossPlay", false);
 
     QueryResult qResult = WorldDatabase.Query("SELECT `id` FROM `hardmode_selfcraft_exclude`");
 

@@ -24,6 +24,7 @@ public:
     bool OnBeforeTeleport(Player* player, uint32 mapId, float x, float y, float z, float orientation, uint32 options, Unit* target) override;
     void AddEffectsForPlayer(Player* player) override;
     void RemoveEffectsForPlayer(Player* player) override;
+    void OnAfterConfigLoad(bool reload) override;
 };
 
 #endif // MODULE_HARDMODE_MODE_HARDCORE_H
