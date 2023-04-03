@@ -723,13 +723,13 @@ ChatCommandTable HardModeCommandScript::GetCommands() const
 {
     static ChatCommandTable hmSetCommandTable =
     {
-        { "mode", HandleHardModeSetModeCommand, SEC_ADMINISTRATOR, Console::No },
-        { "taint", HandleHardModeSetTaintCommand, SEC_ADMINISTRATOR, Console::No },
-        { "shadowban", HandleHardModeSetShadowBanCommand, SEC_ADMINISTRATOR, Console::No }
+        { "mode", HandleHardModeSetModeCommand, SEC_MODERATOR, Console::No },
+        { "taint", HandleHardModeSetTaintCommand, SEC_MODERATOR, Console::No },
+        { "shadowban", HandleHardModeSetShadowBanCommand, SEC_MODERATOR, Console::No }
     };
     static ChatCommandTable hmCommandTable =
     {
-        { "info", HandleHardModeInfoCommand, SEC_ADMINISTRATOR, Console::No },
+        { "info", HandleHardModeInfoCommand, SEC_MODERATOR, Console::No },
         { "set", hmSetCommandTable }
     };
 
