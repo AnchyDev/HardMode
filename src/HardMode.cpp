@@ -17,7 +17,7 @@ void HardModePlayerScript::OnPVPKill(Player* killer, Player* victim)
 {
     if (sHardModeHandler->HasModesEnabled(victim) && !sHardModeHandler->IsShadowBanned(killer))
     {
-        if (sConfigMgr->GetOption<bool>("HardMode.AnnounceOnPvPKill", true))
+        if (sConfigMgr->GetOption<bool>("HardMode.Announce.OnPvPKill", true))
         {
             std::string formatMsg = Acore::StringFormatFmt("|cffFFFFFFPlayer |cff00FF00{}|cffFFFFFF killed |cff00FF00{}|cffFFFFFF while they were doing the {}|cffFFFFFF challenge(s)!", killer->GetName(), victim->GetName(), sHardModeHandler->GetNamesFromEnabledModes(victim, true));
 
@@ -426,7 +426,7 @@ void HardModePlayerScript::OnLevelChanged(Player* player, uint8 /*oldLevel*/)
         ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("You have reached max level in the modes: {}.", sHardModeHandler->GetNamesFromEnabledModes(player)));
         ChatHandler(player->GetSession()).SendSysMessage("Your rewards have been mailed to you, return to the Shrine of Hard Mode to disable your modes.");
 
-        if (sConfigMgr->GetOption<bool>("HardMode.AnnounceModesMaxLevel", true))
+        if (sConfigMgr->GetOption<bool>("HardMode.Announce.MaxLevel", true))
         {
             sWorld->SendServerMessage(SERVER_MSG_STRING, Acore::StringFormatFmt("Congratulations, player {} reached level {} while in: {}!", player->GetName(), maxLevel, sHardModeHandler->GetNamesFromEnabledModes(player)));
         }
@@ -440,7 +440,7 @@ void HardModePlayerScript::OnLogin(Player* player)
         return;
     }
 
-    if (!sConfigMgr->GetOption<bool>("HardMode.AnnounceModesOnLogin", true))
+    if (!sConfigMgr->GetOption<bool>("HardMode.Announce.ModesOnLogin", true))
     {
         return;
     }
@@ -581,7 +581,14 @@ bool HardModePlayerScript::CanSendMail(Player* player, ObjectGuid receiverGuid, 
             return true;
         }
 
-        auto modes = playerSettings->find("HardMode")->second;
+        auto it = playerSettings->find("HardMode");
+        if (it == playerSettings->end())
+        {
+            return true;
+        }
+
+        auto modes = it->second;
+
         if (modes.size() < DifficultyModes::DIFFICULTY_MODE_COUNT)
         {
             return true;
