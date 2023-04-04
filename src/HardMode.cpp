@@ -667,6 +667,11 @@ bool HardModeGuildScript::CanGuildSendBankList(Guild const* guild, WorldSession*
         return true;
     }
 
+    if (!session)
+    {
+        return true;
+    }
+
     Player* player = session->GetPlayer();
     if (!player)
     {
