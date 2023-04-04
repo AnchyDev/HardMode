@@ -156,7 +156,7 @@ HardMode.SlowXP.Multiplier = 1
 #        Type:        bool
 #
 
-HardMode.AnnounceModesOnLogin = 1
+HardMode.Announce.ModesOnLogin = 1
 
 #
 #    HardMode.Announce.MaxLevel

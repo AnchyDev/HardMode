@@ -22,7 +22,7 @@ void DifficultyModeSlowXP::OnGiveXP(Player* player, uint32& amount, Unit* victim
         return;
     }
 
-    amount = (amount / (sConfigMgr->GetOption<float>("Rate.XP.Kill", 1) * sConfigMgr->GetOption<float>("HardMode.SlowXPMultiplier", 1)));
+    amount = (amount / (sConfigMgr->GetOption<float>("Rate.XP.Kill", 1) * sConfigMgr->GetOption<float>("HardMode.SlowXP.Multiplier", 1)));
 }
 
 void DifficultyModeSlowXP::OnQuestComputeXP(Player* player, Quest const* /*quest*/, uint32& xpValue)
