@@ -308,7 +308,6 @@ std::string HardModeHandler::GetNamesFromEnabledModes(Player* player, bool color
 std::string HardModeHandler::CreateWebhookObject(std::string title, std::string content)
 {
     std::stringstream ss;
-    bool isWindows = false;
 
     ss << "{";
 
