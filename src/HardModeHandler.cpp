@@ -345,7 +345,7 @@ void HardModeHandler::SendWebhookMessage(std::string payload)
     ss << "-Method POST ";
     ss << Acore::StringFormatFmt("-Body \"{}\"", windowsPayload);
 #else
-    ss << Acore::StringFormatFmt("-X POST -H \"Content-Type: application/json\" -d '{}' {}", payload, webhookUrl);
+    ss << Acore::StringFormatFmt("-X POST -H 'Content-Type: application/json' -d '{}' '{}'", payload, webhookUrl);
 #endif
     std::string command = ss.str();
 
@@ -353,7 +353,8 @@ void HardModeHandler::SendWebhookMessage(std::string payload)
 
     if (result != 0)
     {
-        LOG_ERROR("module", "cURL returned a result of {} when sending webhook payload.", result);
+        LOG_ERROR("module", "cURL exited with error code ({}) when sending webhook payload.", result);
+        LOG_ERROR("module", "Error codes: https://curl.se/libcurl/c/libcurl-errors.html");
     }
 }
 
