@@ -349,7 +349,13 @@ void HardModeHandler::SendWebhookMessage(std::string payload)
     ss << Acore::StringFormatFmt("-X POST -H \"Content-Type: application/json\" -d '{}' {}", payload, webhookUrl);
 #endif
     std::string command = ss.str();
-    system(command.c_str());
+
+    int result = system(command.c_str());
+
+    if (result != 0)
+    {
+        LOG_ERROR("module", "cURL returned a result of {} when sending webhook payload.", result);
+    }
 }
 
 bool HardModeHandler::HasModesEnabled(Player* player)
