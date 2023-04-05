@@ -230,6 +230,11 @@ void HardModeUnitScript::ModifyPeriodicDamageAurasTick(Unit* victim, Unit* attac
         return;
     }
 
+    if (!attacker || !victim)
+    {
+        return;
+    }
+
     if (!attacker->IsPlayer() || !victim->IsPlayer())
     {
         return;
