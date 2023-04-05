@@ -22,6 +22,12 @@ void HardModePlayerScript::OnPVPKill(Player* killer, Player* victim)
             std::string formatMsg = Acore::StringFormatFmt("|cffFFFFFFPlayer |cff00FF00{}|cffFFFFFF killed |cff00FF00{}|cffFFFFFF while they were doing the {}|cffFFFFFF challenge(s)!", killer->GetName(), victim->GetName(), sHardModeHandler->GetNamesFromEnabledModes(victim, true));
 
             sWorld->SendServerMessage(SERVER_MSG_STRING, formatMsg);
+
+            //if (sConfigMgr->GetOption<bool>("HardMode.Webhook.Enable", false))
+            //{
+            //    std::string whMsg = sHardModeHandler->CreateWebhookObject("pvp kill", "some death occurred.");
+            //    sHardModeHandler->SendWebhookMessage(whMsg);
+            //}
         }
     }
 }

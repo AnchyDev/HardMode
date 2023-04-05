@@ -30,6 +30,8 @@ public:
     uint32 GetEnabledModesAsMask(Player* player);
     std::string GetConfigNameFromMode(uint8 mode);
     PlayerSettingMap* GetPlayerSettingsFromDatabase(ObjectGuid guid);
+    std::string CreateWebhookObject(std::string title, std::string content);
+    void SendWebhookMessage(std::string payload);
 
     void LoadRewardsFromDatabase();
     std::vector<HardModeReward> GetRewardsForMode(uint8 mode);

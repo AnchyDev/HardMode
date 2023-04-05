@@ -196,3 +196,16 @@ HardMode.PartyLevelRange = 3
 #
 
 HardMode.BlockCrossPlay = 1
+
+#
+#    HardMode.Webhook.Enable
+#        Description: Allows HardMode.Announce.OnPvPKill to be transmitted to a Discord webhook.
+#                     0 - Disabled
+#        Default:     1 - Enabled
+#        Type:        bool
+#
+
+HardMode.Webhook.Enable = 0
+HardMode.Webhook.Url = ""
+HardMode.Webhook.Name = "Hardcore Announcer"
+HardMode.Webhook.AvatarUrl = "https://i.imgur.com/ZhlJPgY.png"

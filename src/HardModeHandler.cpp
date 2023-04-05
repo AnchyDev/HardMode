@@ -10,6 +10,10 @@
 #include "Config.h"
 #include "Spell.h"
 
+#include <iostream>
+#include <fstream>
+#include <regex>
+
 void HardModeHandler::LoadRewardsFromDatabase()
 {
     _hardModeRewards.clear();
@@ -299,6 +303,53 @@ std::string HardModeHandler::GetNamesFromEnabledModes(Player* player, bool color
     }
 
     return ss.str();
+}
+
+std::string HardModeHandler::CreateWebhookObject(std::string title, std::string content)
+{
+    std::stringstream ss;
+    bool isWindows = false;
+
+    ss << "{";
+
+    ss << Acore::StringFormatFmt("\"username\": \"{}\"", sConfigMgr->GetOption<std::string>("HardMode.Webhook.Name", "HardCore Announcer"));
+    ss << ",";
+
+    ss << Acore::StringFormatFmt("\"avatar_url\": \"{}\"", sConfigMgr->GetOption<std::string>("HardMode.Webhook.AvatarUrl", "https://i.imgur.com/ZhlJPgY.png"));
+    ss << ",";
+
+    ss << "\"embeds\": [{ ";
+
+    ss << Acore::StringFormatFmt("\"title\": \"{}\"", title);
+    ss << ",";
+
+    ss << Acore::StringFormatFmt("\"description\": \"{}\"", content);
+
+    ss << " }]";
+
+    ss << "}";
+
+    return ss.str();
+}
+
+void HardModeHandler::SendWebhookMessage(std::string payload)
+{
+    std::stringstream ss;
+    std::string webhookUrl = sConfigMgr->GetOption<std::string>("HardMode.Webhook.Url", "");
+
+    ss << "curl ";
+#if AC_PLATFORM == AC_PLATFORM_WINDOWS
+    std::string windowsPayload = std::regex_replace(payload, std::regex("\""), "`\"");
+
+    ss << Acore::StringFormatFmt("-UseBasicParsing \"{}\" ", webhookUrl);
+    ss << "-ContentType \"application/json\" ";
+    ss << "-Method POST ";
+    ss << Acore::StringFormatFmt("-Body \"{}\"", windowsPayload);
+#else
+    ss << Acore::StringFormatFmt("-X POST -H \"Content-Type: application/json\" -d '{}' {}", payload, webhookUrl);
+#endif
+    std::string command = ss.str();
+    system(command.c_str());
 }
 
 bool HardModeHandler::HasModesEnabled(Player* player)
