@@ -133,6 +133,11 @@ void HardModeUnitScript::OnDamage(Unit* attacker, Unit* victim, uint32& damage)
         return;
     }
 
+    if (!attacker || !victim)
+    {
+        return;
+    }
+
     if (!attacker->IsPlayer() || !victim->IsPlayer())
     {
         return;
@@ -150,6 +155,16 @@ void HardModeUnitScript::OnDamage(Unit* attacker, Unit* victim, uint32& damage)
 bool HardModeSpellScript::CanPrepare(Spell* spell, SpellCastTargets const* targets, AuraEffect const* /*triggeredByAura*/)
 {
     if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return true;
+    }
+
+    if (!spell)
+    {
+        return true;
+    }
+
+    if (!targets)
     {
         return true;
     }
@@ -186,6 +201,11 @@ void HardModeUnitScript::OnHeal(Unit* healer, Unit* receiver, uint32& gain)
         return;
     }
 
+    if (!healer || !receiver)
+    {
+        return;
+    }
+
     if (!healer->IsPlayer() || !receiver->IsPlayer())
     {
         return;
@@ -204,6 +224,11 @@ void HardModeUnitScript::OnHeal(Unit* healer, Unit* receiver, uint32& gain)
 void HardModeUnitScript::ModifyHealReceived(Unit* receiver, Unit* healer, uint32& gain, SpellInfo const* /*spellInfo*/)
 {
     if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return;
+    }
+
+    if (!healer || !receiver)
     {
         return;
     }
@@ -257,6 +282,11 @@ void HardModeUnitScript::ModifyMeleeDamage(Unit* victim, Unit* attacker, uint32&
         return;
     }
 
+    if (!victim || !attacker)
+    {
+        return;
+    }
+
     if (!attacker->IsPlayer() || !victim->IsPlayer())
     {
         return;
@@ -279,6 +309,11 @@ void HardModeUnitScript::ModifySpellDamageTaken(Unit* victim, Unit* attacker, in
         return;
     }
 
+    if (!attacker || !victim)
+    {
+        return;
+    }
+
     if (!attacker->IsPlayer() || !victim->IsPlayer())
     {
         return;
@@ -297,6 +332,11 @@ void HardModeUnitScript::ModifySpellDamageTaken(Unit* victim, Unit* attacker, in
 uint32 HardModeUnitScript::DealDamage(Unit* attacker, Unit* victim, uint32 damage, DamageEffectType /*damagetype*/)
 {
     if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return damage;
+    }
+
+    if (!attacker || !victim)
     {
         return damage;
     }
