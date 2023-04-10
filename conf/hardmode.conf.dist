@@ -198,6 +198,16 @@ HardMode.PartyLevelRange = 3
 HardMode.BlockCrossPlay = 1
 
 #
+#    HardMode.OverrideWhoList
+#        Description: Override the who list to display "Unknown" for HardCore players and "Shadow Tomb" for Shadowbanned players.
+#                     0 - Disabled
+#        Default:     1 - Enabled
+#        Type:        bool
+#
+
+HardMode.OverrideWhoList = 1
+
+#
 #    HardMode.Webhook.Enable
 #        Description: Allows HardMode.Announce.OnPvPKill to be transmitted to a Discord webhook.
 #                     0 - Disabled

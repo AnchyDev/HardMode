@@ -1027,6 +1027,16 @@ void HardModeWorldScript::OnAfterConfigLoad(bool reload)
 
 bool HardModeServerScript::CanPacketSend(WorldSession* session, WorldPacket& packet)
 {
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return true;
+    }
+
+    if (!sConfigMgr->GetOption<bool>("HardMode.OverrideWhoList", true))
+    {
+        return true;
+    }
+
     if (!session)
     {
         return true;
