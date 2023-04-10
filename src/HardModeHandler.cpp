@@ -5,7 +5,7 @@
 
 void HardModeHandler::LoadHardModes()
 {
-    QueryResult qResult = WorldDatabase.Query("SELECT `id`, `name`, `description`, `restrictions` FROM `hardmode_modes`");
+    QueryResult qResult = WorldDatabase.Query("SELECT `id`, `name`, `description`, `restrictions`, `enabled` FROM `hardmode_modes`");
 
     if (qResult)
     {
@@ -49,4 +49,34 @@ void HardModeHandler::ClearHardModes()
 std::vector<HardModeInfo>* HardModeHandler::GetHardModes()
 {
     return &_hardModes;
+}
+
+bool HardModeHandler::IsModeEnabledForPlayer(Player* player, uint8 mode)
+{
+    return player->GetPlayerSetting("HardMode", mode).value > 0;
+}
+
+void HardModeHandler::SetModeForPlayer(Player* player, uint8 mode, bool state)
+{
+    player->UpdatePlayerSetting("HardMode", mode, state);
+}
+
+bool HardModeHandler::IsPlayerTainted(Player* player)
+{
+    return player->GetPlayerSetting("HardModeTainted", 0).value > 0;
+}
+
+void HardModeHandler::UpdatePlayerTainted(Player* player, bool state)
+{
+    player->UpdatePlayerSetting("HardModeTainted", 0, state);
+}
+
+bool HardModeHandler::IsPlayerShadowBanned(Player* player)
+{
+    return player->GetPlayerSetting("HardModeShadowBanned", 0).value > 0;
+}
+
+void HardModeHandler::UpdatePlayerShadowBanned(Player* player, bool state)
+{
+    player->UpdatePlayerSetting("HardModeShadowBanned", 0, state);
 }

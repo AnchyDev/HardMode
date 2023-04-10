@@ -1,5 +1,6 @@
 #include "HardMode.h"
 #include "HardModeHandler.h"
+#include "HardModeShrineObject.h"
 
 void HardModeWorldScript::OnAfterConfigLoad(bool reload)
 {
@@ -14,4 +15,5 @@ void HardModeWorldScript::OnAfterConfigLoad(bool reload)
 void SC_AddHardModeScripts()
 {
     new HardModeWorldScript();
+    new HardModeShrineObject();
 }

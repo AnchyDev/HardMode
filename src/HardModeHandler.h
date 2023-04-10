@@ -3,6 +3,8 @@
 
 #include "HardModeTypes.h"
 
+#include "Player.h"
+
 #include <vector>
 
 class HardModeHandler
@@ -14,6 +16,13 @@ public:
     void LoadHardModes();
     void ClearHardModes();
     std::vector<HardModeInfo>* GetHardModes();
+
+    bool IsModeEnabledForPlayer(Player* player, uint8 mode);
+    void SetModeForPlayer(Player* player, uint8 mode, bool state);
+    bool IsPlayerTainted(Player* player);
+    void UpdatePlayerTainted(Player* player, bool state);
+    bool IsPlayerShadowBanned(Player* player);
+    void UpdatePlayerShadowBanned(Player* player, bool state);
 
 private:
     std::vector<HardModeInfo> _hardModes;
