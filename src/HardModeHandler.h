@@ -15,9 +15,17 @@ private:
 
 public:
     bool IsHardModeEnabled();
+
     void LoadHardModes();
     void ClearHardModes();
     std::map<uint8, HardModeInfo>* GetHardModes();
+
+    void LoadSelfCraftExcludeIds();
+    void ClearSelfCraftExcludeIds();
+    std::vector<int32>* GetSelfCraftedExcludeIds();
+    bool IsSelfCraftExcluded(int32 id);
+    bool IsSelfCraftSpellExcluded(uint32 spellId);
+    bool IsSelfCraftItemExcluded(uint32 itemId);
 
     bool IsModeEnabledForPlayer(Player* player, uint8 mode);
     void UpdateModeForPlayer(Player* player, uint8 mode, bool state);
@@ -31,6 +39,7 @@ public:
 
 private:
     std::map<uint8, HardModeInfo> _hardModes;
+    std::vector<int32> _selfCraftExcludeIds;
 
 public:
     static HardModeHandler* GetInstance()

@@ -58,6 +58,68 @@ std::map<uint8, HardModeInfo>* HardModeHandler::GetHardModes()
     return &_hardModes;
 }
 
+void HardModeHandler::LoadSelfCraftExcludeIds()
+{
+    QueryResult qResult = WorldDatabase.Query("SELECT `id` FROM `hardmode_selfcraft_exclude`");
+
+    if (qResult)
+    {
+        uint32 count = 0;
+
+        do
+        {
+            Field* fields = qResult->Fetch();
+            int32 id = fields[0].Get<int32>();
+
+            _selfCraftExcludeIds.push_back(id);
+            count++;
+        } while (qResult->NextRow());
+
+        LOG_INFO("module", "Loaded '{}' rows from 'hardmode_selfcraft_exclude' table.", count);
+    }
+    else
+    {
+        LOG_INFO("module", "Loaded '0' rows from 'hardmode_selfcraft_exclude' table.");
+    }
+}
+
+void HardModeHandler::ClearSelfCraftExcludeIds()
+{
+    _selfCraftExcludeIds.clear();
+}
+
+std::vector<int32>* HardModeHandler::GetSelfCraftedExcludeIds()
+{
+    return &_selfCraftExcludeIds;
+}
+
+bool HardModeHandler::IsSelfCraftExcluded(int32 id)
+{
+    for (uint32 i = 0; i < _selfCraftExcludeIds.size(); ++i)
+    {
+        if (_selfCraftExcludeIds[i] == id)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool HardModeHandler::IsSelfCraftSpellExcluded(uint32 spellId)
+{
+    return IsSelfCraftExcluded(-spellId);
+
+    return false;
+}
+
+bool HardModeHandler::IsSelfCraftItemExcluded(uint32 itemId)
+{
+    return IsSelfCraftExcluded(itemId);
+
+    return false;
+}
+
 bool HardModeHandler::IsModeEnabledForPlayer(Player* player, uint8 mode)
 {
     return player->GetPlayerSetting("HardMode", mode).value > 0;

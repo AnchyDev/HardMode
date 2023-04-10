@@ -10,9 +10,11 @@ void HardModeWorldScript::OnAfterConfigLoad(bool reload)
     if (reload)
     {
         sHardModeHandler->ClearHardModes();
+        sHardModeHandler->ClearSelfCraftExcludeIds();
     }
 
     sHardModeHandler->LoadHardModes();
+    sHardModeHandler->LoadSelfCraftExcludeIds();
 }
 
 void SC_AddHardModeScripts()

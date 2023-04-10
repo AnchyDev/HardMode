@@ -16,6 +16,7 @@ enum HardModeRestrictions
 {
     HARDMODE_RESTRICT_NONE = 0, // Used internally, DO NOT USE
     HARDMODE_RESTRICT_RETAIL_XP = 1, // 2: The player can only receive 1x exp rates from kills and quests.
+    HARDMODE_RESTRICT_SELFCRAFTED = 2, // 4: The player can only use self-crafted items (armor, weapons, consumables, etc..)
     HARDMODE_RESTRICT_COUNT = 2, // Used internally. DO NOT USE
 };
 
