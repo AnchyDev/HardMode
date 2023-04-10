@@ -20,6 +20,7 @@ HardCore:
 - Can't teleport while shadow banned.
 - Gains a red aura, notifying players of hardcore.
 - Location shows as Unknown on who list.
+- Cannot use LFG to queue for dungeons (you have to run there).
 
 SlowXP:
 - Exp scaled back to 1x (may be futher reduced if configured).
