@@ -126,6 +126,38 @@ bool HardModePlayerScript::CanGroupInvite(Player* player, std::string& memberNam
     return true;
 }
 
+bool HardModePlayerScript::CanJoinLfg(Player* player, uint8 roles, lfg::LfgDungeonSet& dungeons, const std::string& comment)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    {
+        return true;
+    }
+
+    if (!player)
+    {
+        return true;
+    }
+
+    for (uint8 i = 0; i < DIFFICULTY_MODE_COUNT; ++i)
+    {
+        if (!sHardModeHandler->IsModeEnabledForPlayerAndServer(player, i))
+        {
+            continue;
+        }
+
+        bool result = sHardModeHandler->Modes[i]->CanJoinLfg(player, roles, dungeons, comment);
+
+        if (!result)
+        {
+            ChatHandler(player->GetSession()).SendSysMessage(Acore::StringFormatFmt("|cffFFFFFFYou cannot queue Random Dungeon Finder while in {}{} |cffFFFFFFmode.", sHardModeHandler->GetColorFromMode(i), sHardModeHandler->GetNameFromMode(i)));
+
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void HardModeUnitScript::OnDamage(Unit* attacker, Unit* victim, uint32& damage)
 {
     if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))

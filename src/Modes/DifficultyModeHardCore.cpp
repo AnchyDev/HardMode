@@ -7,6 +7,11 @@
 
 DifficultyModeHardCore::DifficultyModeHardCore() : DifficultyMode(/*canBeTraded*/ false, /*canSendOrReceiveMail*/ false, /*canCrossPlay*/ false) { }
 
+bool DifficultyModeHardCore::CanJoinLfg(Player* /*player*/, uint8 /*roles*/, lfg::LfgDungeonSet& /*dungeons*/, const std::string& /*comment*/)
+{
+    return false;
+}
+
 bool DifficultyModeHardCore::CanGroupInvite(Player* player, Player* targetPlayer)
 {
     bool flag1 = sHardModeHandler->IsModeEnabledForPlayer(player, DifficultyModes::DIFFICULTY_MODE_HARDCORE);

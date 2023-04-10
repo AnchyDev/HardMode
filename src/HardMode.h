@@ -44,6 +44,7 @@ private:
     bool OnBeforeTeleport(Player* player, uint32 mapId, float x, float y, float z, float orientation, uint32 options, Unit* target) override;
     void OnPVPKill(Player* killer, Player* victim) override;
     bool CanGroupInvite(Player* player, std::string& memberName) override;
+    bool CanJoinLfg(Player* player, uint8 roles, lfg::LfgDungeonSet& dungeons, const std::string& comment) override;
 };
 
 class HardModeUnitScript : UnitScript

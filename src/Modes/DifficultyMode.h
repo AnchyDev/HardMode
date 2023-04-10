@@ -16,6 +16,7 @@ class DifficultyMode
 public:
     DifficultyMode(bool canBeTraded, bool canSendOrReceiveMail, bool canCrossPlay) : _canBeTraded(canBeTraded), _canSendOrReceiveMail(canSendOrReceiveMail), _canCrossPlay(canCrossPlay) { }
 public:
+    virtual bool CanJoinLfg(Player* /*player*/, uint8 /*roles*/, lfg::LfgDungeonSet& /*dungeons*/, const std::string& /*comment*/) { return true; }
     virtual bool CanGroupInvite(Player* /*player*/, Player* /*targetPlayer*/) { return true; }
     virtual bool CanSendAuctionHello(WorldSession const* /*session*/, ObjectGuid /*guid*/, Creature* /*creature*/) { return true; }
     virtual bool CanGuildSendBankList(Guild const* /*guild*/, WorldSession* /*session*/, uint8 /*tabId*/, bool /*sendAllSlots*/) { return true; }
