@@ -5,7 +5,7 @@
 
 struct HardModeInfo
 {
-    uint32 Id;
+    uint8 Id;
     std::string Name;
     std::string Description;
     uint64 Restrictions;

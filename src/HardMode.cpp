@@ -1,4 +1,5 @@
 #include "HardMode.h"
+#include "HardModeCommands.h"
 #include "HardModeHandler.h"
 #include "HardModeShrineObject.h"
 
@@ -16,4 +17,5 @@ void SC_AddHardModeScripts()
 {
     new HardModeWorldScript();
     new HardModeShrineObject();
+    new HardModeCommandsScript();
 }

@@ -1,4 +1,5 @@
 #include "HardModeHandler.h"
+#include "HardModeTypes.h"
 
 #include "DatabaseEnv.h"
 #include "Log.h"
@@ -56,7 +57,7 @@ bool HardModeHandler::IsModeEnabledForPlayer(Player* player, uint8 mode)
     return player->GetPlayerSetting("HardMode", mode).value > 0;
 }
 
-void HardModeHandler::SetModeForPlayer(Player* player, uint8 mode, bool state)
+void HardModeHandler::UpdateModeForPlayer(Player* player, uint8 mode, bool state)
 {
     player->UpdatePlayerSetting("HardMode", mode, state);
 }
@@ -79,4 +80,45 @@ bool HardModeHandler::IsPlayerShadowBanned(Player* player)
 void HardModeHandler::UpdatePlayerShadowBanned(Player* player, bool state)
 {
     player->UpdatePlayerSetting("HardModeShadowBanned", 0, state);
+}
+
+std::string HardModeHandler::GetNamesFromEnabledModes(Player* player)
+{
+    std::stringstream ss;
+    std::vector<HardModeInfo> modes;
+
+    auto hardModes = sHardModeHandler->GetHardModes();
+    for (auto mode = hardModes->begin(); mode != hardModes->end(); ++mode)
+    {
+        if (sHardModeHandler->IsModeEnabledForPlayer(player, mode->Id))
+        {
+            modes.push_back(*mode);
+        }
+    }
+
+    for (uint8 i = 0; i < modes.size(); ++i)
+    {
+        ss << modes[i].Name;
+
+        if (i != modes.size() - 1)
+        {
+            ss << ", ";
+        }
+    }
+
+    return ss.str();
+}
+
+std::string HardModeHandler::GetNameFromMode(uint8 mode)
+{
+    auto hardModes = sHardModeHandler->GetHardModes();
+    for (auto it = hardModes->begin(); it != hardModes->end(); ++it)
+    {
+        if (it->Id == mode)
+        {
+            return it->Name;
+        }
+    }
+
+    return "Unknown";
 }

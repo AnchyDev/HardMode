@@ -36,7 +36,7 @@ bool HardModeShrineObject::OnGossipHello(Player* player, GameObject* go)
 bool HardModeShrineObject::OnGossipSelect(Player* player, GameObject* /*go*/, uint32 /*sender*/, uint32 mode)
 {
     bool flag = sHardModeHandler->IsModeEnabledForPlayer(player, mode);
-    sHardModeHandler->SetModeForPlayer(player, mode, !flag);
+    sHardModeHandler->UpdateModeForPlayer(player, mode, !flag);
 
     CloseGossipMenuFor(player);
 

@@ -18,11 +18,13 @@ public:
     std::vector<HardModeInfo>* GetHardModes();
 
     bool IsModeEnabledForPlayer(Player* player, uint8 mode);
-    void SetModeForPlayer(Player* player, uint8 mode, bool state);
+    void UpdateModeForPlayer(Player* player, uint8 mode, bool state);
     bool IsPlayerTainted(Player* player);
     void UpdatePlayerTainted(Player* player, bool state);
     bool IsPlayerShadowBanned(Player* player);
     void UpdatePlayerShadowBanned(Player* player, bool state);
+    std::string GetNamesFromEnabledModes(Player* player);
+    std::string GetNameFromMode(uint8 mode);
 
 private:
     std::vector<HardModeInfo> _hardModes;
