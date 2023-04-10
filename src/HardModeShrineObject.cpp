@@ -7,25 +7,27 @@
 
 bool HardModeShrineObject::OnGossipHello(Player* player, GameObject* go)
 {
-    if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
+    if (!sHardModeHandler->IsHardModeEnabled())
     {
         return false;
     }
 
     auto hardModes = sHardModeHandler->GetHardModes();
 
-    for (auto mode = hardModes->begin(); mode != hardModes->end(); ++mode)
+    for (auto it = hardModes->begin(); it != hardModes->end(); ++it)
     {
-        if (!mode->Enabled)
+        auto mode = it->second;
+
+        if (!mode.Enabled)
         {
             continue;
         }
 
-        bool flag = sHardModeHandler->IsModeEnabledForPlayer(player, mode->Id);
+        bool flag = sHardModeHandler->IsModeEnabledForPlayer(player, mode.Id);
         std::string state = flag ? "Disable" : "Enable";
-        std::string format = Acore::StringFormatFmt("{} {} mode.", state, mode->Name);
+        std::string format = Acore::StringFormatFmt("{} {} mode.", state, mode.Name);
 
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, format, 0, mode->Id);
+        AddGossipItemFor(player, GOSSIP_ICON_CHAT, format, 0, mode.Id);
     }
 
     SendGossipMenuFor(player, 1, go->GetGUID());

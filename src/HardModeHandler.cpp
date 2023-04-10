@@ -1,12 +1,18 @@
 #include "HardModeHandler.h"
 #include "HardModeTypes.h"
 
+#include "Config.h"
 #include "DatabaseEnv.h"
 #include "Log.h"
 
+bool HardModeHandler::IsHardModeEnabled()
+{
+    return sConfigMgr->GetOption<bool>("HardMode.Enable", false);
+}
+
 void HardModeHandler::LoadHardModes()
 {
-    QueryResult qResult = WorldDatabase.Query("SELECT `id`, `name`, `description`, `restrictions`, `enabled` FROM `hardmode_modes`");
+    QueryResult qResult = WorldDatabase.Query("SELECT * FROM `hardmode_modes` ORDER BY id ASC");
 
     if (qResult)
     {
@@ -29,7 +35,7 @@ void HardModeHandler::LoadHardModes()
             mode.Restrictions = restrictions;
             mode.Enabled = enabled;
 
-            _hardModes.push_back(mode);
+            _hardModes.emplace(id, mode);
 
             count++;
         } while (qResult->NextRow());
@@ -47,7 +53,7 @@ void HardModeHandler::ClearHardModes()
     _hardModes.clear();
 }
 
-std::vector<HardModeInfo>* HardModeHandler::GetHardModes()
+std::map<uint8, HardModeInfo>* HardModeHandler::GetHardModes()
 {
     return &_hardModes;
 }
@@ -60,6 +66,40 @@ bool HardModeHandler::IsModeEnabledForPlayer(Player* player, uint8 mode)
 void HardModeHandler::UpdateModeForPlayer(Player* player, uint8 mode, bool state)
 {
     player->UpdatePlayerSetting("HardMode", mode, state);
+}
+
+bool HardModeHandler::PlayerHasRestriction(Player* player, uint32 restriction)
+{
+    auto modes = sHardModeHandler->GetHardModes();
+    for (auto it = modes->begin(); it != modes->end(); ++it)
+    {
+        auto mode = it->second;
+
+        if (!mode.Enabled)
+        {
+            continue;
+        }
+
+        if (mode.Restrictions == HARDMODE_RESTRICT_NONE)
+        {
+            continue;
+        }
+
+        if (!sHardModeHandler->IsModeEnabledForPlayer(player, mode.Id))
+        {
+            continue;
+        }
+
+        auto rMask = (1 << restriction);
+        bool hasRestriction = (mode.Restrictions & rMask) == rMask;
+
+        if (hasRestriction)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool HardModeHandler::IsPlayerTainted(Player* player)
@@ -90,9 +130,9 @@ std::string HardModeHandler::GetNamesFromEnabledModes(Player* player)
     auto hardModes = sHardModeHandler->GetHardModes();
     for (auto mode = hardModes->begin(); mode != hardModes->end(); ++mode)
     {
-        if (sHardModeHandler->IsModeEnabledForPlayer(player, mode->Id))
+        if (sHardModeHandler->IsModeEnabledForPlayer(player, mode->second.Id))
         {
-            modes.push_back(*mode);
+            modes.push_back(mode->second);
         }
     }
 
@@ -109,15 +149,15 @@ std::string HardModeHandler::GetNamesFromEnabledModes(Player* player)
     return ss.str();
 }
 
-std::string HardModeHandler::GetNameFromMode(uint8 mode)
+std::string HardModeHandler::GetNameFromMode(uint8 id)
 {
     auto hardModes = sHardModeHandler->GetHardModes();
-    for (auto it = hardModes->begin(); it != hardModes->end(); ++it)
+
+    auto mode = hardModes->find(id);
+
+    if (mode != hardModes->end())
     {
-        if (it->Id == mode)
-        {
-            return it->Name;
-        }
+        return mode->second.Name;
     }
 
     return "Unknown";
