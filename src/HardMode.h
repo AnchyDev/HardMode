@@ -117,5 +117,14 @@ private:
     void OnAfterConfigLoad(bool reload) override;
 };
 
+class HardModeServerScript : ServerScript
+{
+public:
+    HardModeServerScript() : ServerScript("HardModeServerScript") { }
+
+private:
+    bool CanPacketSend(WorldSession* session, WorldPacket& packet) override;
+};
+
 
 #endif // MODULE_HARDMODE_H

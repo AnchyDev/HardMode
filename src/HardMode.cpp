@@ -1025,6 +1025,88 @@ void HardModeWorldScript::OnAfterConfigLoad(bool reload)
     }
 }
 
+bool HardModeServerScript::CanPacketSend(WorldSession* session, WorldPacket& packet)
+{
+    if (!session)
+    {
+        return true;
+    }
+
+    auto player = session->GetPlayer();
+    if (!player)
+    {
+        return true;
+    }
+
+    auto opCode = packet.GetOpcode();
+    if (opCode != SMSG_WHO)
+    {
+        return true;
+    }
+
+    uint32 ignorePacketFlag = 696969;
+
+    bool ignorePacket = packet.read<uint32>(packet.size() - 4) == ignorePacketFlag;
+
+    // Read position is moved as this packet is modified already, don't read any further.
+    if (ignorePacket)
+    {
+        return true;
+    }
+
+    uint32 displayCount = packet.read<uint32>();
+    uint32 matchCount = packet.read<uint32>();
+
+    // No matches, don't try read any further.
+    if (matchCount == 0 && displayCount == 0)
+    {
+        return false;
+    }
+    uint32 unknownZoneId = 4988;
+    uint32 azsharaCraterZoneId = 268;
+    uint32 jailZoneId = 3888;
+
+    for (uint32 i = 0; i < displayCount; ++i)
+    {
+        std::string playerName = packet.read<std::string>();
+        packet.read_skip<std::string>(); //GuildName
+        packet.read_skip<uint32>(); //PlayerLvl
+        packet.read_skip<uint32>(); //PlayerClass
+        packet.read_skip<uint32>(); //PlayerRace
+        packet.read_skip<uint8>(); //PlayerGender
+        uint32 playerZoneId = packet.read<uint32>();
+
+        if (playerZoneId == azsharaCraterZoneId)
+        {
+            packet.put(packet.rpos() - 4, jailZoneId);
+        }
+        else
+        {
+            auto targetPlayer = ObjectAccessor::FindPlayerByName(playerName);
+
+            if (!targetPlayer)
+            {
+                return true;
+            }
+
+            if (!sHardModeHandler->IsModeEnabledForPlayerAndServer(targetPlayer, DifficultyModes::DIFFICULTY_MODE_HARDCORE))
+            {
+                return true;
+            }
+
+            packet.put(packet.rpos() - 4, unknownZoneId);
+        }
+    }
+
+    // Add ignore packet flag to end of payload.
+    packet << ignorePacketFlag;
+
+    // Resend modified packet.
+    player->SendDirectMessage(&packet);
+
+    return false;
+}
+
 void SC_AddHardModeScripts()
 {
     sHardModeHandler->Modes[DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED] = new DifficultyModeSelfCrafted();
@@ -1036,6 +1118,7 @@ void SC_AddHardModeScripts()
     new HardModeSpellScript();
     new HardModeGuildScript();
     new HardModeWorldScript();
+    new HardModeServerScript();
     new HardModePlayerScript();
     new HardModeCommandScript();
     new HardModeGameObjectScript();
