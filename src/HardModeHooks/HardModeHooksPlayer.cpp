@@ -44,7 +44,7 @@ void HardModeHooksPlayerScript::OnQuestComputeXP(Player* player, Quest const* /*
     xpValue = (xpValue / sConfigMgr->GetOption<float>("Rate.XP.Quest", 1));
 }
 
-bool HardModeHooksPlayerScript::CanEquipItem(Player* player, uint8 slot, uint16& dest, Item* pItem, bool swap, bool notLoading)
+bool HardModeHooksPlayerScript::CanEquipItem(Player* player, uint8 /*slot*/, uint16& /*dest*/, Item* pItem, bool /*swap*/, bool /*notLoading*/)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
@@ -84,7 +84,7 @@ bool HardModeHooksPlayerScript::CanEquipItem(Player* player, uint8 slot, uint16&
     return true;
 }
 
-bool HardModeHooksPlayerScript::CanCastItemUseSpell(Player* player, Item* item, SpellCastTargets const& targets, uint8 castCount, uint32 glyphIndex)
+bool HardModeHooksPlayerScript::CanCastItemUseSpell(Player* player, Item* item, SpellCastTargets const& /*targets*/, uint8 /*castCount*/, uint32 /*glyphIndex*/)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
