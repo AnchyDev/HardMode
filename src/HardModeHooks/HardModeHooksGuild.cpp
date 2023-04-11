@@ -1,7 +1,7 @@
 #include "HardModeHooks/HardModeHooksGuild.h"
 #include "HardModeHandler.h"
 
-bool HardModeHooksGuildScript::CanGuildSendBankList(Guild const* guild, WorldSession* session, uint8 tabId, bool sendAllSlots)
+bool HardModeHooksGuildScript::CanGuildSendBankList(Guild const* /*guild*/, WorldSession* session, uint8 /*tabId*/, bool /*sendAllSlots*/)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {

@@ -3,7 +3,7 @@
 
 #include "Player.h"
 
-bool HardModeHooksMiscScript::CanSendAuctionHello(WorldSession const* session, ObjectGuid guid, Creature* creature)
+bool HardModeHooksMiscScript::CanSendAuctionHello(WorldSession const* session, ObjectGuid /*guid*/, Creature* /*creature*/)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
