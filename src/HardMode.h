@@ -3,6 +3,15 @@
 
 #include "ScriptMgr.h"
 
+class HardModePlayerScript : PlayerScript
+{
+public:
+    HardModePlayerScript() : PlayerScript("HardModePlayerScript") { }
+
+private:
+    void OnLevelChanged(Player* player, uint8 oldLevel) override;
+};
+
 class HardModeWorldScript : WorldScript
 {
 public:

@@ -3,6 +3,11 @@
 
 #include "Common.h"
 
+enum HardModeConstants
+{
+    HARDMODE_MAIL_SENDER = 441102
+};
+
 struct HardModeInfo
 {
     uint8 Id;
@@ -20,6 +25,22 @@ enum HardModeRestrictions
     HARDMODE_RESTRICT_INTERACT_AUCTION = 3,// 8: The player cannot interact with the auction house.
     HARDMODE_RESTRICT_INTERACT_GUILDBANK = 4, // 16: The player cannot interact with the guild bank.
     HARDMODE_RESTRICT_COUNT = 5, // Used internally. DO NOT USE
+};
+
+enum HardModeRewardType
+{
+    HARDMODE_REWARD_TYPE_ITEM = 0,
+    HARDMODE_REWARD_TYPE_TITLE = 1,
+    HARDMODE_REWARD_TYPE_SPELL = 2
+};
+
+struct HardModeReward
+{
+    uint32 Mode;
+    uint32 Level;
+    uint32 Type;
+    uint32 RewardId;
+    uint32 RewardCount;
 };
 
 #endif // MODULE_HARDMODE_TYPES_H

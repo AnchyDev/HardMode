@@ -4,6 +4,7 @@
 #include "Config.h"
 #include "DatabaseEnv.h"
 #include "Log.h"
+#include "Player.h"
 
 bool HardModeHandler::IsHardModeEnabled()
 {
@@ -118,6 +119,218 @@ bool HardModeHandler::IsSelfCraftItemExcluded(uint32 itemId)
     return IsSelfCraftExcluded(itemId);
 
     return false;
+}
+
+void HardModeHandler::LoadRewards()
+{
+    QueryResult qResult = WorldDatabase.Query("SELECT `mode`, `reward_level`, `reward_type`, `reward_id`, `reward_count` FROM `hardmode_rewards`");
+
+    if (qResult)
+    {
+        uint32 count = 0;
+
+        do
+        {
+            Field* fields = qResult->Fetch();
+
+            uint32 mode = fields[0].Get<uint32>();
+            uint32 level = fields[1].Get<uint32>();
+            uint32 rewardType = fields[2].Get<uint32>();
+            uint32 rewardId = fields[3].Get<uint32>();
+            uint32 rewardCount = fields[4].Get<uint32>();
+
+            HardModeReward reward;
+
+            reward.Mode = mode;
+            reward.Level = level;
+            reward.Type = rewardType;
+            reward.RewardId = rewardId;
+            reward.RewardCount = rewardCount;
+
+            auto it = _rewards.find(mode);
+            if (it == _rewards.end())
+            {
+                std::vector<HardModeReward> rewards;
+                _rewards.emplace(mode, rewards);
+
+                it = _rewards.find(mode);
+                if (it == _rewards.end())
+                {
+                    LOG_ERROR("module", "An error occurred when trying to populate rewards map!");
+                    return;
+                }
+            }
+
+            it->second.push_back(reward);
+            count++;
+        } while (qResult->NextRow());
+
+        LOG_INFO("module", "Loaded '{}' rows from 'hardmode_rewards' table.", count);
+    }
+    else
+    {
+        LOG_INFO("module", "Loaded '0' rows from 'hardmode_rewards' table.");
+    }
+}
+
+void HardModeHandler::ClearRewards()
+{
+    _rewards.clear();
+}
+
+std::map<uint8, std::vector<HardModeReward>>* HardModeHandler::GetRewards()
+{
+    return &_rewards;
+}
+
+std::vector<HardModeReward>* HardModeHandler::GetRewardsForMode(uint8 mode)
+{
+    auto it = _rewards.find(mode);
+    if (it != _rewards.end())
+    {
+        return &it->second;
+    }
+
+    return nullptr;
+}
+
+void HardModeHandler::TryRewardPlayer(Player* player, std::vector<HardModeReward> rewards)
+{
+    for (auto reward : rewards)
+    {
+        switch (reward.Type)
+        {
+        case HardModeRewardType::HARDMODE_REWARD_TYPE_TITLE:
+            RewardTitle(player, reward.RewardId);
+            break;
+
+        case HardModeRewardType::HARDMODE_REWARD_TYPE_SPELL:
+            RewardSpell(player, reward.RewardId);
+            break;
+        }
+    }
+
+    RewardItems(player, rewards);
+}
+
+void HardModeHandler::RewardItems(Player* player, std::vector<HardModeReward> rewards)
+{
+    std::vector<std::pair<uint32, uint32>> mailItems;
+    uint8 mode = 0;
+
+    for (auto const& reward : rewards)
+    {
+        if (reward.Type == HardModeRewardType::HARDMODE_REWARD_TYPE_ITEM)
+        {
+            mailItems.push_back(std::make_pair(reward.RewardId, reward.RewardCount));
+            mode = reward.Mode;
+        }
+    }
+
+    if (mailItems.size() < 1)
+    {
+        return;
+    }
+
+    std::string hardModeName = sHardModeHandler->GetNameFromMode(mode);
+    std::string header = Acore::StringFormatFmt("{} Rewards", hardModeName);
+    std::string body = Acore::StringFormatFmt("Congratulations on reaching level {} on {} mode, enjoy your rewards!", player->GetLevel(), hardModeName);
+
+    SendMailItems(player, mailItems, header, body);
+}
+
+void HardModeHandler::RewardTitle(Player* player, uint32 titleId)
+{
+    auto titleEntry = sCharTitlesStore.LookupEntry(titleId);
+
+    if (!titleEntry)
+    {
+        LOG_ERROR("module", "No title with entry '{}' found while rewarding player '{}'.", titleId, player->GetName());
+        return;
+    }
+
+    player->SetTitle(titleEntry);
+}
+
+void HardModeHandler::RewardSpell(Player* player, uint32 spellId)
+{
+    auto spellEntry = sSpellStore.LookupEntry(spellId);
+
+    if (!spellEntry)
+    {
+        LOG_ERROR("module", "No spell with entry '{}' found while rewarding player '{}'.", spellId, player->GetName());
+        return;
+    }
+
+    player->learnSpell(spellId);
+}
+
+void HardModeHandler::SendMailItems(Player* player, std::vector<std::pair<uint32, uint32>>& mailItems, std::string header, std::string body)
+{
+    using SendMailTempateVector = std::vector<std::pair<uint32, uint32>>;
+
+    std::vector<SendMailTempateVector> allItems;
+
+    auto AddMailItem = [&allItems](uint32 itemEntry, uint32 itemCount)
+    {
+        SendMailTempateVector toSendItems;
+
+        ItemTemplate const* itemTemplate = sObjectMgr->GetItemTemplate(itemEntry);
+        if (!itemTemplate)
+        {
+            LOG_ERROR("entities.player.items", "> HardModeHandler::SendMailItems: Item id {} is invalid", itemEntry);
+            return;
+        }
+
+        if (itemCount < 1 || (itemTemplate->MaxCount > 0 && itemCount > static_cast<uint32>(itemTemplate->MaxCount)))
+        {
+            LOG_ERROR("entities.player.items", "> HardModeHandler::SendMailItems: Incorrect item count ({}) for item id {}", itemCount, itemEntry);
+            return;
+        }
+
+        while (itemCount > itemTemplate->GetMaxStackSize())
+        {
+            if (toSendItems.size() <= MAX_MAIL_ITEMS)
+            {
+                toSendItems.emplace_back(itemEntry, itemTemplate->GetMaxStackSize());
+                itemCount -= itemTemplate->GetMaxStackSize();
+            }
+            else
+            {
+                allItems.emplace_back(toSendItems);
+                toSendItems.clear();
+            }
+        }
+
+        toSendItems.emplace_back(itemEntry, itemCount);
+        allItems.emplace_back(toSendItems);
+    };
+
+    for (auto& [itemEntry, itemCount] : mailItems)
+    {
+        AddMailItem(itemEntry, itemCount);
+    }
+
+    CharacterDatabaseTransaction trans = CharacterDatabase.BeginTransaction();
+
+    MailSender sender(MAIL_CREATURE, HARDMODE_MAIL_SENDER);
+    MailDraft draft(header, body);
+
+    for (auto const& items : allItems)
+    {
+        for (auto const& [itemEntry, itemCount] : items)
+        {
+            if (Item* mailItem = Item::CreateItem(itemEntry, itemCount))
+            {
+                mailItem->SaveToDB(trans);
+                draft.AddItem(mailItem);
+            }
+        }
+    }
+
+    draft.SendMailTo(trans, MailReceiver(player, player->GetGUID().GetCounter()), sender);
+
+    CharacterDatabase.CommitTransaction(trans);
 }
 
 bool HardModeHandler::IsModeEnabledForPlayer(Player* player, uint8 mode)

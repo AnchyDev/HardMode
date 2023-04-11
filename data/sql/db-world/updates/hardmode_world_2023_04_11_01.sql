@@ -9,3 +9,14 @@ CREATE TABLE IF NOT EXISTS `hardmode_modes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 UPDATE gameobject_template SET ScriptName = "HardModeShrineObject" WHERE entry = 441101;
+
+DROP TABLE IF EXISTS `hardmode_rewards`;
+CREATE TABLE IF NOT EXISTS `hardmode_rewards` (
+  `mode` int NOT NULL,
+  `reward_level` int NOT NULL,
+  `reward_type` int NOT NULL,
+  `reward_id` int NOT NULL,
+  `reward_count` int DEFAULT NULL,
+  `comment` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`mode`,`reward_level`,`reward_type`,`reward_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

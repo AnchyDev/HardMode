@@ -2,10 +2,44 @@
 #include "HardModeCommands.h"
 #include "HardModeHandler.h"
 #include "HardModeShrineObject.h"
+#include "HardModeTypes.h"
 
 #include "HardModeHooks/HardModeHooksGuild.h"
 #include "HardModeHooks/HardModeHooksMisc.h"
 #include "HardModeHooks/HardModeHooksPlayer.h"
+
+void HardModePlayerScript::OnLevelChanged(Player* player, uint8 /*oldLevel*/)
+{
+    if (!player)
+    {
+        return;
+    }
+
+    uint32 level = player->GetLevel();
+
+    auto modes = sHardModeHandler->GetHardModes();
+    for (auto it = modes->begin(); it != modes->end(); ++it)
+    {
+        auto mode = it->second;
+
+        if (!sHardModeHandler->IsModeEnabledForPlayer(player, mode.Id))
+        {
+            continue;
+        }
+
+        auto rewards = sHardModeHandler->GetRewardsForMode(mode.Id);
+
+        std::vector<HardModeReward> newRewards;
+        for (auto reward = rewards->begin(); reward != rewards->end(); ++reward)
+        {
+            if (level == reward->Level)
+            {
+                newRewards.push_back(*reward);
+            }
+        }
+        sHardModeHandler->TryRewardPlayer(player, newRewards);
+    }
+}
 
 void HardModeWorldScript::OnAfterConfigLoad(bool reload)
 {
@@ -13,14 +47,17 @@ void HardModeWorldScript::OnAfterConfigLoad(bool reload)
     {
         sHardModeHandler->ClearHardModes();
         sHardModeHandler->ClearSelfCraftExcludeIds();
+        sHardModeHandler->ClearRewards();
     }
 
     sHardModeHandler->LoadHardModes();
     sHardModeHandler->LoadSelfCraftExcludeIds();
+    sHardModeHandler->LoadRewards();
 }
 
 void SC_AddHardModeScripts()
 {
+    new HardModePlayerScript();
     new HardModeWorldScript();
     new HardModeShrineObject();
     new HardModeCommandsScript();

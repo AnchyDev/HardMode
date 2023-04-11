@@ -27,6 +27,16 @@ public:
     bool IsSelfCraftSpellExcluded(uint32 spellId);
     bool IsSelfCraftItemExcluded(uint32 itemId);
 
+    void LoadRewards();
+    void ClearRewards();
+    std::map<uint8, std::vector<HardModeReward>>* GetRewards();
+    std::vector<HardModeReward>* GetRewardsForMode(uint8 mode);
+    void TryRewardPlayer(Player* player, std::vector<HardModeReward> rewards);
+    void RewardItems(Player* player, std::vector<HardModeReward> rewards);
+    void RewardTitle(Player* player, uint32 titleId);
+    void RewardSpell(Player* player, uint32 spellId);
+    void SendMailItems(Player* player, std::vector<std::pair<uint32, uint32>>& mailItems, std::string header, std::string body);
+
     bool IsModeEnabledForPlayer(Player* player, uint8 mode);
     void UpdateModeForPlayer(Player* player, uint8 mode, bool state);
     bool PlayerHasRestriction(Player* player, uint32 restriction);
@@ -40,6 +50,7 @@ public:
 private:
     std::map<uint8, HardModeInfo> _hardModes;
     std::vector<int32> _selfCraftExcludeIds;
+    std::map<uint8, std::vector<HardModeReward>> _rewards;
 
 public:
     static HardModeHandler* GetInstance()
