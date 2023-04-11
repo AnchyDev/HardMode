@@ -3,6 +3,7 @@
 #include "HardModeHandler.h"
 #include "HardModeShrineObject.h"
 
+#include "HardModeHooks/HardModeHooksMisc.h"
 #include "HardModeHooks/HardModeHooksPlayer.h"
 
 void HardModeWorldScript::OnAfterConfigLoad(bool reload)
@@ -23,5 +24,6 @@ void SC_AddHardModeScripts()
     new HardModeShrineObject();
     new HardModeCommandsScript();
 
+    new HardModeHooksMiscScript();
     new HardModeHooksPlayerScript();
 }
