@@ -21,6 +21,8 @@ private:
     bool CanRepopAtGraveyard(Player* player) override;
 
     bool OnBeforeTeleport(Player* player, uint32 mapId, float x, float y, float z, float orientation, uint32 options, Unit* target) override;
+
+    bool CanInitTrade(Player* player, Player* target) override;
 };
 
 #endif // MODULE_HARDMODE_HOOKS_PLAYER_H

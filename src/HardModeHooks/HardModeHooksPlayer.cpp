@@ -3,6 +3,7 @@
 #include "HardModeTypes.h"
 
 #include "Config.h"
+#include "Player.h"
 
 void HardModeHooksPlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* /*victim*/)
 {
@@ -194,6 +195,32 @@ bool HardModeHooksPlayerScript::OnBeforeTeleport(Player* player, uint32 mapId, f
     if (sHardModeHandler->IsPlayerShadowBanned(player))
     {
         return (mapId == HARDMODE_AREA_AZSHARACRATER); // Only allow teleports for Shadowban players if it's to the azshara crater / shadow tomb.
+    }
+
+    return true;
+}
+
+bool HardModeHooksPlayerScript::CanInitTrade(Player* player, Player* target)
+{
+    if (!player || !target)
+    {
+        return true;
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_TRADE))
+    {
+        // TODO: Player feedback, you cannot trade while restricted.
+        player->GetSession()->SendTradeStatus(TRADE_STATUS_TRADE_CANCELED);
+        target->GetSession()->SendTradeStatus(TRADE_STATUS_TRADE_CANCELED);
+        return false;
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(target, HARDMODE_RESTRICT_INTERACT_TRADE))
+    {
+        // TODO: Player feedback, you cannot trade restricted players.
+        player->GetSession()->SendTradeStatus(TRADE_STATUS_TRADE_CANCELED);
+        target->GetSession()->SendTradeStatus(TRADE_STATUS_TRADE_CANCELED);
+        return false;
     }
 
     return true;

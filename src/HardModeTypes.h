@@ -29,8 +29,9 @@ enum HardModeRestrictions
     HARDMODE_RESTRICT_INTERACT_GUILDBANK =    4, // 16: The player cannot interact with the guild bank.
     HARDMODE_RESTRICT_INTERACT_MAIL_SEND =    5, // 32: The player cannot send mail.
     HARDMODE_RESTRICT_INTERACT_MAIL_RECEIVE = 6, // 64: The player cannot receive mail.
-    HARDMODE_RESTRICT_PERMADEATH =            7, // 128: The player is sent to the shadow tomb on death.
-    HARDMODE_RESTRICT_COUNT =                 8, // Used internally. DO NOT USE
+    HARDMODE_RESTRICT_INTERACT_TRADE =        7, // 128: The player cannot trade.
+    HARDMODE_RESTRICT_PERMADEATH =            8, // 256: The player is sent to the shadow tomb on death.
+    HARDMODE_RESTRICT_COUNT =                 9, // Used internally. DO NOT USE
 };
 
 enum HardModeRewardType
