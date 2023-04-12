@@ -333,6 +333,14 @@ void HardModeHandler::SendMailItems(Player* player, std::vector<std::pair<uint32
     CharacterDatabase.CommitTransaction(trans);
 }
 
+void HardModeHandler::SendAlert(Player* player, std::string message)
+{
+    WorldPacket data(SMSG_NOTIFICATION, (message.size() + 1));
+    data << message;
+
+    player->SendDirectMessage(&data);
+}
+
 bool HardModeHandler::IsModeEnabledForPlayer(Player* player, uint8 mode)
 {
     return player->GetPlayerSetting("HardMode", mode).value > 0;

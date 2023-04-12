@@ -36,6 +36,7 @@ public:
     void RewardTitle(Player* player, uint32 titleId);
     void RewardSpell(Player* player, uint32 spellId);
     void SendMailItems(Player* player, std::vector<std::pair<uint32, uint32>>& mailItems, std::string header, std::string body);
+    void SendAlert(Player* player, std::string message);
 
     bool IsModeEnabledForPlayer(Player* player, uint8 mode);
     void UpdateModeForPlayer(Player* player, uint8 mode, bool state);
