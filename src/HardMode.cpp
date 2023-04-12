@@ -37,7 +37,11 @@ void HardModePlayerScript::OnLevelChanged(Player* player, uint8 /*oldLevel*/)
                 newRewards.push_back(*reward);
             }
         }
-        sHardModeHandler->TryRewardPlayer(player, newRewards);
+
+        if (newRewards.size() > 0)
+        {
+            sHardModeHandler->TryRewardPlayer(player, newRewards);
+        }
     }
 }
 
