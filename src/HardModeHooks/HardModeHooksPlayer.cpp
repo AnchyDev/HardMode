@@ -156,6 +156,8 @@ void HardModeHooksPlayerScript::OnPlayerResurrect(Player* player, float /*restor
     {
         sHardModeHandler->TryShadowBanPlayer(player);
     }
+
+    sHardModeHandler->ValidatePlayerAuras(player);
 }
 
 void HardModeHooksPlayerScript::OnPlayerReleasedGhost(Player* player)
