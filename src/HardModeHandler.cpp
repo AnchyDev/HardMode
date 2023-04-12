@@ -123,6 +123,96 @@ bool HardModeHandler::IsSelfCraftItemExcluded(uint32 itemId)
     return false;
 }
 
+void HardModeHandler::LoadAuras()
+{
+    QueryResult qResult = WorldDatabase.Query("SELECT `mode`, `aura` FROM `hardmode_auras`");
+
+    if (qResult)
+    {
+        uint32 count = 0;
+
+        do
+        {
+            Field* fields = qResult->Fetch();
+
+            uint32 mode = fields[0].Get<uint32>();
+            uint32 aura = fields[1].Get<uint32>();
+
+            auto it = _auras.find(mode);
+            if (it == _auras.end())
+            {
+                std::vector<uint32> auras;
+                _auras.emplace(mode, aura);
+
+                it = _auras.find(mode);
+                if (it == _auras.end())
+                {
+                    LOG_ERROR("module", "An error occurred when trying to populate auras map!");
+                    return;
+                }
+            }
+
+            it->second.push_back(aura);
+            count++;
+        } while (qResult->NextRow());
+
+        LOG_INFO("module", "Loaded '{}' rows from 'hardmode_auras' table.", count);
+    }
+    else
+    {
+        LOG_INFO("module", "Loaded '0' rows from 'hardmode_auras' table.");
+    }
+}
+
+void HardModeHandler::ClearAuras()
+{
+    _auras.clear();
+}
+
+std::map<uint8, std::vector<uint32>>* HardModeHandler::GetAuras()
+{
+    return &_auras;
+}
+
+void HardModeHandler::ValidatePlayerAuras(Player* player)
+{
+    auto auras = sHardModeHandler->GetAuras();
+    auto modes = sHardModeHandler->GetHardModes();
+
+    if (!auras || !modes)
+    {
+        return;
+    }
+
+    if (auras->size() < 1 || modes->size() < 1)
+    {
+        return;
+    }
+
+    for (auto modeIt = modes->begin(); modeIt != modes->end(); ++modeIt)
+    {
+        auto mode = modeIt->second.Id;
+
+        auto auraIt = auras->find(mode);
+        if (auraIt == auras->end())
+        {
+            continue;
+        }
+
+        for (auto aura : auraIt->second)
+        {
+            if (sHardModeHandler->IsModeEnabledForPlayer(player, mode) && !player->HasAura(aura))
+            {
+                player->AddAura(aura, player);
+            }
+            else if (!sHardModeHandler->IsModeEnabledForPlayer(player, mode) && player->HasAura(aura))
+            {
+                player->RemoveAura(aura);
+            }
+        }
+    }
+}
+
 void HardModeHandler::LoadRewards()
 {
     QueryResult qResult = WorldDatabase.Query("SELECT `mode`, `reward_level`, `reward_type`, `reward_id`, `reward_count` FROM `hardmode_rewards`");
@@ -351,6 +441,7 @@ bool HardModeHandler::IsModeEnabledForPlayer(Player* player, uint8 mode)
 void HardModeHandler::UpdateModeForPlayer(Player* player, uint8 mode, bool state)
 {
     player->UpdatePlayerSetting("HardMode", mode, state);
+    sHardModeHandler->ValidatePlayerAuras(player);
 }
 
 bool HardModeHandler::PlayerHasRestriction(Player* player, uint32 restriction)

@@ -20,3 +20,11 @@ CREATE TABLE IF NOT EXISTS `hardmode_rewards` (
   `comment` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`mode`,`reward_level`,`reward_type`,`reward_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `hardmode_auras`;
+CREATE TABLE IF NOT EXISTS `hardmode_auras` (
+  `mode` int NOT NULL,
+  `aura` int NOT NULL,
+  `description` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`mode`,`aura`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

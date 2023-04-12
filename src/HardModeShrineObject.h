@@ -3,6 +3,12 @@
 
 #include "ScriptMgr.h"
 
+enum HardModeShrineConstants
+{
+    HARDMODE_SHRINE_GREETING = 441101,
+    HARDMODE_SHRINE_GREETING_TAINTED = 441102
+};
+
 class HardModeShrineObject : GameObjectScript
 {
 public:

@@ -239,3 +239,8 @@ bool HardModeHooksPlayerScript::CanInitTrade(Player* player, Player* target)
 
     return true;
 }
+
+void HardModeHooksPlayerScript::OnLogin(Player* player)
+{
+    sHardModeHandler->ValidatePlayerAuras(player);
+}

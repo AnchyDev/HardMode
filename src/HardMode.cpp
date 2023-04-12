@@ -63,11 +63,13 @@ void HardModeWorldScript::OnAfterConfigLoad(bool reload)
         sHardModeHandler->ClearHardModes();
         sHardModeHandler->ClearSelfCraftExcludeIds();
         sHardModeHandler->ClearRewards();
+        sHardModeHandler->ClearAuras();
     }
 
     sHardModeHandler->LoadHardModes();
     sHardModeHandler->LoadSelfCraftExcludeIds();
     sHardModeHandler->LoadRewards();
+    sHardModeHandler->LoadAuras();
 }
 
 void SC_AddHardModeScripts()

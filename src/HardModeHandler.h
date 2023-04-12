@@ -27,6 +27,11 @@ public:
     bool IsSelfCraftSpellExcluded(uint32 spellId);
     bool IsSelfCraftItemExcluded(uint32 itemId);
 
+    void LoadAuras();
+    void ClearAuras();
+    std::map<uint8, std::vector<uint32>>* GetAuras();
+    void ValidatePlayerAuras(Player* player);
+
     void LoadRewards();
     void ClearRewards();
     std::map<uint8, std::vector<HardModeReward>>* GetRewards();
@@ -58,6 +63,7 @@ private:
     std::map<uint8, HardModeInfo> _hardModes;
     std::vector<int32> _selfCraftExcludeIds;
     std::map<uint8, std::vector<HardModeReward>> _rewards;
+    std::map<uint8, std::vector<uint32>> _auras;
 
 public:
     static HardModeHandler* GetInstance()

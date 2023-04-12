@@ -30,7 +30,14 @@ bool HardModeShrineObject::OnGossipHello(Player* player, GameObject* go)
         AddGossipItemFor(player, GOSSIP_ICON_CHAT, format, 0, mode.Id);
     }
 
-    SendGossipMenuFor(player, 1, go->GetGUID());
+    if (!sHardModeHandler->IsPlayerTainted(player))
+    {
+        SendGossipMenuFor(player, HARDMODE_SHRINE_GREETING, go->GetGUID());
+    }
+    else
+    {
+        SendGossipMenuFor(player, HARDMODE_SHRINE_GREETING_TAINTED, go->GetGUID());
+    }
 
     return true;
 }
