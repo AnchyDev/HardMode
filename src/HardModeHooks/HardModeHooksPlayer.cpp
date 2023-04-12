@@ -132,3 +132,69 @@ bool HardModeHooksPlayerScript::CanCastItemUseSpell(Player* player, Item* item, 
 
     return true;
 }
+
+void HardModeHooksPlayerScript::OnPlayerResurrect(Player* player, float /*restorePercent*/, bool /*applySickness*/)
+{
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
+    if (!player)
+    {
+        return;
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_PERMADEATH))
+    {
+        sHardModeHandler->TryShadowBanPlayer(player);
+    }
+}
+
+void HardModeHooksPlayerScript::OnPlayerReleasedGhost(Player* player)
+{
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
+    if (!player)
+    {
+        return;
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_PERMADEATH))
+    {
+        sHardModeHandler->TryShadowBanPlayer(player);
+    }
+}
+
+bool HardModeHooksPlayerScript::CanRepopAtGraveyard(Player* player)
+{
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return true;
+    }
+
+    if (!player)
+    {
+        return true;
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_PERMADEATH))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool HardModeHooksPlayerScript::OnBeforeTeleport(Player* player, uint32 mapId, float /*x*/, float /*y*/, float /*z*/, float /*orientation*/, uint32 /*options*/, Unit* /*target*/)
+{
+    if (sHardModeHandler->IsPlayerShadowBanned(player))
+    {
+        return (mapId == HARDMODE_AREA_AZSHARACRATER); // Only allow teleports for Shadowban players if it's to the azshara crater / shadow tomb.
+    }
+
+    return true;
+}

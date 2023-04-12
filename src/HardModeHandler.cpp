@@ -397,6 +397,23 @@ void HardModeHandler::UpdatePlayerShadowBanned(Player* player, bool state)
     player->UpdatePlayerSetting("HardModeShadowBanned", 0, state);
 }
 
+void HardModeHandler::TryShadowBanPlayer(Player* player)
+{
+    sHardModeHandler->UpdatePlayerShadowBanned(player, true);
+
+    WorldLocation worldLoc(HARDMODE_AREA_AZSHARACRATER, -614.38, -239.69, 379.35, 0.69); // Azshara Crater / Shadow Tomb
+    player->TeleportTo(worldLoc);
+    player->SetHomebind(worldLoc, HARDMODE_AREA_SHADOWTOMB);
+
+    if (!player->IsAlive())
+    {
+        player->ResurrectPlayer(100, false);
+        player->RemoveCorpse();
+    }
+
+    player->AddAura(HARDMODE_AURA_SHADOWBAN, player); // Ghost effect, cannot be removed.
+}
+
 std::string HardModeHandler::GetNamesFromEnabledModes(Player* player)
 {
     std::stringstream ss;

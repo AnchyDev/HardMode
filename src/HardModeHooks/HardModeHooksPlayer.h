@@ -15,6 +15,12 @@ private:
 
     bool CanEquipItem(Player* player, uint8 slot, uint16& dest, Item* pItem, bool swap, bool notLoading) override;
     bool CanCastItemUseSpell(Player* player, Item* item, SpellCastTargets const& targets, uint8 castCount, uint32 glyphIndex) override;
+
+    void OnPlayerResurrect(Player* player, float restorePercent, bool applySickness) override;
+    void OnPlayerReleasedGhost(Player* player) override;
+    bool CanRepopAtGraveyard(Player* player) override;
+
+    bool OnBeforeTeleport(Player* player, uint32 mapId, float x, float y, float z, float orientation, uint32 options, Unit* target) override;
 };
 
 #endif // MODULE_HARDMODE_HOOKS_PLAYER_H
