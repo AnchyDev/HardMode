@@ -7,6 +7,7 @@
 #include "HardModeHooks/HardModeHooksGuild.h"
 #include "HardModeHooks/HardModeHooksMisc.h"
 #include "HardModeHooks/HardModeHooksPlayer.h"
+#include "HardModeHooks/HardModeHooksUnit.h"
 
 void HardModePlayerScript::OnLevelChanged(Player* player, uint8 /*oldLevel*/)
 {
@@ -82,4 +83,5 @@ void SC_AddHardModeScripts()
     new HardModeHooksGuildScript();
     new HardModeHooksMiscScript();
     new HardModeHooksPlayerScript();
+    new HardModeHooksUnitScript();
 }
