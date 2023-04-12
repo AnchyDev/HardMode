@@ -3,6 +3,8 @@
 
 void HardModeHooksUnitScript::OnAuraRemove(Unit* unit, AuraApplication* aurApp, AuraRemoveMode mode)
 {
+    // TODO: Implement OnOwnedAuraRemove into core to catch expired auras..
+
     if (!unit)
     {
         return;
