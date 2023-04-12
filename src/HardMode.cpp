@@ -30,6 +30,11 @@ void HardModePlayerScript::OnLevelChanged(Player* player, uint8 /*oldLevel*/)
 
         auto rewards = sHardModeHandler->GetRewardsForMode(mode.Id);
 
+        if (rewards->size() < 1)
+        {
+            continue;
+        }
+
         std::vector<HardModeReward> newRewards;
         bool hasItemRewards = false;
         for (auto reward = rewards->begin(); reward != rewards->end(); ++reward)
