@@ -1,5 +1,6 @@
 #include "HardModeHooks/HardModeHooksGuild.h"
 #include "HardModeHandler.h"
+#include "HardModeTypes.h"
 
 bool HardModeHooksGuildScript::CanGuildSendBankList(Guild const* /*guild*/, WorldSession* session, uint8 /*tabId*/, bool /*sendAllSlots*/)
 {
@@ -24,6 +25,9 @@ bool HardModeHooksGuildScript::CanGuildSendBankList(Guild const* /*guild*/, Worl
         return true;
     }
 
-    // TODO: Player feedback, you cannot use the guild bank.
+    auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_INTERACT_GUILDBANK);
+    std::string alert = Acore::StringFormatFmt("You cannot use the guild bank in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+    sHardModeHandler->SendAlert(player, alert);
+
     return false;
 }

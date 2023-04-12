@@ -41,7 +41,7 @@ bool HardModeShrineObject::OnGossipSelect(Player* player, GameObject* /*go*/, ui
 
     if (flag && sHardModeHandler->IsPlayerTainted(player))
     {
-        // TODO: Player feedback, can't enable modes while tainted.
+        sHardModeHandler->SendAlert(player, "You cannot enable hard modes while tainted.");
     }
     else
     {

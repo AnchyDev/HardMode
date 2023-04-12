@@ -6,6 +6,8 @@
 #include "Log.h"
 #include "Player.h"
 
+#include <sstream>
+
 bool HardModeHandler::IsHardModeEnabled()
 {
     return sConfigMgr->GetOption<bool>("HardMode.Enable", false);
@@ -354,6 +356,7 @@ void HardModeHandler::UpdateModeForPlayer(Player* player, uint8 mode, bool state
 bool HardModeHandler::PlayerHasRestriction(Player* player, uint32 restriction)
 {
     auto modes = sHardModeHandler->GetHardModes();
+
     for (auto it = modes->begin(); it != modes->end(); ++it)
     {
         auto mode = it->second;
@@ -385,6 +388,59 @@ bool HardModeHandler::PlayerHasRestriction(Player* player, uint32 restriction)
     return false;
 }
 
+std::vector<HardModeInfo> HardModeHandler::GetPlayerModesFromRestriction(Player* player, uint32 restriction)
+{
+    auto modes = sHardModeHandler->GetHardModes();
+    std::vector<HardModeInfo> enabledModes;
+
+    for (auto it = modes->begin(); it != modes->end(); ++it)
+    {
+        auto mode = it->second;
+
+        if (!mode.Enabled)
+        {
+            continue;
+        }
+
+        if (mode.Restrictions == HARDMODE_RESTRICT_NONE)
+        {
+            continue;
+        }
+
+        if (!sHardModeHandler->IsModeEnabledForPlayer(player, mode.Id))
+        {
+            continue;
+        }
+
+        auto rMask = (1 << restriction);
+        bool hasRestriction = (mode.Restrictions & rMask) == rMask;
+
+        if (hasRestriction)
+        {
+            enabledModes.push_back(mode);
+        }
+    }
+
+    return enabledModes;
+}
+
+std::string HardModeHandler::GetDelimitedModes(std::vector<HardModeInfo> modes, std::string delimiter)
+{
+    std::stringstream ss;
+
+    for (uint8 i = 0; i < modes.size(); ++i)
+    {
+        ss << modes[i].Name;
+
+        if (i != modes.size() - 1)
+        {
+            ss << delimiter;
+        }
+    }
+
+    return ss.str();
+}
+
 bool HardModeHandler::IsPlayerTainted(Player* player)
 {
     return player->GetPlayerSetting("HardModeTainted", 0).value > 0;
@@ -403,6 +459,21 @@ bool HardModeHandler::IsPlayerShadowBanned(Player* player)
 void HardModeHandler::UpdatePlayerShadowBanned(Player* player, bool state)
 {
     player->UpdatePlayerSetting("HardModeShadowBanned", 0, state);
+
+    if (state)
+    {
+        if (!player->HasAura(HARDMODE_AURA_SHADOWBAN))
+        {
+            player->AddAura(HARDMODE_AURA_SHADOWBAN, player);
+        }
+    }
+    else
+    {
+        if (player->HasAura(HARDMODE_AURA_SHADOWBAN))
+        {
+            player->RemoveAura(HARDMODE_AURA_SHADOWBAN);
+        }
+    }
 }
 
 void HardModeHandler::TryShadowBanPlayer(Player* player)
@@ -418,8 +489,6 @@ void HardModeHandler::TryShadowBanPlayer(Player* player)
         player->ResurrectPlayer(100, false);
         player->RemoveCorpse();
     }
-
-    player->AddAura(HARDMODE_AURA_SHADOWBAN, player); // Ghost effect, cannot be removed.
 }
 
 std::string HardModeHandler::GetNamesFromEnabledModes(Player* player)

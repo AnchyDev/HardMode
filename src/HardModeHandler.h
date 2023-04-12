@@ -41,6 +41,8 @@ public:
     bool IsModeEnabledForPlayer(Player* player, uint8 mode);
     void UpdateModeForPlayer(Player* player, uint8 mode, bool state);
     bool PlayerHasRestriction(Player* player, uint32 restriction);
+    std::vector<HardModeInfo> GetPlayerModesFromRestriction(Player* player, uint32 restriction);
+    std::string GetDelimitedModes(std::vector<HardModeInfo> modes, std::string delimiter);
 
     bool IsPlayerTainted(Player* player);
     void UpdatePlayerTainted(Player* player, bool state);

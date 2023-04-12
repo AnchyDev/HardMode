@@ -79,7 +79,10 @@ bool HardModeHooksPlayerScript::CanEquipItem(Player* player, uint8 /*slot*/, uin
     // If the item is not creator by the player, block equip.
     if (pItem->GetGuidValue(ITEM_FIELD_CREATOR) != player->GetGUID())
     {
-        // TODO: Player feedback, you can't equip this item.
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_SELFCRAFTED);
+        std::string alert = Acore::StringFormatFmt("You cannot equip this item while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+        sHardModeHandler->SendAlert(player, alert);
+
         return false;
     }
 
@@ -127,7 +130,10 @@ bool HardModeHooksPlayerScript::CanCastItemUseSpell(Player* player, Item* item, 
 
     if (item->GetGuidValue(ITEM_FIELD_CREATOR) != player->GetGUID())
     {
-        // TODO: Player feedback, you cannot use this item.
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_SELFCRAFTED);
+        std::string alert = Acore::StringFormatFmt("You cannot use this item while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+        sHardModeHandler->SendAlert(player, alert);
+
         return false;
     }
 
@@ -209,17 +215,25 @@ bool HardModeHooksPlayerScript::CanInitTrade(Player* player, Player* target)
 
     if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_TRADE))
     {
-        // TODO: Player feedback, you cannot trade while restricted.
         player->GetSession()->SendTradeStatus(TRADE_STATUS_TRADE_CANCELED);
         target->GetSession()->SendTradeStatus(TRADE_STATUS_TRADE_CANCELED);
+
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_INTERACT_TRADE);
+        std::string alert = Acore::StringFormatFmt("You cannot trade players while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+        sHardModeHandler->SendAlert(player, alert);
+
         return false;
     }
 
     if (sHardModeHandler->PlayerHasRestriction(target, HARDMODE_RESTRICT_INTERACT_TRADE))
     {
-        // TODO: Player feedback, you cannot trade restricted players.
         player->GetSession()->SendTradeStatus(TRADE_STATUS_TRADE_CANCELED);
         target->GetSession()->SendTradeStatus(TRADE_STATUS_TRADE_CANCELED);
+
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(target, HARDMODE_RESTRICT_INTERACT_TRADE);
+        std::string alert = Acore::StringFormatFmt("You cannot trade players in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+        sHardModeHandler->SendAlert(player, alert);
+
         return false;
     }
 

@@ -21,6 +21,10 @@ bool HardModeHooksMiscScript::CanSendAuctionHello(WorldSession const* session, O
         return true;
     }
 
-    // TODO: Player feedback, you cannot use the auction house.
+
+    auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_INTERACT_AUCTION);
+    std::string alert = Acore::StringFormatFmt("You cannot use the auction house in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+    sHardModeHandler->SendAlert(player, alert);
+
     return false;
 }
