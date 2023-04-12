@@ -21,5 +21,6 @@ bool HardModeHooksMiscScript::CanSendAuctionHello(WorldSession const* session, O
         return true;
     }
 
+    // TODO: Player feedback, you cannot use the auction house.
     return false;
 }

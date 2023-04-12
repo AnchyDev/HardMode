@@ -78,6 +78,7 @@ bool HardModeHooksPlayerScript::CanEquipItem(Player* player, uint8 /*slot*/, uin
     // If the item is not creator by the player, block equip.
     if (pItem->GetGuidValue(ITEM_FIELD_CREATOR) != player->GetGUID())
     {
+        // TODO: Player feedback, you can't equip this item.
         return false;
     }
 
@@ -125,6 +126,7 @@ bool HardModeHooksPlayerScript::CanCastItemUseSpell(Player* player, Item* item, 
 
     if (item->GetGuidValue(ITEM_FIELD_CREATOR) != player->GetGUID())
     {
+        // TODO: Player feedback, you cannot use this item.
         return false;
     }
 

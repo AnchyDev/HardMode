@@ -24,5 +24,6 @@ bool HardModeHooksGuildScript::CanGuildSendBankList(Guild const* /*guild*/, Worl
         return true;
     }
 
+    // TODO: Player feedback, you cannot use the guild bank.
     return false;
 }
