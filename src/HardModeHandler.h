@@ -59,6 +59,8 @@ public:
     std::string GetNamesFromEnabledModes(Player* player);
     std::string GetNameFromMode(uint8 mode);
 
+    PlayerSettingMap* GetPlayerSettingsFromDatabase(ObjectGuid guid);
+
 private:
     std::map<uint8, HardModeInfo> _hardModes;
     std::vector<int32> _selfCraftExcludeIds;
