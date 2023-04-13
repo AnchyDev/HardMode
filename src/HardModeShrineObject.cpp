@@ -27,7 +27,15 @@ bool HardModeShrineObject::OnGossipHello(Player* player, GameObject* go)
         std::string state = flag ? "Disable" : "Enable";
         std::string format = Acore::StringFormatFmt("{} {} mode.", state, mode.Name);
 
-        AddGossipItemFor(player, GOSSIP_ICON_CHAT, format, 0, mode.Id);
+        if (flag && sHardModeHandler->IsPlayerTainted(player))
+        {
+            std::string popupFormat = Acore::StringFormatFmt("Are you sure you want to disable the {} mode?|n|nYou will not be able to re-enable it.", mode.Name);
+            AddGossipItemFor(player, GOSSIP_ICON_CHAT, format, 0, mode.Id, popupFormat, 0, false);
+        }
+        else
+        {
+            AddGossipItemFor(player, GOSSIP_ICON_CHAT, format, 0, mode.Id);
+        }
     }
 
     if (!sHardModeHandler->IsPlayerTainted(player))
@@ -46,7 +54,7 @@ bool HardModeShrineObject::OnGossipSelect(Player* player, GameObject* /*go*/, ui
 {
     bool flag = sHardModeHandler->IsModeEnabledForPlayer(player, mode);
 
-    if (flag && sHardModeHandler->IsPlayerTainted(player))
+    if (!flag && sHardModeHandler->IsPlayerTainted(player))
     {
         sHardModeHandler->SendAlert(player, "You cannot enable hard modes while tainted.");
     }
