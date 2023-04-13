@@ -9,7 +9,7 @@ public:
     HardModeHooksUnitScript() : UnitScript("HardModeHooksUnitScript") { }
 
 private:
-    void OnAuraRemove(Unit* unit, AuraApplication* aurApp, AuraRemoveMode mode);
+    void OnAuraRemove(Unit* unit, AuraApplication* auraApp, AuraRemoveMode mode);
 };
 
 #endif // MODULE_HARDMODE_HOOKS_UNIT_H

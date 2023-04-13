@@ -1,10 +1,8 @@
 #include "HardModeHooks/HardModeHooksUnit.h"
 #include "HardModeHandler.h"
 
-void HardModeHooksUnitScript::OnAuraRemove(Unit* unit, AuraApplication* aurApp, AuraRemoveMode mode)
+void HardModeHooksUnitScript::OnAuraRemove(Unit* unit, AuraApplication* /*auraApp*/, AuraRemoveMode mode)
 {
-    // TODO: Implement OnOwnedAuraRemove into core to catch expired auras..
-
     if (!unit)
     {
         return;
