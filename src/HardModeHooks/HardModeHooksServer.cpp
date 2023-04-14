@@ -75,7 +75,7 @@ bool HardModeHooksServerScript::HandleWhoOverride(Player* player, WorldPacket& p
         packet.read_skip<uint32>(); //PlayerClass
         packet.read_skip<uint32>(); //PlayerRace
         packet.read_skip<uint8>(); //PlayerGender
-        uint32 playerZoneId = packet.read<uint32>();
+        packet.read_skip<uint32>(); //PlayerZoneId
 
         auto targetPlayer = ObjectAccessor::FindPlayerByName(playerName);
 
