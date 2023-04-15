@@ -54,7 +54,7 @@ bool HardModeHooksServerScript::HandleWhoOverride(Player* player, WorldPacket& p
 {
     if (!sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_HIDE_WHOLIST))
     {
-        return true;
+        return false;
     }
 
     uint32 displayCount = packet.read<uint32>();
@@ -65,6 +65,7 @@ bool HardModeHooksServerScript::HandleWhoOverride(Player* player, WorldPacket& p
     {
         return false;
     }
+
     uint32 unknownZoneId = HARDMODE_AREA_UNKNOWN;
 
     for (uint32 i = 0; i < displayCount; ++i)
@@ -78,10 +79,9 @@ bool HardModeHooksServerScript::HandleWhoOverride(Player* player, WorldPacket& p
         packet.read_skip<uint32>(); //PlayerZoneId
 
         auto targetPlayer = ObjectAccessor::FindPlayerByName(playerName);
-
         if (!targetPlayer)
         {
-            return true;
+            return false;
         }
 
         packet.put(packet.rpos() - 4, unknownZoneId);
