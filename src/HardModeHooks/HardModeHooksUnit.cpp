@@ -20,5 +20,10 @@ void HardModeHooksUnitScript::OnAuraRemove(Unit* unit, AuraApplication* /*auraAp
     }
 
     Player* player = unit->ToPlayer();
+    if (!player || !player->IsInWorld())
+    {
+        return;
+    }
+
     sHardModeHandler->ValidatePlayerAuras(player);
 }

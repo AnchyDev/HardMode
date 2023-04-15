@@ -209,7 +209,7 @@ void HardModeHandler::ValidatePlayerAuras(Player* player)
             }
             else if (!sHardModeHandler->IsModeEnabledForPlayer(player, mode) && player->HasAura(aura))
             {
-                player->RemoveAura(aura);
+                player->RemoveAura(aura, ObjectGuid::Empty, 0U, AURA_REMOVE_BY_DEATH);
             }
         }
     }
