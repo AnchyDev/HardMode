@@ -141,7 +141,7 @@ bool HardModeHooksServerScript::HandleFriendStatus(WorldPacket& packet)
 
 bool HardModeHooksServerScript::HandleContactList(WorldPacket& packet)
 {
-    uint32 flags = packet.read<uint32>();
+    packet.read_skip<uint32>(); // Flags
     uint32 count = packet.read<uint32>();
 
     if (count < 1)
