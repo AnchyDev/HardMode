@@ -131,7 +131,7 @@ bool HardModeHooksServerScript::HandleFriendStatus(Player* player, WorldPacket& 
 
     packet.read_skip<std::string>(); // Friend Note
     packet.read_skip<uint8>(); // Friend status
-    packet.read_skip<uint32>(); // Firned area
+    packet.read_skip<uint32>(); // Friend area
 
     packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
 
