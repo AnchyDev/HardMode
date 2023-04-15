@@ -3,7 +3,7 @@
 
 #include "Common.h"
 
-enum HardModeConstants
+enum HardModeConstants : uint32
 {
     HARDMODE_MAIL_SENDER = 441102,
     HARDMODE_AURA_SHADOWBAN = 45681,
@@ -21,7 +21,7 @@ struct HardModeInfo
     bool Enabled;
 };
 
-enum HardModeRestrictions
+enum HardModeRestrictions : uint32
 {
     HARDMODE_RESTRICT_NONE =                  0,  // Used internally, DO NOT USE
     HARDMODE_RESTRICT_RETAIL_XP =             1,  // 2: The player can only receive 1x exp rates from kills, quests, etc..

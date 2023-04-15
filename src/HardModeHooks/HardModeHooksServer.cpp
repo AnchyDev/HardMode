@@ -66,8 +66,6 @@ bool HardModeHooksServerScript::HandleWhoOverride(Player* player, WorldPacket& p
         return false;
     }
 
-    uint32 unknownZoneId = HARDMODE_AREA_UNKNOWN;
-
     for (uint32 i = 0; i < displayCount; ++i)
     {
         std::string playerName = packet.read<std::string>();
@@ -84,7 +82,7 @@ bool HardModeHooksServerScript::HandleWhoOverride(Player* player, WorldPacket& p
             return false;
         }
 
-        packet.put(packet.rpos() - 4, unknownZoneId);
+        packet.put(packet.rpos() - 4, HARDMODE_AREA_UNKNOWN);
     }
 
     // Resend modified packet.
