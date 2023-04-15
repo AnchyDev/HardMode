@@ -4,6 +4,7 @@
 #include "HardModeTypes.h"
 
 #include "Player.h"
+#include "TaskScheduler.h"
 
 #include <vector>
 #include <map>
@@ -30,6 +31,7 @@ public:
     void LoadAuras();
     void ClearAuras();
     std::map<uint8, std::vector<uint32>>* GetAuras();
+    std::vector<uint32>* GetAurasForMode(uint8 mode);
     void ValidatePlayerAuras(Player* player);
 
     void LoadRewards();
@@ -60,12 +62,14 @@ public:
     std::string GetNameFromMode(uint8 mode);
 
     PlayerSettingMap* GetPlayerSettingsFromDatabase(ObjectGuid guid);
+    TaskScheduler* GetScheduler();
 
 private:
     std::map<uint8, HardModeInfo> _hardModes;
     std::vector<int32> _selfCraftExcludeIds;
     std::map<uint8, std::vector<HardModeReward>> _rewards;
     std::map<uint8, std::vector<uint32>> _auras;
+    TaskScheduler _scheduler;
 
 public:
     static HardModeHandler* GetInstance()

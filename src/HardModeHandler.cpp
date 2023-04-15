@@ -144,7 +144,7 @@ void HardModeHandler::LoadAuras()
             if (it == _auras.end())
             {
                 std::vector<uint32> auras;
-                _auras.emplace(mode, aura);
+                _auras.emplace(mode, auras);
 
                 it = _auras.find(mode);
                 if (it == _auras.end())
@@ -176,6 +176,19 @@ std::map<uint8, std::vector<uint32>>* HardModeHandler::GetAuras()
     return &_auras;
 }
 
+std::vector<uint32>* HardModeHandler::GetAurasForMode(uint8 mode)
+{
+    auto auras = sHardModeHandler->GetAuras();
+
+    auto auraIt = auras->find(mode);
+    if (auraIt != auras->end())
+    {
+        return &(auraIt->second);
+    }
+
+    return nullptr;
+}
+
 void HardModeHandler::ValidatePlayerAuras(Player* player)
 {
     if (!player)
@@ -183,38 +196,49 @@ void HardModeHandler::ValidatePlayerAuras(Player* player)
         return;
     }
 
-    auto auras = sHardModeHandler->GetAuras();
     auto modes = sHardModeHandler->GetHardModes();
 
-    if (!auras || !modes)
+    if (!modes)
     {
         return;
     }
 
-    if (auras->size() < 1 || modes->size() < 1)
+    if (modes->size() < 1)
     {
         return;
     }
+
+    LOG_INFO("module", "Found {} modes.", modes->size());
 
     for (auto modeIt = modes->begin(); modeIt != modes->end(); ++modeIt)
     {
         auto mode = modeIt->second.Id;
-
-        auto auraIt = auras->find(mode);
-        if (auraIt == auras->end())
+        LOG_INFO("module", "Finding auras for mode {}..", mode);
+        auto auras = sHardModeHandler->GetAurasForMode(mode);
+        
+        if (!auras)
         {
+            LOG_INFO("module", "No auras found, skipping mode {}..", mode);
             continue;
         }
 
-        for (auto aura : auraIt->second)
+        LOG_INFO("module", "Found {} auras for mode {}..", auras->size(), mode);
+
+        for (auto aura : *auras)
         {
-            if (sHardModeHandler->IsModeEnabledForPlayer(player, mode) && !player->HasAura(aura))
+            LOG_INFO("module", "Found aura {} for mode {}.", aura, mode);
+
+            if (sHardModeHandler->IsModeEnabledForPlayer(player, mode))
             {
-                player->AddAura(aura, player);
-            }
-            else if (!sHardModeHandler->IsModeEnabledForPlayer(player, mode) && player->HasAura(aura))
-            {
-                player->RemoveAura(aura, ObjectGuid::Empty, 0U, AURA_REMOVE_BY_DEATH);
+                if (!player->HasAura(aura))
+                {
+                    LOG_INFO("module", "Player doesnt have aura {}", aura);
+                    _scheduler.Schedule(1s, [aura, player](TaskContext task)
+                     {
+                            player->AddAura(aura, player);
+                            LOG_INFO("module", "Added aura {} to player.", aura);
+                     });
+                }
             }
         }
     }
@@ -681,4 +705,9 @@ PlayerSettingMap* HardModeHandler::GetPlayerSettingsFromDatabase(ObjectGuid guid
     }
 
     return settingMap;
+}
+
+TaskScheduler* HardModeHandler::GetScheduler()
+{
+    return &_scheduler;
 }
