@@ -3,6 +3,7 @@
 #include "HardModeTypes.h"
 
 #include "Player.h"
+#include "SocialMgr.h"
 
 bool HardModeHooksServerScript::CanPacketSend(WorldSession* session, WorldPacket& packet)
 {
@@ -34,7 +35,12 @@ bool HardModeHooksServerScript::CanPacketSend(WorldSession* session, WorldPacket
     switch (opCode)
     {
     case SMSG_WHO:
-        resend = HandleWhoOverride(player, packet);
+        resend = HandleWhoListOverride(player, packet);
+        break;
+
+    case SMSG_CONTACT_LIST:
+    case SMSG_FRIEND_STATUS:
+        resend = HandleFriendsListOverride(player, packet);
         break;
     }
 
@@ -50,7 +56,7 @@ bool HardModeHooksServerScript::CanPacketSend(WorldSession* session, WorldPacket
     return true;
 }
 
-bool HardModeHooksServerScript::HandleWhoOverride(Player* player, WorldPacket& packet)
+bool HardModeHooksServerScript::HandleWhoListOverride(Player* player, WorldPacket& packet)
 {
     if (!sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_HIDE_WHOLIST))
     {
@@ -82,10 +88,99 @@ bool HardModeHooksServerScript::HandleWhoOverride(Player* player, WorldPacket& p
             return false;
         }
 
-        packet.put(packet.rpos() - 4, HARDMODE_AREA_UNKNOWN);
+        packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
     }
 
     // Resend modified packet.
+    return true;
+}
+
+bool HardModeHooksServerScript::HandleFriendsListOverride(Player* player, WorldPacket& packet)
+{
+    auto opCode = packet.GetOpcode();
+
+    switch (opCode)
+    {
+    case SMSG_FRIEND_STATUS:
+        return HandleFriendStatus(player, packet);
+
+    case SMSG_CONTACT_LIST:
+        return HandleContactList(player, packet);
+    }
+
+    return false;
+}
+
+bool HardModeHooksServerScript::HandleFriendStatus(Player* player, WorldPacket& packet)
+{
+    uint8 status = packet.read<uint8>();
+    ObjectGuid targetGuid = ObjectGuid(packet.read<uint64>());
+
+    Player* targetPlayer = ObjectAccessor::FindPlayer(targetGuid);
+
+    if (!targetPlayer || !sHardModeHandler->PlayerHasRestriction(targetPlayer, HARDMODE_RESTRICT_HIDE_FRIENDS))
+    {
+        return false;
+    }
+
+    if (status != FRIEND_ADDED_ONLINE &&
+        status != FRIEND_ONLINE)
+    {
+        return false;
+    }
+
+    packet.read_skip<std::string>(); // Friend Note
+    packet.read_skip<uint8>(); // Friend status
+
+    uint32 area = packet.read<uint32>();
+
+    packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
+
+    // Resend modified packet.
+    return true;
+}
+
+bool HardModeHooksServerScript::HandleContactList(Player* player, WorldPacket& packet)
+{
+    uint32 flags = packet.read<uint32>();
+    uint32 count = packet.read<uint32>();
+
+    if (count < 1)
+    {
+        return false;
+    }
+
+    for (uint32 i = 0; i < count; ++i)
+    {
+        ObjectGuid targetGuid = ObjectGuid(packet.read<uint64>());
+        uint32 targetFlags = packet.read<uint32>();
+        packet.read_skip<std::string>(); // target note
+
+        if (!(targetFlags & SOCIAL_FLAG_FRIEND))
+        {
+            // Not a friend query, goto next.
+            continue;
+        }
+
+        uint8 targetStatus = packet.read<uint8>();
+        if (!targetStatus)
+        {
+            // Target is not online, goto next.
+            continue;
+        }
+
+        Player* targetPlayer = ObjectAccessor::FindPlayer(targetGuid);
+
+        if (!targetPlayer || !sHardModeHandler->PlayerHasRestriction(targetPlayer, HARDMODE_RESTRICT_HIDE_FRIENDS))
+        {
+            // No restriction for this player, skip.
+            continue;
+        }
+
+        uint32 targetArea = packet.read<uint32>();
+        packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
+    }
+
     return true;
 }
 

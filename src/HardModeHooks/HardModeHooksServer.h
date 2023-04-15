@@ -15,7 +15,10 @@ public:
 
 private:
     bool CanPacketSend(WorldSession* session, WorldPacket& packet) override;
-    bool HandleWhoOverride(Player* player, WorldPacket& packet);
+    bool HandleWhoListOverride(Player* player, WorldPacket& packet);
+    bool HandleFriendsListOverride(Player* player, WorldPacket& packet);
+    bool HandleFriendStatus(Player* player, WorldPacket& packet);
+    bool HandleContactList(Player* player, WorldPacket& packet);
     bool HasModifiedTail(WorldPacket& packet);
 };
 
