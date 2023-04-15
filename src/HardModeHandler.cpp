@@ -178,6 +178,11 @@ std::map<uint8, std::vector<uint32>>* HardModeHandler::GetAuras()
 
 void HardModeHandler::ValidatePlayerAuras(Player* player)
 {
+    if (!player)
+    {
+        return;
+    }
+
     auto auras = sHardModeHandler->GetAuras();
     auto modes = sHardModeHandler->GetHardModes();
 
@@ -437,11 +442,21 @@ void HardModeHandler::SendAlert(Player* player, std::string message)
 
 bool HardModeHandler::IsModeEnabledForPlayer(Player* player, uint8 mode)
 {
+    if (!player)
+    {
+        return false;
+    }
+
     return player->GetPlayerSetting("HardMode", mode).value > 0;
 }
 
 void HardModeHandler::UpdateModeForPlayer(Player* player, uint8 mode, bool state)
 {
+    if (!player)
+    {
+        return;
+    }
+
     player->UpdatePlayerSetting("HardMode", mode, state);
     sHardModeHandler->ValidatePlayerAuras(player);
 }
