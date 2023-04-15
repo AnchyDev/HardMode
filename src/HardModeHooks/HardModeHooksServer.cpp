@@ -35,12 +35,12 @@ bool HardModeHooksServerScript::CanPacketSend(WorldSession* session, WorldPacket
     switch (opCode)
     {
     case SMSG_WHO:
-        resend = HandleWhoListOverride(player, packet);
+        resend = HandleWhoListOverride(packet);
         break;
 
     case SMSG_CONTACT_LIST:
     case SMSG_FRIEND_STATUS:
-        resend = HandleFriendsListOverride(player, packet);
+        resend = HandleFriendsListOverride(packet);
         break;
     }
 
@@ -56,13 +56,8 @@ bool HardModeHooksServerScript::CanPacketSend(WorldSession* session, WorldPacket
     return true;
 }
 
-bool HardModeHooksServerScript::HandleWhoListOverride(Player* player, WorldPacket& packet)
+bool HardModeHooksServerScript::HandleWhoListOverride(WorldPacket& packet)
 {
-    if (!sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_HIDE_WHOLIST))
-    {
-        return false;
-    }
-
     uint32 displayCount = packet.read<uint32>();
     uint32 matchCount = packet.read<uint32>();
 
@@ -88,6 +83,11 @@ bool HardModeHooksServerScript::HandleWhoListOverride(Player* player, WorldPacke
             return false;
         }
 
+        if (!sHardModeHandler->PlayerHasRestriction(targetPlayer, HARDMODE_RESTRICT_HIDE_WHOLIST))
+        {
+            return false;
+        }
+
         packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
     }
 
@@ -95,23 +95,23 @@ bool HardModeHooksServerScript::HandleWhoListOverride(Player* player, WorldPacke
     return true;
 }
 
-bool HardModeHooksServerScript::HandleFriendsListOverride(Player* player, WorldPacket& packet)
+bool HardModeHooksServerScript::HandleFriendsListOverride(WorldPacket& packet)
 {
     auto opCode = packet.GetOpcode();
 
     switch (opCode)
     {
     case SMSG_FRIEND_STATUS:
-        return HandleFriendStatus(player, packet);
+        return HandleFriendStatus(packet);
 
     case SMSG_CONTACT_LIST:
-        return HandleContactList(player, packet);
+        return HandleContactList(packet);
     }
 
     return false;
 }
 
-bool HardModeHooksServerScript::HandleFriendStatus(Player* player, WorldPacket& packet)
+bool HardModeHooksServerScript::HandleFriendStatus(WorldPacket& packet)
 {
     uint8 status = packet.read<uint8>();
     ObjectGuid targetGuid = ObjectGuid(packet.read<uint64>());
@@ -139,7 +139,7 @@ bool HardModeHooksServerScript::HandleFriendStatus(Player* player, WorldPacket& 
     return true;
 }
 
-bool HardModeHooksServerScript::HandleContactList(Player* player, WorldPacket& packet)
+bool HardModeHooksServerScript::HandleContactList(WorldPacket& packet)
 {
     uint32 flags = packet.read<uint32>();
     uint32 count = packet.read<uint32>();
