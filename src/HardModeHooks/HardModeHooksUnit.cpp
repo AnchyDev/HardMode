@@ -25,6 +25,5 @@ void HardModeHooksUnitScript::OnAuraRemove(Unit* unit, AuraApplication* /*auraAp
         return;
     }
 
-    LOG_INFO("module", "OnAuraRemove");
     sHardModeHandler->ValidatePlayerAuras(player);
 }

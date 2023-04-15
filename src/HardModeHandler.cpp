@@ -208,35 +208,30 @@ void HardModeHandler::ValidatePlayerAuras(Player* player)
         return;
     }
 
-    LOG_INFO("module", "Found {} modes.", modes->size());
-
     for (auto modeIt = modes->begin(); modeIt != modes->end(); ++modeIt)
     {
         auto mode = modeIt->second.Id;
-        LOG_INFO("module", "Finding auras for mode {}..", mode);
         auto auras = sHardModeHandler->GetAurasForMode(mode);
         
         if (!auras)
         {
-            LOG_INFO("module", "No auras found, skipping mode {}..", mode);
             continue;
         }
 
-        LOG_INFO("module", "Found {} auras for mode {}..", auras->size(), mode);
-
         for (auto aura : *auras)
         {
-            LOG_INFO("module", "Found aura {} for mode {}.", aura, mode);
-
             if (sHardModeHandler->IsModeEnabledForPlayer(player, mode))
             {
                 if (!player->HasAura(aura))
                 {
-                    LOG_INFO("module", "Player doesnt have aura {}", aura);
                     _scheduler.Schedule(1s, [aura, player](TaskContext task)
                      {
+                            if (!player || !aura)
+                            {
+                                return;
+                            }
+
                             player->AddAura(aura, player);
-                            LOG_INFO("module", "Added aura {} to player.", aura);
                      });
                 }
             }
