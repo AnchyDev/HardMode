@@ -5,7 +5,7 @@
 #include "Config.h"
 #include "Player.h"
 
-void HardModeHooksPlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* /*victim*/)
+void HardModeHooksPlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* victim)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
@@ -13,6 +13,11 @@ void HardModeHooksPlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* /
     }
 
     if (!player)
+    {
+        return;
+    }
+
+    if (!victim)
     {
         return;
     }
