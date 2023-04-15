@@ -33,7 +33,7 @@ enum HardModeRestrictions
     HARDMODE_RESTRICT_INTERACT_TRADE =        7,  // 128: The player cannot trade/be traded.
     HARDMODE_RESTRICT_PERMADEATH =            8,  // 256: The player is sent to the shadow tomb on death.
     HARDMODE_RESTRICT_HIDE_WHOLIST =          9,  // 512: The players location is hidden on the who list.
-    HARDMODE_RESTRICT_HIDE_FRIENDS =          10, // 1024, The players location is hidden on the friends list. NOT IMPLEMENTED
+    HARDMODE_RESTRICT_HIDE_FRIENDS =          10, // 1024, The players location is hidden on the friends list.
     HARDMODE_RESTRICT_HIDE_GUILD =            11, // 2048, The players location is hidden on the guild roster. NOT IMPLEMENTED
     HARDMODE_RESTRICT_COUNT =                 12,  // Used internally. DO NOT USE
 };
