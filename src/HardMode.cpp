@@ -31,7 +31,7 @@ void HardModePlayerScript::OnLevelChanged(Player* player, uint8 /*oldLevel*/)
 
         auto rewards = sHardModeHandler->GetRewardsForMode(mode.Id);
 
-        if (rewards->size() < 1)
+        if (!rewards || rewards->size() < 1)
         {
             continue;
         }
