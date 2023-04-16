@@ -39,8 +39,8 @@ bool HardModeHooksServerScript::CanPacketSend(WorldSession* session, WorldPacket
         resend = HandleWhoListOverride(packet);
         break;
 
-    case SMSG_CONTACT_LIST:
     case SMSG_FRIEND_STATUS:
+    case SMSG_CONTACT_LIST:
         resend = HandleFriendsListOverride(packet);
         break;
 
@@ -63,6 +63,8 @@ bool HardModeHooksServerScript::CanPacketSend(WorldSession* session, WorldPacket
 
 bool HardModeHooksServerScript::HandleWhoListOverride(WorldPacket& packet)
 {
+    bool resendPacket = false;
+
     uint32 displayCount = packet.read<uint32>();
     uint32 matchCount = packet.read<uint32>();
 
@@ -83,21 +85,14 @@ bool HardModeHooksServerScript::HandleWhoListOverride(WorldPacket& packet)
         packet.read_skip<uint32>(); //PlayerZoneId
 
         auto targetPlayer = ObjectAccessor::FindPlayerByName(playerName);
-        if (!targetPlayer)
+        if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer, HARDMODE_RESTRICT_HIDE_WHOLIST))
         {
-            return false;
+            packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
+            resendPacket = true;
         }
-
-        if (!sHardModeHandler->PlayerHasRestriction(targetPlayer, HARDMODE_RESTRICT_HIDE_WHOLIST))
-        {
-            return false;
-        }
-
-        packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
     }
 
-    // Resend modified packet.
-    return true;
+    return resendPacket;
 }
 
 bool HardModeHooksServerScript::HandleFriendsListOverride(WorldPacket& packet)
@@ -118,15 +113,10 @@ bool HardModeHooksServerScript::HandleFriendsListOverride(WorldPacket& packet)
 
 bool HardModeHooksServerScript::HandleFriendStatus(WorldPacket& packet)
 {
+    bool resendPacket = false;
+
     uint8 status = packet.read<uint8>();
     ObjectGuid targetGuid = ObjectGuid(packet.read<uint64>());
-
-    Player* targetPlayer = ObjectAccessor::FindPlayer(targetGuid);
-
-    if (!targetPlayer || !sHardModeHandler->PlayerHasRestriction(targetPlayer, HARDMODE_RESTRICT_HIDE_FRIENDS))
-    {
-        return false;
-    }
 
     if (status != FRIEND_ADDED_ONLINE &&
         status != FRIEND_ONLINE)
@@ -138,27 +128,33 @@ bool HardModeHooksServerScript::HandleFriendStatus(WorldPacket& packet)
     packet.read_skip<uint8>(); // Friend status
     packet.read_skip<uint32>(); // Friend area
 
-    packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
+    Player* targetPlayer = ObjectAccessor::FindPlayer(targetGuid);
+    if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer, HARDMODE_RESTRICT_HIDE_FRIENDS))
+    {
+        packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
+        resendPacket = true;
+    }
 
-    // Resend modified packet.
-    return true;
+    return resendPacket;
 }
 
 bool HardModeHooksServerScript::HandleContactList(WorldPacket& packet)
 {
-    packet.read_skip<uint32>(); // Flags
-    uint32 count = packet.read<uint32>();
+    bool resendPacket = false;
 
-    if (count < 1)
+    packet.read_skip<uint32>(); // Flags
+    uint32 contactCount = packet.read<uint32>();
+
+    if (contactCount < 1)
     {
         return false;
     }
 
-    for (uint32 i = 0; i < count; ++i)
+    for (uint32 i = 0; i < contactCount; ++i)
     {
         ObjectGuid targetGuid = ObjectGuid(packet.read<uint64>());
         uint32 targetFlags = packet.read<uint32>();
-        packet.read_skip<std::string>(); // target note
+        std::string targetNote = packet.read<std::string>(); // target note
 
         if (!(targetFlags & SOCIAL_FLAG_FRIEND))
         {
@@ -179,17 +175,20 @@ bool HardModeHooksServerScript::HandleContactList(WorldPacket& packet)
         if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer, HARDMODE_RESTRICT_HIDE_FRIENDS))
         {
             packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
+            resendPacket = true;
         }
 
         packet.read_skip<uint32>(); // target level
         packet.read_skip<uint32>(); // target class
     }
 
-    return true;
+    return resendPacket;
 }
 
 bool HardModeHooksServerScript::HandleGuildRosterOverride(WorldPacket& packet)
 {
+    bool resendPacket = false;
+
     uint32 memberCount = packet.read<uint32>();
     packet.read_skip<std::string>(); // WelcomeText
     packet.read_skip<std::string>(); // InfoText
@@ -223,6 +222,7 @@ bool HardModeHooksServerScript::HandleGuildRosterOverride(WorldPacket& packet)
         if (!targetMember || sHardModeHandler->PlayerHasRestriction(targetMember, HARDMODE_RESTRICT_HIDE_GUILD))
         {
             packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
+            resendPacket = true;
         }
 
         if (!memberStatus)
@@ -234,7 +234,7 @@ bool HardModeHooksServerScript::HandleGuildRosterOverride(WorldPacket& packet)
         packet.read_skip<std::string>(); //MemberOfficerNote
     }
 
-    return true;
+    return resendPacket;
 }
 
 bool HardModeHooksServerScript::HasModifiedTail(WorldPacket& packet)
