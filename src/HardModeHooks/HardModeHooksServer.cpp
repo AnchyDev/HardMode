@@ -218,7 +218,6 @@ bool HardModeHooksServerScript::HandleGuildRosterOverride(WorldPacket& packet)
         packet.read_skip<uint8>(); //MemberGender
         uint32 areaId = packet.read<int32>();
 
-        LOG_INFO("module", "Found player {} in area {}.", memberName, areaId);
         Player* targetMember = ObjectAccessor::FindPlayer(memberGuid);
 
         if (!targetMember || sHardModeHandler->PlayerHasRestriction(targetMember, HARDMODE_RESTRICT_HIDE_GUILD))
@@ -234,8 +233,6 @@ bool HardModeHooksServerScript::HandleGuildRosterOverride(WorldPacket& packet)
         packet.read_skip<std::string>(); //MemberNote
         packet.read_skip<std::string>(); //MemberOfficerNote
     }
-
-    LOG_INFO("module", "Guild Roster, MemberCount: {}, RankCount: {}", memberCount, rankCount);
 
     return true;
 }
