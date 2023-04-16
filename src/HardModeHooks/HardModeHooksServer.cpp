@@ -215,7 +215,7 @@ bool HardModeHooksServerScript::HandleGuildRosterOverride(WorldPacket& packet)
         packet.read_skip<uint8>(); //MemberLevel
         packet.read_skip<uint8>(); //MemberClassId
         packet.read_skip<uint8>(); //MemberGender
-        uint32 areaId = packet.read<int32>();
+        packet.read_skip<int32>(); //MemberAreaId
 
         Player* targetMember = ObjectAccessor::FindPlayer(memberGuid);
 
