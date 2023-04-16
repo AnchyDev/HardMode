@@ -224,7 +224,7 @@ void HardModeHandler::ValidatePlayerAuras(Player* player)
             {
                 if (!player->HasAura(aura))
                 {
-                    _scheduler.Schedule(1s, [aura, player](TaskContext task)
+                    _scheduler.Schedule(1s, [aura, player](TaskContext /*task*/)
                      {
                             if (!player || !aura)
                             {
