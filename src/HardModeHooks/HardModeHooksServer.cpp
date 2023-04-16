@@ -173,16 +173,16 @@ bool HardModeHooksServerScript::HandleContactList(WorldPacket& packet)
             continue;
         }
 
-        Player* targetPlayer = ObjectAccessor::FindPlayer(targetGuid);
+        packet.read_skip<uint32>(); // target area
 
-        if (!targetPlayer || !sHardModeHandler->PlayerHasRestriction(targetPlayer, HARDMODE_RESTRICT_HIDE_FRIENDS))
+        Player* targetPlayer = ObjectAccessor::FindPlayer(targetGuid);
+        if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer, HARDMODE_RESTRICT_HIDE_FRIENDS))
         {
-            // No restriction for this player, skip.
-            continue;
+            packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
         }
 
-        packet.read_skip<uint32>(); // target area
-        packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
+        packet.read_skip<uint32>(); // target level
+        packet.read_skip<uint32>(); // target class
     }
 
     return true;
