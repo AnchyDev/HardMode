@@ -19,6 +19,7 @@ private:
     bool HandleFriendsListOverride(WorldPacket& packet);
     bool HandleFriendStatus(WorldPacket& packet);
     bool HandleContactList(WorldPacket& packet);
+    bool HandleGuildRosterOverride(WorldPacket& packet);
     bool HasModifiedTail(WorldPacket& packet);
 };
 

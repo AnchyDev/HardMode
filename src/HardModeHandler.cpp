@@ -235,6 +235,21 @@ void HardModeHandler::ValidatePlayerAuras(Player* player)
                      });
                 }
             }
+            else
+            {
+                if (player->HasAura(aura))
+                {
+                    _scheduler.Schedule(1s, [aura, player](TaskContext /*task*/)
+                    {
+                        if (!player || !aura)
+                        {
+                            return;
+                        }
+
+                        player->RemoveAura(aura);
+                    });
+                }
+            }
         }
     }
 }

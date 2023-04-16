@@ -2,6 +2,7 @@
 #include "HardModeHandler.h"
 #include "HardModeTypes.h"
 
+#include "Guild.h"
 #include "Player.h"
 #include "SocialMgr.h"
 
@@ -41,6 +42,10 @@ bool HardModeHooksServerScript::CanPacketSend(WorldSession* session, WorldPacket
     case SMSG_CONTACT_LIST:
     case SMSG_FRIEND_STATUS:
         resend = HandleFriendsListOverride(packet);
+        break;
+
+    case SMSG_GUILD_ROSTER:
+        resend = HandleGuildRosterOverride(packet);
         break;
     }
 
@@ -179,6 +184,58 @@ bool HardModeHooksServerScript::HandleContactList(WorldPacket& packet)
         packet.read_skip<uint32>(); // target area
         packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
     }
+
+    return true;
+}
+
+bool HardModeHooksServerScript::HandleGuildRosterOverride(WorldPacket& packet)
+{
+    uint32 memberCount = packet.read<uint32>();
+    packet.read_skip<std::string>(); // WelcomeText
+    packet.read_skip<std::string>(); // InfoText
+    uint32 rankCount = packet.read<uint32>();
+
+    for (uint32 i = 0; i < rankCount; ++i)
+    {
+        packet.read_skip<uint32>(); //RankFlags
+        packet.read_skip<uint32>(); //RankWithdrawGoldLimit
+
+        for (uint8 i = 0; i < GUILD_BANK_MAX_TABS; i++)
+        {
+            packet.read_skip<uint32>(); //RankTabFlags
+            packet.read_skip<uint32>(); //RankTabWithdrawItemLimit
+        }
+    }
+
+    for (uint32 i = 0; i < memberCount; ++i)
+    {
+        ObjectGuid memberGuid = ObjectGuid(packet.read<uint64>());
+        uint8 memberStatus = packet.read<uint8>(); //MemberStatus
+        std::string memberName = packet.read<std::string>(); //MemberName
+        packet.read_skip<int32>(); //MemberRankId
+        packet.read_skip<uint8>(); //MemberLevel
+        packet.read_skip<uint8>(); //MemberClassId
+        packet.read_skip<uint8>(); //MemberGender
+        uint32 areaId = packet.read<int32>();
+
+        LOG_INFO("module", "Found player {} in area {}.", memberName, areaId);
+        Player* targetMember = ObjectAccessor::FindPlayer(memberGuid);
+
+        if (!targetMember || sHardModeHandler->PlayerHasRestriction(targetMember, HARDMODE_RESTRICT_HIDE_GUILD))
+        {
+            packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
+        }
+
+        if (!memberStatus)
+        {
+            packet.read_skip<float>(); //MemberLastSave
+        }
+
+        packet.read_skip<std::string>(); //MemberNote
+        packet.read_skip<std::string>(); //MemberOfficerNote
+    }
+
+    LOG_INFO("module", "Guild Roster, MemberCount: {}, RankCount: {}", memberCount, rankCount);
 
     return true;
 }
