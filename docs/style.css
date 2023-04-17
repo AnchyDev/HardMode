@@ -1,0 +1,123 @@
+* {
+    margin: 0px;
+    padding: 0px;
+
+    font-family: Arial;
+    text-decoration: none;
+}
+
+body {
+    display: flex;
+
+    width: 100vw;
+    height: 100vh;
+
+    justify-content: center;
+    align-items: center;
+
+    background-color: white;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo {
+    display: flex;
+    flex-direction: row;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.logo img{
+    max-height: 64px;
+}
+
+.menu {
+    display: flex;
+    flex-direction: row;
+
+    justify-content: center;
+
+    gap: 20px;
+}
+.menu a{
+    color: black;
+    transition: color 0.25s;
+}
+.menu a:hover{
+    color: red;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+
+    max-width: 600px;
+
+    margin: 10px;
+}
+
+.sections{
+    display: flex;
+    flex-direction: column;
+
+    justify-content: left;
+}
+
+.header {
+    font-size: 1.5rem;
+    font-weight: bold;
+
+    margin: 5px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+.sub-header {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin: 5px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+.body {
+    font-size: 1rem;
+
+    margin: 5px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+.sub-body {
+    font-size: 0.75rem;
+    margin-bottom: 5px;
+}
+
+.highlight-dark {
+    display: inline-flex;
+    color: rgb(53, 53, 53);
+    background-color: rgb(223, 223, 223);
+    border-radius: 2px;
+    padding: 3px;
+}
+
+.nice-button {
+    color: rgb(53, 53, 53);
+    background-color: rgb(209, 209, 209);
+
+    border: 0px;
+    border-radius: 4px;
+    padding: 5px;
+
+    transition: color 0.25s, background-color 0.25s, transform 0.25s;
+}
+.nice-button:hover {
+    color: white;
+    background-color: red;
+}
+.nice-button:active {
+    background-color: rgb(255, 119, 119);
+}

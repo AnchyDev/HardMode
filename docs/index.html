@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hardmode Documentation</title>
+        <link rel="stylesheet" href="./style.css">
+        <script src="./bitmask.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="logo">
+                <img src="./logo.png">
+                <div class="header">HardMode</div>
+            </div>
+            <div class="menu">
+                <a href="#about">About</a>
+                <a href="#bitmask">Bitmask Editor</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="content">
+                <div class="sections">
+                    <section id="about">
+                        <div class="header">
+                            About
+                        </div>
+                        <div class="body">
+                            The HardMode module gives server owners the tools to create their own HardModes without writing a line of C++/Lua, and is entirely possible within the database.
+                        </div>
+                    </section>
+                    <section id="bitmask">
+                        <div class="header">
+                            Bitmask Editor
+                        </div>
+                        <div class="body">
+                            To enable restrictions for your modes you need to create a bitmask to store in the <div class="highlight-dark">restrictions</div> column of the <div class="highlight-dark">hardmode_modes</div> table.<br><br>
+                            Tick the restrictions you would like to use below and copy the bitmask result into the <div class="highlight-dark">restrictions</div> table column for your mode.
+                        </div>
+                        <div class="sub-header">
+                            Restrictions
+                        </div>
+                        <input id="hmr_retailxp" type="checkbox">
+                        <label for="hmr_retailxp"> RetailXP (2)</label>
+                        <div class="sub-body">
+                            Enables 1x rates for kill and quest exp.
+                        </div>
+
+                        <input id="hmr_selfcrafted" type="checkbox">
+                        <label for="hmr_selfcrafted"> SelfCrafted (4)</label>
+                        <div class="sub-body">
+                            Disables the use of items/equipment that are not crafted by the player.
+                        </div>
+
+                        <input id="hmr_int_auction" type="checkbox">
+                        <label for="hmr_int_auction"> Interact Auction House (8)</label>
+                        <div class="sub-body">
+                            Disables the interaction with the auction house NPC.
+                        </div>
+
+                        <input id="hmr_int_gbank" type="checkbox">
+                        <label for="hmr_int_gbank"> Interact Guild Bank (16)</label>
+                        <div class="sub-body">
+                            Disables the interaction with the guild bank.
+                        </div>
+
+                        <div class="body">
+                            <button class="nice-button" type="button" onclick="generateMask()">Generate</button>
+                            <span id="bitmask-result">Result: 0</span>
+                        </div>
+                    </section>
+                    <section id="contact">
+                        <div class="header">
+                            Contact
+                        </div>
+                        <div class="body">
+                            If you are having difficulty with this module or want to speak to me you can join the <a href="https://discord.gg/zpJRC2rc6G">Discord</a>. If you want to report a bug you can open an issue on the <a href="https://github.com/AnchyDev/HardMode/issues">repository</a>.
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
