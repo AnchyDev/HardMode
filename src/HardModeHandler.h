@@ -53,6 +53,8 @@ public:
     std::vector<HardModeInfo> GetPlayerModesFromRestriction(Player* player, uint32 restriction);
     std::vector<HardModeInfo> GetOfflinePlayerModesFromRestriction(PlayerSettingMap* settingMap, uint32 restriction);
     std::string GetDelimitedModes(std::vector<HardModeInfo> modes, std::string delimiter);
+    bool HasMatchingModesWithRestriction(Player* player, Player* target, uint32 restriction);
+    bool ModeHasRestriction(uint8 mode, uint32 restriction);
 
     bool IsPlayerTainted(Player* player);
     void UpdatePlayerTainted(Player* player, bool state);

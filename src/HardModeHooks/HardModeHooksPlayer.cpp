@@ -328,19 +328,41 @@ bool HardModeHooksPlayerScript::CanGroupInvite(Player* player, std::string& memb
         return true;
     }
 
+    Player* target = ObjectAccessor::FindPlayerByName(memberName);
+
+    if (!target)
+    {
+        return true;
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(target, HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY))
+    {
+        if (!sHardModeHandler->HasMatchingModesWithRestriction(player, target, HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY))
+        {
+            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(target, HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY);
+            std::string alert = Acore::StringFormatFmt("You cannot invite players if you aren't in the cross-play {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+            sHardModeHandler->SendAlert(player, alert);
+            return false;
+        }
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY))
+    {
+        if (!sHardModeHandler->HasMatchingModesWithRestriction(player, target, HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY))
+        {
+            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY);
+            std::string alert = Acore::StringFormatFmt("You cannot invite players that aren't in the cross-play {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+            sHardModeHandler->SendAlert(player, alert);
+            return false;
+        }
+    }
+
     if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_GROUP))
     {
         auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_INTERACT_GROUP);
         std::string alert = Acore::StringFormatFmt("You cannot invite players while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
         sHardModeHandler->SendAlert(player, alert);
         return false;
-    }
-
-    Player* target = ObjectAccessor::FindPlayerByName(memberName);
-
-    if (!target)
-    {
-        return true;
     }
 
     if (sHardModeHandler->PlayerHasRestriction(target, HARDMODE_RESTRICT_INTERACT_GROUP))

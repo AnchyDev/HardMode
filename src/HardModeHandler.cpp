@@ -677,6 +677,52 @@ std::string HardModeHandler::GetDelimitedModes(std::vector<HardModeInfo> modes, 
     return ss.str();
 }
 
+bool HardModeHandler::HasMatchingModesWithRestriction(Player* player, Player* target, uint32 restriction)
+{
+    auto hardModes = sHardModeHandler->GetHardModes();
+
+    for (auto it = hardModes->begin(); it != hardModes->end(); ++it)
+    {
+        auto mode = it->second;
+
+        if (!mode.Enabled)
+        {
+            continue;
+        }
+
+        if (!sHardModeHandler->ModeHasRestriction(mode.Id, restriction))
+        {
+            continue;
+        }
+
+        bool flag1 = (sHardModeHandler->IsModeEnabledForPlayer(player, mode.Id));
+        bool flag2 = (sHardModeHandler->IsModeEnabledForPlayer(target, mode.Id));
+
+        if (flag1 != flag2)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool HardModeHandler::ModeHasRestriction(uint8 mode, uint32 restriction)
+{
+    auto modes = sHardModeHandler->GetHardModes();
+    auto modeIt = modes->find(mode);
+
+    if (modeIt == modes->end())
+    {
+        return false;
+    }
+
+    auto rMask = (1 << restriction);
+    bool hasRestriction = (modeIt->second.Restrictions & rMask) == rMask;
+
+    return hasRestriction;
+}
+
 bool HardModeHandler::IsPlayerTainted(Player* player)
 {
     return player->GetPlayerSetting("HardModeTainted", 0).value > 0;

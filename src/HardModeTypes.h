@@ -23,21 +23,22 @@ struct HardModeInfo
 
 enum HardModeRestrictions
 {
-    HARDMODE_RESTRICT_NONE =                  0,  // Used internally, DO NOT USE
-    HARDMODE_RESTRICT_RETAIL_XP =             1,  // 2: The player can only receive 1x exp rates from kills, quests, etc..
-    HARDMODE_RESTRICT_SELFCRAFTED =           2,  // 4: The player can only use self-crafted items (armor, weapons, consumables, etc..)
-    HARDMODE_RESTRICT_INTERACT_AUCTION =      3,  // 8: The player cannot interact with the auction house.
-    HARDMODE_RESTRICT_INTERACT_GUILDBANK =    4,  // 16: The player cannot interact with the guild bank.
-    HARDMODE_RESTRICT_INTERACT_MAIL_SEND =    5,  // 32: The player cannot send mail.
-    HARDMODE_RESTRICT_INTERACT_MAIL_RECEIVE = 6,  // 64: The player cannot receive mail.
-    HARDMODE_RESTRICT_INTERACT_TRADE =        7,  // 128: The player cannot trade/be traded.
-    HARDMODE_RESTRICT_PERMADEATH =            8,  // 256: The player is sent to the shadow tomb on death.
-    HARDMODE_RESTRICT_HIDE_WHOLIST =          9,  // 512: The players location is hidden on the who list.
-    HARDMODE_RESTRICT_HIDE_FRIENDS =          10, // 1024, The players location is hidden on the friends list.
-    HARDMODE_RESTRICT_HIDE_GUILD =            11, // 2048, The players location is hidden on the guild roster.
-    HARDMODE_RESTRICT_INTERACT_LFG =          12, // 4096, The player cannot queue for LFG.
-    HARDMODE_RESTRICT_INTERACT_GROUP =        13, // 8192, The player cannot join groups.
-    HARDMODE_RESTRICT_COUNT =                 14,  // Used internally. DO NOT USE
+    HARDMODE_RESTRICT_NONE =                        0,  // Used internally, DO NOT USE
+    HARDMODE_RESTRICT_RETAIL_XP =                   1,  // 2: The player can only receive 1x exp rates from kills, quests, etc..
+    HARDMODE_RESTRICT_SELFCRAFTED =                 2,  // 4: The player can only use self-crafted items (armor, weapons, consumables, etc..)
+    HARDMODE_RESTRICT_INTERACT_AUCTION =            3,  // 8: The player cannot interact with the auction house.
+    HARDMODE_RESTRICT_INTERACT_GUILDBANK =          4,  // 16: The player cannot interact with the guild bank.
+    HARDMODE_RESTRICT_INTERACT_MAIL_SEND =          5,  // 32: The player cannot send mail.
+    HARDMODE_RESTRICT_INTERACT_MAIL_RECEIVE =       6,  // 64: The player cannot receive mail.
+    HARDMODE_RESTRICT_INTERACT_TRADE =              7,  // 128: The player cannot trade/be traded.
+    HARDMODE_RESTRICT_PERMADEATH =                  8,  // 256: The player is sent to the shadow tomb on death.
+    HARDMODE_RESTRICT_HIDE_WHOLIST =                9,  // 512: The players location is hidden on the who list.
+    HARDMODE_RESTRICT_HIDE_FRIENDS =                10, // 1024, The players location is hidden on the friends list.
+    HARDMODE_RESTRICT_HIDE_GUILD =                  11, // 2048, The players location is hidden on the guild roster.
+    HARDMODE_RESTRICT_INTERACT_LFG =                12, // 4096, The player cannot queue for LFG.
+    HARDMODE_RESTRICT_INTERACT_GROUP =              13, // 8192, The player cannot join groups.
+    HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY =    14, // 16384 The player can only group with matching modes.
+    HARDMODE_RESTRICT_COUNT =                       15,  // Used internally. DO NOT USE
 };
 
 enum HardModeRewardType
