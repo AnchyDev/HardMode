@@ -26,5 +26,5 @@ function generateMask()
     }
 
     let bResult = document.getElementById("bitmask-result");
-    bResult.innerHTML = "Result: " + bitmask;
+    bResult.innerHTML = bitmask;
 }
