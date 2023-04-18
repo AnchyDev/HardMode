@@ -484,6 +484,29 @@ bool HardModeHandler::IsModeEnabledForPlayer(Player* player, uint8 mode)
     return player->GetPlayerSetting("HardMode", mode).value > 0;
 }
 
+bool HardModeHandler::IsModeEnabledForPlayerSettings(PlayerSettingMap* settingMap, uint8 mode)
+{
+    if (!settingMap)
+    {
+        return false;
+    }
+
+    auto itr = settingMap->find("HardMode");
+    if (itr == settingMap->end())
+    {
+        return false;
+    }
+
+
+    auto setting = itr->second;
+    if (setting.size() < (mode + 1))
+    {
+        return false;
+    }
+
+    return setting[mode].value > 0;
+}
+
 void HardModeHandler::UpdateModeForPlayer(Player* player, uint8 mode, bool state)
 {
     if (!player)
@@ -530,6 +553,41 @@ bool HardModeHandler::PlayerHasRestriction(Player* player, uint32 restriction)
     return false;
 }
 
+bool HardModeHandler::OfflinePlayerHasRestriction(PlayerSettingMap* settingMap, uint32 restriction)
+{
+    auto modes = sHardModeHandler->GetHardModes();
+
+    for (auto it = modes->begin(); it != modes->end(); ++it)
+    {
+        auto mode = it->second;
+
+        if (!mode.Enabled)
+        {
+            continue;
+        }
+
+        if (mode.Restrictions == HARDMODE_RESTRICT_NONE)
+        {
+            continue;
+        }
+
+        if (!sHardModeHandler->IsModeEnabledForPlayerSettings(settingMap, mode.Id))
+        {
+            continue;
+        }
+
+        auto rMask = (1 << restriction);
+        bool hasRestriction = (mode.Restrictions & rMask) == rMask;
+
+        if (hasRestriction)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 std::vector<HardModeInfo> HardModeHandler::GetPlayerModesFromRestriction(Player* player, uint32 restriction)
 {
     auto modes = sHardModeHandler->GetHardModes();
@@ -550,6 +608,42 @@ std::vector<HardModeInfo> HardModeHandler::GetPlayerModesFromRestriction(Player*
         }
 
         if (!sHardModeHandler->IsModeEnabledForPlayer(player, mode.Id))
+        {
+            continue;
+        }
+
+        auto rMask = (1 << restriction);
+        bool hasRestriction = (mode.Restrictions & rMask) == rMask;
+
+        if (hasRestriction)
+        {
+            enabledModes.push_back(mode);
+        }
+    }
+
+    return enabledModes;
+}
+
+std::vector<HardModeInfo> HardModeHandler::GetOfflinePlayerModesFromRestriction(PlayerSettingMap* settingMap, uint32 restriction)
+{
+    auto modes = sHardModeHandler->GetHardModes();
+    std::vector<HardModeInfo> enabledModes;
+
+    for (auto it = modes->begin(); it != modes->end(); ++it)
+    {
+        auto mode = it->second;
+
+        if (!mode.Enabled)
+        {
+            continue;
+        }
+
+        if (mode.Restrictions == HARDMODE_RESTRICT_NONE)
+        {
+            continue;
+        }
+
+        if (!sHardModeHandler->IsModeEnabledForPlayerSettings(settingMap, mode.Id))
         {
             continue;
         }

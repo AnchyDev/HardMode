@@ -28,8 +28,8 @@ enum HardModeRestrictions
     HARDMODE_RESTRICT_SELFCRAFTED =           2,  // 4: The player can only use self-crafted items (armor, weapons, consumables, etc..)
     HARDMODE_RESTRICT_INTERACT_AUCTION =      3,  // 8: The player cannot interact with the auction house.
     HARDMODE_RESTRICT_INTERACT_GUILDBANK =    4,  // 16: The player cannot interact with the guild bank.
-    HARDMODE_RESTRICT_INTERACT_MAIL_SEND =    5,  // 32: The player cannot send mail. NOT IMPLEMENTED
-    HARDMODE_RESTRICT_INTERACT_MAIL_RECEIVE = 6,  // 64: The player cannot receive mail. NOT IMPLEMENTED
+    HARDMODE_RESTRICT_INTERACT_MAIL_SEND =    5,  // 32: The player cannot send mail.
+    HARDMODE_RESTRICT_INTERACT_MAIL_RECEIVE = 6,  // 64: The player cannot receive mail.
     HARDMODE_RESTRICT_INTERACT_TRADE =        7,  // 128: The player cannot trade/be traded.
     HARDMODE_RESTRICT_PERMADEATH =            8,  // 256: The player is sent to the shadow tomb on death.
     HARDMODE_RESTRICT_HIDE_WHOLIST =          9,  // 512: The players location is hidden on the who list.

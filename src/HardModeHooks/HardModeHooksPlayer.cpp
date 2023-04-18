@@ -247,6 +247,47 @@ bool HardModeHooksPlayerScript::CanInitTrade(Player* player, Player* target)
     return true;
 }
 
+bool HardModeHooksPlayerScript::CanSendMail(Player* player, ObjectGuid receiverGuid, ObjectGuid mailbox, std::string& subject, std::string& body, uint32 money, uint32 cod, Item* item)
+{
+    if (!player)
+    {
+        return true;
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_MAIL_SEND))
+    {
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_INTERACT_MAIL_SEND);
+        std::string alert = Acore::StringFormatFmt("You cannot send mail to other players while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+        sHardModeHandler->SendAlert(player, alert);
+        return false;
+    }
+
+    Player* target = ObjectAccessor::FindPlayer(receiverGuid);
+    if (!target)
+    {
+        auto targetSettings = sHardModeHandler->GetPlayerSettingsFromDatabase(receiverGuid);
+        if (sHardModeHandler->OfflinePlayerHasRestriction(targetSettings, HARDMODE_RESTRICT_INTERACT_MAIL_RECEIVE))
+        {
+            auto restrictedModes = sHardModeHandler->GetOfflinePlayerModesFromRestriction(targetSettings, HARDMODE_RESTRICT_INTERACT_MAIL_RECEIVE);
+            std::string alert = Acore::StringFormatFmt("You cannot send mail to players in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+            sHardModeHandler->SendAlert(player, alert);
+            return false;
+        }
+    }
+    else
+    {
+        if (sHardModeHandler->PlayerHasRestriction(target, HARDMODE_RESTRICT_INTERACT_MAIL_RECEIVE))
+        {
+            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(target, HARDMODE_RESTRICT_INTERACT_MAIL_RECEIVE);
+            std::string alert = Acore::StringFormatFmt("You cannot send mail to players in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+            sHardModeHandler->SendAlert(player, alert);
+            return false;
+        }
+    }
+
+    return true;
+}
+
 void HardModeHooksPlayerScript::OnLogin(Player* player)
 {
     sHardModeHandler->ValidatePlayerAuras(player);

@@ -23,6 +23,7 @@ private:
     bool OnBeforeTeleport(Player* player, uint32 mapId, float x, float y, float z, float orientation, uint32 options, Unit* target) override;
 
     bool CanInitTrade(Player* player, Player* target) override;
+    bool CanSendMail(Player* player, ObjectGuid receiverGuid, ObjectGuid mailbox, std::string& subject, std::string& body, uint32 money, uint32 cod, Item* item) override;
 
     void OnLogin(Player* player) override;
 };
