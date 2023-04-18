@@ -2,7 +2,14 @@ const maskInputs = [
     "hmr_retailxp",
     "hmr_selfcrafted",
     "hmr_int_auction",
-    "hmr_int_gbank"
+    "hmr_int_gbank",
+    "hmr_int_msend",
+    "hmr_int_mrec",
+    "hmr_int_trade",
+    "hmr_permadeath",
+    "hmr_hide_who",
+    "hmr_hide_friends",
+    "hmr_hide_guild"
 ];
 
 function generateMask() 

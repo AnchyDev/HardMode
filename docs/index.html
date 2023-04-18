@@ -63,6 +63,48 @@
                             Disables the interaction with the guild bank.
                         </div>
 
+                        <input id="hmr_int_msend" type="checkbox">
+                        <label for="hmr_int_msend"> Interact Mail Send (32)</label>
+                        <div class="sub-body">
+                            Disables sending of mail to other players.
+                        </div>
+
+                        <input id="hmr_int_mrec" type="checkbox">
+                        <label for="hmr_int_mrec"> Interact Mail Receive (64)</label>
+                        <div class="sub-body">
+                            Disables receiving of mail from other players.
+                        </div>
+
+                        <input id="hmr_int_trade" type="checkbox">
+                        <label for="hmr_int_trade"> Interact Trade (128)</label>
+                        <div class="sub-body">
+                            Disables trading to/from other players.
+                        </div>
+
+                        <input id="hmr_permadeath" type="checkbox">
+                        <label for="hmr_permadeath"> Permadeath (256)</label>
+                        <div class="sub-body">
+                            The player is sent to the shadow realm on death (you cannot leave the shadow realm).
+                        </div>
+
+                        <input id="hmr_hide_who" type="checkbox">
+                        <label for="hmr_hide_who"> Hide Who List (512)</label>
+                        <div class="sub-body">
+                            The player is hidden from the who list (shows unknown location).
+                        </div>
+
+                        <input id="hmr_hide_friends" type="checkbox">
+                        <label for="hmr_hide_friends"> Hide Friends List (1024)</label>
+                        <div class="sub-body">
+                            The player is hidden from the friends list (shows unknown location).
+                        </div>
+
+                        <input id="hmr_hide_guild" type="checkbox">
+                        <label for="hmr_hide_guild"> Hide Guild List (2048)</label>
+                        <div class="sub-body">
+                            The player is hidden from the guild member roster (shows unknown location).
+                        </div>
+
                         <div class="body">
                             <button class="nice-button" type="button" onclick="generateMask()">Generate</button>
                             Result: <span id="bitmask-result" class="highlight-dark">0</span>

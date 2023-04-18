@@ -4,6 +4,8 @@
 
     font-family: Arial;
     text-decoration: none;
+
+    scroll-behavior: smooth;
 }
 
 body {
