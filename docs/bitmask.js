@@ -12,6 +12,42 @@ const maskInputs = [
     "hmr_hide_guild"
 ];
 
+function loadMask()
+{
+    let editMaskInputElement = document.getElementById("bitmask-edit");
+    if(!editMaskInputElement)
+    {
+        console.log("An unexpected error occurred when trying to get element bitmask-edit.");
+        return;
+    }
+
+    let editMaskInputValue = editMaskInputElement.value;
+    if(!editMaskInputValue)
+    {
+        return;
+    }
+
+    let i = 1; // Start at 1 because of an internal enum we are skipping. HARDMODE_RESTRICT_NONE
+
+    for(let maskIndex in maskInputs)
+    {
+        let maskInput = maskInputs[maskIndex];
+
+        let maskInputElement = document.getElementById(maskInput);
+
+        if(editMaskInputValue & (1 << i))
+        {
+            maskInputElement.checked = true;
+        }
+        else
+        {
+            maskInputElement.checked = false;
+        }
+
+        i += 1;
+    }
+}
+
 function generateMask() 
 {
     let bitmask = 0;
@@ -25,7 +61,6 @@ function generateMask()
 
         if(maskInputElement.checked)
         {
-            console.log(typeof maskIndex);
             bitmask += 1 << i; 
         }
 

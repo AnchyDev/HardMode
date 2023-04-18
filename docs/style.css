@@ -99,6 +99,11 @@ body {
     font-size: 0.75rem;
     margin-bottom: 5px;
 }
+.body-item {
+    display: flex;
+    gap: 5px;
+    margin: 5px 0px;
+}
 
 .highlight-dark {
     display: inline-flex;
