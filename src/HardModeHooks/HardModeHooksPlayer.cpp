@@ -321,6 +321,39 @@ bool HardModeHooksPlayerScript::CanJoinLfg(Player* player, uint8 roles, lfg::Lfg
     return true;
 }
 
+bool HardModeHooksPlayerScript::CanGroupInvite(Player* player, std::string& memberName)
+{
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return true;
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_GROUP))
+    {
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_INTERACT_GROUP);
+        std::string alert = Acore::StringFormatFmt("You cannot invite players while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+        sHardModeHandler->SendAlert(player, alert);
+        return false;
+    }
+
+    Player* target = ObjectAccessor::FindPlayerByName(memberName);
+
+    if (!target)
+    {
+        return true;
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(target, HARDMODE_RESTRICT_INTERACT_GROUP))
+    {
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(target, HARDMODE_RESTRICT_INTERACT_GROUP);
+        std::string alert = Acore::StringFormatFmt("You cannot invite players in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+        sHardModeHandler->SendAlert(player, alert);
+        return false;
+    }
+
+    return true;
+}
+
 void HardModeHooksPlayerScript::OnLogin(Player* player)
 {
     if (!sHardModeHandler->IsHardModeEnabled())

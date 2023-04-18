@@ -25,6 +25,7 @@ private:
     bool CanInitTrade(Player* player, Player* target) override;
     bool CanSendMail(Player* player, ObjectGuid receiverGuid, ObjectGuid mailbox, std::string& subject, std::string& body, uint32 money, uint32 cod, Item* item) override;
     bool CanJoinLfg(Player* player, uint8 roles, lfg::LfgDungeonSet& dungeons, const std::string& comment);
+    bool CanGroupInvite(Player* player, std::string& memberName);
 
     void OnLogin(Player* player) override;
 };
