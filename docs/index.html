@@ -15,7 +15,7 @@
             </div>
             <div class="menu">
                 <a href="#about">About</a>
-                <a href="#bitmask">Bitmask Editor</a>
+                <a href="#mode-editor">Mode Editor</a>
                 <a href="#contact">Contact</a>
             </div>
             <div class="content">
@@ -28,16 +28,31 @@
                             The HardMode module gives server owners the tools to create their own HardModes without writing a line of C++/Lua, and is entirely possible within the database.
                         </div>
                     </section>
-                    <section id="bitmask">
+                    <section id="mode-editor">
                         <div class="header">
-                            Bitmask Editor
+                            Mode Editor
                         </div>
                         <div class="body">
+                            This section will help you create your first hard mode, before you can create a mode you need to come up with a name, choose a color, description & restrictions.<br>
+                            <div class="sub-header">
+                                <label for="mode-name">Name</label>
+                            </div>
+                            <div class="name-picker">
+                                <input id="mode-name" type="text" placeholder="Name">
+                                <button id="mode-color-button" class="color-picker" type="button" onclick="openColorPicker()"></button>
+                                <input id="mode-color" type="color" style="display: none">
+                            </div>
+                            <div class="sub-header">
+                                <label for="mode-desc">Description</label>
+                            </div>
+                            <div class="sub-body">
+                                <input id="mode-desc" type="text" placeholder="Description">
+                            </div>
+                            <div class="sub-header">
+                                Restrictions
+                            </div>
                             To enable restrictions for your modes you need to create a bitmask to store in the <div class="highlight-dark">restrictions</div> column of the <div class="highlight-dark">hardmode_modes</div> table.<br><br>
                             Tick the restrictions you would like to use below and copy the bitmask result into the <div class="highlight-dark">restrictions</div> table column for your mode.
-                        </div>
-                        <div class="sub-header">
-                            Restrictions
                         </div>
                         <div class="body-item">
                             <input id="bitmask-edit" type="text" placeholder="Bitmask"><button class="nice-button" type="button" onclick="loadMask()">Edit</button>
@@ -154,10 +169,17 @@
                                     The player can only group with other players with the same cross-play modes as them (all the modes with this flag enabled).
                                 </div>
                             </div>
-                        </div>
+                        </div><br>
                         <div class="body">
-                            <button class="nice-button" type="button" onclick="generateMask()">Generate</button>
-                            Result: <span id="bitmask-result" class="highlight-dark">0</span>
+                            <div>
+                                <input id="hm-enabled" type="checkbox">
+                                <label for="hm-enabled"> Enabled By Default</label>
+                                <div class="sub-body">
+                                    The mode is enabled by default in the table entry (it will show up in the HardMode gossip).
+                                </div>
+                            </div>
+                            <button class="nice-button" type="button" onclick="generateSQL()">Generate SQL </button><br><br>
+                            <div id="sql-result" class="highlight-dark"></div>
                         </div>
                     </section>
                     <section id="contact">

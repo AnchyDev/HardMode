@@ -84,7 +84,7 @@ body {
 .sub-header {
     font-size: 1.25rem;
     font-weight: bold;
-    margin: 5px;
+    margin: 10px;
     margin-left: 0px;
     margin-right: 0px;
 }
@@ -146,4 +146,21 @@ body {
 }
 .nice-button:active {
     background-color: rgb(255, 119, 119);
+}
+
+.color-picker {
+    min-width: 20px;
+    min-height: 20px;
+
+    border: solid black 1px;
+    border-radius: 5px;
+
+    background-color: white;
+}
+
+.name-picker {
+    display: flex;
+    flex-direction: row;
+
+    gap: 5px;
 }

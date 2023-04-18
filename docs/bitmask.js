@@ -15,6 +15,23 @@ const maskInputs = [
     "hmr_int_crossplay"
 ];
 
+var modeName = "";
+var modeDesc = "";
+var modeColor = "#ffffff";
+var modeMask = 0;
+var modeEnabled = false;
+
+function openColorPicker()
+{
+    let colorPickerElement = document.getElementById("mode-color");
+    let colorPickerButtonElement = document.getElementById("mode-color-button");
+    colorPickerElement.addEventListener("change", () => {
+        modeColor = colorPickerElement.value;
+        colorPickerButtonElement.style.backgroundColor = modeColor;
+    });
+    colorPickerElement.click();
+}
+
 function loadMask()
 {
     let editMaskInputElement = document.getElementById("bitmask-edit");
@@ -51,6 +68,18 @@ function loadMask()
     }
 }
 
+function generateSQL()
+{
+    generateMask();
+    document.getElementById("bitmask-edit").value = modeMask;
+    modeName = document.getElementById("mode-name").value;
+    modeDesc = document.getElementById("mode-desc").value;
+    modeEnabled = document.getElementById("hm-enabled").checked;
+    let strippedColor = modeColor.substring(1);
+    let modeSqlElement = document.getElementById("sql-result");
+    modeSqlElement.innerHTML = `INSERT INTO hardmode_modes (name, description, restrictions, enabled) VALUES ('|cff${strippedColor}${modeName}|r', '${modeDesc}', ${modeMask}, ${modeEnabled ? 1 : 0});`;
+}
+
 function generateMask() 
 {
     let bitmask = 0;
@@ -70,6 +99,5 @@ function generateMask()
         i += 1;
     }
 
-    let bResult = document.getElementById("bitmask-result");
-    bResult.innerHTML = bitmask;
+    modeMask = bitmask;
 }
