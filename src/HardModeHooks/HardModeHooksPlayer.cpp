@@ -288,6 +288,19 @@ bool HardModeHooksPlayerScript::CanSendMail(Player* player, ObjectGuid receiverG
     return true;
 }
 
+bool HardModeHooksPlayerScript::CanJoinLfg(Player* player, uint8 roles, lfg::LfgDungeonSet& dungeons, const std::string& comment)
+{
+    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_LFG))
+    {
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_INTERACT_LFG);
+        std::string alert = Acore::StringFormatFmt("You cannot join looking for group while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+        sHardModeHandler->SendAlert(player, alert);
+        return false;
+    }
+
+    return true;
+}
+
 void HardModeHooksPlayerScript::OnLogin(Player* player)
 {
     sHardModeHandler->ValidatePlayerAuras(player);

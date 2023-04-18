@@ -35,7 +35,8 @@ enum HardModeRestrictions
     HARDMODE_RESTRICT_HIDE_WHOLIST =          9,  // 512: The players location is hidden on the who list.
     HARDMODE_RESTRICT_HIDE_FRIENDS =          10, // 1024, The players location is hidden on the friends list.
     HARDMODE_RESTRICT_HIDE_GUILD =            11, // 2048, The players location is hidden on the guild roster.
-    HARDMODE_RESTRICT_COUNT =                 12,  // Used internally. DO NOT USE
+    HARDMODE_RESTRICT_INTERACT_LFG =          12, // 4096, The player cannot queue for LFG.
+    HARDMODE_RESTRICT_COUNT =                 13,  // Used internally. DO NOT USE
 };
 
 enum HardModeRewardType
