@@ -105,6 +105,23 @@ body {
     margin: 5px 0px;
 }
 
+.bitmask-options {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.bitmask-option {
+    border: solid 1px;
+    border-color: rgb(200, 200, 200);
+    border-radius: 5px;
+
+    padding: 5px;
+
+    min-width: 250px;
+    max-width: 250px;
+}
+
 .highlight-dark {
     display: inline-flex;
     color: rgb(53, 53, 53);
