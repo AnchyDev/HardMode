@@ -6,12 +6,6 @@
     text-decoration: none;
 }
 
-@media screen and (max-height: 600px) {
-    body {
-        align-items: baseline !important;
-    }
-}
-
 body {
     display: flex;
     
@@ -20,6 +14,8 @@ body {
 
     justify-content: center;
     align-items: center;
+
+    flex-wrap: wrap;
 
     background-color: white;
 }
