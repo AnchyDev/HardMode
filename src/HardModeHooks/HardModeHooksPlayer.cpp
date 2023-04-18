@@ -303,7 +303,7 @@ bool HardModeHooksPlayerScript::CanSendMail(Player* player, ObjectGuid receiverG
     return true;
 }
 
-bool HardModeHooksPlayerScript::CanJoinLfg(Player* player, uint8 roles, lfg::LfgDungeonSet& dungeons, const std::string& comment)
+bool HardModeHooksPlayerScript::CanJoinLfg(Player* player, uint8 /*roles*/, lfg::LfgDungeonSet& /*dungeons*/, const std::string& /*comment*/)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
