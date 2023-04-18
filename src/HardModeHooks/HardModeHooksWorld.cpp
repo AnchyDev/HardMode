@@ -3,5 +3,10 @@
 
 void HardModeHooksWorldScript::OnUpdate(uint32 diff)
 {
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
     sHardModeHandler->GetScheduler()->Update(diff);
 }

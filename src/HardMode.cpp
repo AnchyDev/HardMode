@@ -13,6 +13,11 @@
 
 void HardModePlayerScript::OnLevelChanged(Player* player, uint8 /*oldLevel*/)
 {
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
     if (!player)
     {
         return;
@@ -66,6 +71,11 @@ void HardModePlayerScript::OnLevelChanged(Player* player, uint8 /*oldLevel*/)
 
 void HardModeWorldScript::OnAfterConfigLoad(bool reload)
 {
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
     if (reload)
     {
         sHardModeHandler->ClearHardModes();

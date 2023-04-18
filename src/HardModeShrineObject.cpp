@@ -55,6 +55,11 @@ bool HardModeShrineObject::OnGossipHello(Player* player, GameObject* go)
 
 bool HardModeShrineObject::OnGossipSelect(Player* player, GameObject* /*go*/, uint32 /*sender*/, uint32 mode)
 {
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return false;
+    }
+
     bool flag = sHardModeHandler->IsModeEnabledForPlayer(player, mode);
 
     if (!flag && sHardModeHandler->IsPlayerTainted(player))

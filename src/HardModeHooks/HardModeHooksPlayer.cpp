@@ -205,6 +205,11 @@ bool HardModeHooksPlayerScript::CanRepopAtGraveyard(Player* player)
 
 bool HardModeHooksPlayerScript::OnBeforeTeleport(Player* player, uint32 mapId, float /*x*/, float /*y*/, float /*z*/, float /*orientation*/, uint32 /*options*/, Unit* /*target*/)
 {
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return true;
+    }
+
     if (sHardModeHandler->IsPlayerShadowBanned(player))
     {
         return (mapId == HARDMODE_AREA_AZSHARACRATER); // Only allow teleports for Shadowban players if it's to the azshara crater / shadow tomb.
@@ -215,6 +220,11 @@ bool HardModeHooksPlayerScript::OnBeforeTeleport(Player* player, uint32 mapId, f
 
 bool HardModeHooksPlayerScript::CanInitTrade(Player* player, Player* target)
 {
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return true;
+    }
+
     if (!player || !target)
     {
         return true;
@@ -249,6 +259,11 @@ bool HardModeHooksPlayerScript::CanInitTrade(Player* player, Player* target)
 
 bool HardModeHooksPlayerScript::CanSendMail(Player* player, ObjectGuid receiverGuid, ObjectGuid /*mailbox*/, std::string& /*subject*/, std::string& /*body*/, uint32 /*money*/, uint32 /*cod*/, Item* /*item*/)
 {
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return true;
+    }
+
     if (!player)
     {
         return true;
@@ -290,6 +305,11 @@ bool HardModeHooksPlayerScript::CanSendMail(Player* player, ObjectGuid receiverG
 
 bool HardModeHooksPlayerScript::CanJoinLfg(Player* player, uint8 roles, lfg::LfgDungeonSet& dungeons, const std::string& comment)
 {
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return true;
+    }
+
     if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_LFG))
     {
         auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_INTERACT_LFG);
@@ -303,5 +323,10 @@ bool HardModeHooksPlayerScript::CanJoinLfg(Player* player, uint8 roles, lfg::Lfg
 
 void HardModeHooksPlayerScript::OnLogin(Player* player)
 {
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
     sHardModeHandler->ValidatePlayerAuras(player);
 }

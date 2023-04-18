@@ -9,7 +9,8 @@ const maskInputs = [
     "hmr_permadeath",
     "hmr_hide_who",
     "hmr_hide_friends",
-    "hmr_hide_guild"
+    "hmr_hide_guild",
+    "hmr_int_lfg"
 ];
 
 function loadMask()

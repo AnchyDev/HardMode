@@ -3,6 +3,11 @@
 
 void HardModeHooksUnitScript::OnAuraRemove(Unit* unit, AuraApplication* /*auraApp*/, AuraRemoveMode mode)
 {
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
     if (!unit)
     {
         return;
