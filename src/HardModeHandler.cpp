@@ -733,6 +733,12 @@ void HardModeHandler::UpdatePlayerTainted(Player* player, bool state)
     player->UpdatePlayerSetting("HardModeTainted", 0, state);
 }
 
+void HardModeHandler::UpdateOfflinePlayerTainted(ObjectGuid guid, bool state)
+{
+    std::string sState = state ? "1" : "0";
+    CharacterDatabase.Execute("INSERT INTO character_settings (guid, source, data) VALUES ({}, 'HardModeTainted', '{}') ON DUPLICATE KEY UPDATE data = '{}'", guid.GetRawValue(), sState, sState);
+}
+
 bool HardModeHandler::IsPlayerShadowBanned(Player* player)
 {
     return player->GetPlayerSetting("HardModeShadowBanned", 0).value > 0;

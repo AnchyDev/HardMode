@@ -22,12 +22,12 @@ void HardModeHooksPlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* v
         return;
     }
 
-    if (!sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_RETAIL_XP))
+    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_RETAIL_XP))
     {
-        return;
+        amount = (amount / sConfigMgr->GetOption<float>("Rate.XP.Kill", 1));
     }
 
-    amount = (amount / sConfigMgr->GetOption<float>("Rate.XP.Kill", 1));
+    sHardModeHandler->UpdatePlayerTainted(player, true);
 }
 
 void HardModeHooksPlayerScript::OnQuestComputeXP(Player* player, Quest const* /*quest*/, uint32& xpValue)
@@ -42,12 +42,10 @@ void HardModeHooksPlayerScript::OnQuestComputeXP(Player* player, Quest const* /*
         return;
     }
 
-    if (!sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_RETAIL_XP))
+    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_RETAIL_XP))
     {
-        return;
+        xpValue = (xpValue / sConfigMgr->GetOption<float>("Rate.XP.Quest", 1));
     }
-
-    xpValue = (xpValue / sConfigMgr->GetOption<float>("Rate.XP.Quest", 1));
 }
 
 bool HardModeHooksPlayerScript::CanEquipItem(Player* player, uint8 /*slot*/, uint16& /*dest*/, Item* pItem, bool /*swap*/, bool /*notLoading*/)
@@ -62,33 +60,31 @@ bool HardModeHooksPlayerScript::CanEquipItem(Player* player, uint8 /*slot*/, uin
         return true;
     }
 
-    if (!sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_SELFCRAFTED))
+    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_SELFCRAFTED))
     {
-        return true;
-    }
+        auto itemProto = pItem->GetTemplate();
 
-    auto itemProto = pItem->GetTemplate();
+        // Exclude item ids in the `hardmode_selfcraft_exclude` table.
+        if (sHardModeHandler->IsSelfCraftItemExcluded(itemProto->ItemId))
+        {
+            return true;
+        }
 
-    // Exclude item ids in the `hardmode_selfcraft_exclude` table.
-    if (sHardModeHandler->IsSelfCraftItemExcluded(itemProto->ItemId))
-    {
-        return true;
-    }
+        // Allow quest items to be equipped.
+        if (itemProto->Class == ITEM_CLASS_QUEST)
+        {
+            return true;
+        }
 
-    // Allow quest items to be equipped.
-    if (itemProto->Class == ITEM_CLASS_QUEST)
-    {
-        return true;
-    }
+        // If the item is not creator by the player, block equip.
+        if (pItem->GetGuidValue(ITEM_FIELD_CREATOR) != player->GetGUID())
+        {
+            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_SELFCRAFTED);
+            std::string alert = Acore::StringFormatFmt("You cannot equip this item while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+            sHardModeHandler->SendAlert(player, alert);
 
-    // If the item is not creator by the player, block equip.
-    if (pItem->GetGuidValue(ITEM_FIELD_CREATOR) != player->GetGUID())
-    {
-        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_SELFCRAFTED);
-        std::string alert = Acore::StringFormatFmt("You cannot equip this item while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
-        sHardModeHandler->SendAlert(player, alert);
-
-        return false;
+            return false;
+        }
     }
 
     return true;
@@ -106,40 +102,38 @@ bool HardModeHooksPlayerScript::CanCastItemUseSpell(Player* player, Item* item, 
         return true;
     }
 
-    if (!sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_SELFCRAFTED))
+    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_SELFCRAFTED))
     {
-        return true;
-    }
+        // Exclude spell ids in the `hardmode_selfcraft_exclude` table.
+        if (sHardModeHandler->IsSelfCraftSpellExcluded(item->GetTemplate()->Spells[0].SpellId))
+        {
+            return true;
+        }
 
-    // Exclude spell ids in the `hardmode_selfcraft_exclude` table.
-    if (sHardModeHandler->IsSelfCraftSpellExcluded(item->GetTemplate()->Spells[0].SpellId))
-    {
-        return true;
-    }
+        auto itemProto = item->GetTemplate();
 
-    auto itemProto = item->GetTemplate();
+        // Only consider blocking on consumables.
+        if (itemProto->Class != ITEM_CLASS_CONSUMABLE)
+        {
+            return true;
+        }
 
-    // Only consider blocking on consumables.
-    if (itemProto->Class != ITEM_CLASS_CONSUMABLE)
-    {
-        return true;
-    }
+        if (itemProto->SubClass != ITEM_SUBCLASS_FOOD &&
+            itemProto->SubClass != ITEM_SUBCLASS_POTION &&
+            itemProto->SubClass != ITEM_SUBCLASS_ELIXIR &&
+            itemProto->SubClass != ITEM_SUBCLASS_FLASK)
+        {
+            return true;
+        }
 
-    if (itemProto->SubClass != ITEM_SUBCLASS_FOOD &&
-        itemProto->SubClass != ITEM_SUBCLASS_POTION &&
-        itemProto->SubClass != ITEM_SUBCLASS_ELIXIR &&
-        itemProto->SubClass != ITEM_SUBCLASS_FLASK)
-    {
-        return true;
-    }
+        if (item->GetGuidValue(ITEM_FIELD_CREATOR) != player->GetGUID())
+        {
+            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_SELFCRAFTED);
+            std::string alert = Acore::StringFormatFmt("You cannot use this item while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+            sHardModeHandler->SendAlert(player, alert);
 
-    if (item->GetGuidValue(ITEM_FIELD_CREATOR) != player->GetGUID())
-    {
-        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_SELFCRAFTED);
-        std::string alert = Acore::StringFormatFmt("You cannot use this item while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
-        sHardModeHandler->SendAlert(player, alert);
-
-        return false;
+            return false;
+        }
     }
 
     return true;
@@ -254,6 +248,9 @@ bool HardModeHooksPlayerScript::CanInitTrade(Player* player, Player* target)
         return false;
     }
 
+    sHardModeHandler->UpdatePlayerTainted(player, true);
+    sHardModeHandler->UpdatePlayerTainted(target, true);
+
     return true;
 }
 
@@ -298,6 +295,17 @@ bool HardModeHooksPlayerScript::CanSendMail(Player* player, ObjectGuid receiverG
             sHardModeHandler->SendAlert(player, alert);
             return false;
         }
+    }
+
+    sHardModeHandler->UpdatePlayerTainted(player, true);
+
+    if (target)
+    {
+        sHardModeHandler->UpdatePlayerTainted(target, true);
+    }
+    else
+    {
+        sHardModeHandler->UpdateOfflinePlayerTainted(receiverGuid, true);
     }
 
     return true;
