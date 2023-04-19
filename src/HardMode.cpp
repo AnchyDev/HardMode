@@ -4,6 +4,7 @@
 #include "HardModeShrineObject.h"
 #include "HardModeTypes.h"
 
+#include "HardModeHooks/HardModeHooksGlobal.h"
 #include "HardModeHooks/HardModeHooksGuild.h"
 #include "HardModeHooks/HardModeHooksMisc.h"
 #include "HardModeHooks/HardModeHooksPlayer.h"
@@ -97,6 +98,7 @@ void SC_AddHardModeScripts()
     new HardModeShrineObject();
     new HardModeCommandsScript();
 
+    new HardModeHooksGlobalScript();
     new HardModeHooksGuildScript();
     new HardModeHooksMiscScript();
     new HardModeHooksPlayerScript();

@@ -12,7 +12,8 @@ const maskInputs = [
     "hmr_hide_guild",
     "hmr_int_lfg",
     "hmr_int_grp",
-    "hmr_int_crossplay"
+    "hmr_int_crossplay",
+    "hmr_unlucky"
 ];
 
 var modeName = "";
