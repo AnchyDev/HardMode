@@ -68,13 +68,18 @@ bool HardModeCommandsScript::HandleHardModeSetModeCommand(ChatHandler* handler, 
         return false;
     }
 
-    if (mode > (sHardModeHandler->GetHardModes()->size() - 1))
+    if (mode > (sHardModeHandler->GetHardModes()->size()))
+    {
+        return false;
+    }
+
+    if ((mode - 1) < 0)
     {
         return false;
     }
 
     auto targetPlayer = target->GetConnectedPlayer();
-    sHardModeHandler->UpdateModeForPlayer(targetPlayer, mode, value);
+    sHardModeHandler->UpdateModeForPlayer(targetPlayer, mode - 1 /* PlayerSettings are 0 indexed, hardmode_modes is not. */, value);
 
     handler->SendSysMessage(Acore::StringFormatFmt("Updated mode '{}' for player '{}' to '{}'.", sHardModeHandler->GetNameFromMode(mode), targetPlayer->GetName(), value));
 
