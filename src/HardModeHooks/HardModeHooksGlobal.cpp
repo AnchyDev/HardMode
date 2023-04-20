@@ -3,7 +3,7 @@
 
 #include "LootMgr.h"
 
-void HardModeHooksGlobalScript::OnBeforeDropAddItem(Player const* player, Loot& loot, bool canRate, uint16 lootMode, LootStoreItem* lootStoreItem, LootStore const& store)
+void HardModeHooksGlobalScript::OnBeforeDropAddItem(Player const* player, Loot& /*loot*/, bool /*canRate*/, uint16 /*lootMode*/, LootStoreItem* lootStoreItem, LootStore const& /*store*/)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
