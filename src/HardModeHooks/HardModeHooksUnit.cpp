@@ -32,3 +32,44 @@ void HardModeHooksUnitScript::OnAuraRemove(Unit* unit, AuraApplication* /*auraAp
 
     sHardModeHandler->ValidatePlayerAuras(player);
 }
+
+void HardModeHooksUnitScript::OnDamage(Unit* attacker, Unit* victim, uint32& damage)
+{
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
+    if (!attacker)
+    {
+        return;
+    }
+
+    if (!attacker->IsPlayer())
+    {
+        return;
+    }
+
+    Player* player = attacker->ToPlayer();
+    if (!player)
+    {
+        return;
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_PACIFIST))
+    {
+        auto modes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_PACIFIST);
+        for (auto mode : modes)
+        {
+            if (!mode.Enabled)
+            {
+                continue;
+            }
+
+            sHardModeHandler->UpdateModeForPlayer(player, mode.Id, false);
+        }
+
+        // TODO: Update this to alert in the chat so the player is more aware.
+        sHardModeHandler->SendAlert(player, "You have failed the pacifist challenge.");
+    }
+}

@@ -9,7 +9,8 @@ public:
     HardModeHooksUnitScript() : UnitScript("HardModeHooksUnitScript") { }
 
 private:
-    void OnAuraRemove(Unit* unit, AuraApplication* auraApp, AuraRemoveMode mode);
+    void OnAuraRemove(Unit* unit, AuraApplication* auraApp, AuraRemoveMode mode) override;
+    void OnDamage(Unit* attacker, Unit* victim, uint32& damage) override;
 };
 
 #endif // MODULE_HARDMODE_HOOKS_UNIT_H

@@ -39,7 +39,8 @@ enum HardModeRestrictions
     HARDMODE_RESTRICT_INTERACT_GROUP =              13, // 8192, The player cannot join groups.
     HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY =    14, // 16384 The player can only group with matching modes.
     HARDMODE_RESTRICT_BAD_LUCK =                    15, // 32768 The player has bad luck with loot drops.
-    HARDMODE_RESTRICT_COUNT =                       16,  // Used internally. DO NOT USE
+    HARDMODE_RESTRICT_PACIFIST =                    16, // 65536 The player loses the mode if they damage or kill units.
+    HARDMODE_RESTRICT_COUNT =                       17,  // Used internally. DO NOT USE
 };
 
 enum HardModeRewardType
