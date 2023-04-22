@@ -33,7 +33,7 @@ void HardModeHooksUnitScript::OnAuraRemove(Unit* unit, AuraApplication* /*auraAp
     sHardModeHandler->ValidatePlayerAuras(player);
 }
 
-void HardModeHooksUnitScript::OnDamage(Unit* attacker, Unit* victim, uint32& damage)
+void HardModeHooksUnitScript::OnDamage(Unit* attacker, Unit* /*victim*/, uint32& /*damage*/)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
