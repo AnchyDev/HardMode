@@ -34,7 +34,7 @@ void HardModeHandler::LoadHardModes()
             bool enabled = fields[4].Get<bool>();
 
             HardModeInfo mode;
-            mode.Id = id - 1; /* PlayerSettings are 0 indexed, hardmode_modes is not. */
+            mode.Id = id;
             mode.Name = name;
             mode.Description = description;
             mode.Restrictions = restrictions;
