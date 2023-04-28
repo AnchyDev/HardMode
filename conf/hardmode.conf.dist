@@ -16,3 +16,12 @@
 #
 
 HardMode.Enable = 0
+
+#
+#    HardMode.Restrict.Interact.Group.Range
+#        Description: The level range that players can group together when under this restriction.
+#        Default:     3
+#        Type:        uint32
+#
+
+HardMode.Restrict.Interact.Group.Range = 3

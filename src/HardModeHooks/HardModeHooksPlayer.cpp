@@ -5,7 +5,7 @@
 #include "Config.h"
 #include "Player.h"
 
-void HardModeHooksPlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* victim)
+void HardModeHooksPlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* victim, uint8 xpSource)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
@@ -17,14 +17,18 @@ void HardModeHooksPlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* v
         return;
     }
 
-    if (!victim)
-    {
-        return;
-    }
-
     if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_RETAIL_XP))
     {
-        amount = (amount / sConfigMgr->GetOption<float>("Rate.XP.Kill", 1));
+        switch (xpSource)
+        {
+            case PlayerXPSource::XPSOURCE_KILL:
+                amount = (amount / sConfigMgr->GetOption<float>("Rate.XP.Kill", 1));
+                break;
+
+            case PlayerXPSource::XPSOURCE_EXPLORE:
+                amount = (amount / sConfigMgr->GetOption<float>("Rate.XP.Explore", 1));
+                break;
+        }
     }
 
     if (sHardModeHandler->CanTaintPlayer(player))
@@ -395,6 +399,23 @@ bool HardModeHooksPlayerScript::CanGroupInvite(Player* player, std::string& memb
         std::string alert = Acore::StringFormatFmt("You cannot invite players in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
         sHardModeHandler->SendAlert(player, alert);
         return false;
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_GROUP_RANGE) ||
+        sHardModeHandler->PlayerHasRestriction(target, HARDMODE_RESTRICT_INTERACT_GROUP_RANGE))
+    {
+        uint32 pLevel = player->GetLevel();
+        uint32 tLevel = target->GetLevel();
+
+        uint32 range = sConfigMgr->GetOption<uint32>("HardMode.Restrict.Interact.Group.Range", 3);
+        uint32 result = std::abs(int32(pLevel - tLevel));
+        if (result > range)
+        {
+            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(target, HARDMODE_RESTRICT_INTERACT_GROUP);
+            std::string alert = Acore::StringFormatFmt("You cannot invite players who are further than {} levels from you.", range);
+            sHardModeHandler->SendAlert(player, alert);
+            return false;
+        }
     }
 
     return true;
