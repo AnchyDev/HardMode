@@ -219,7 +219,7 @@ bool HardModeHooksPlayerScript::OnBeforeTeleport(Player* player, uint32 mapId, f
     return true;
 }
 
-void HardModeHooksPlayerScript::OnPlayerLearnTalents(Player* player, uint32 talentId, uint32 talentRank, uint32 spellId)
+void HardModeHooksPlayerScript::OnPlayerLearnTalents(Player* player, uint32 /*talentId*/, uint32 /*talentRank*/, uint32 /*spellId*/)
 {
     if (!player)
     {
