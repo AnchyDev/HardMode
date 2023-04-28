@@ -2,6 +2,7 @@
 #include "HardModeHandler.h"
 #include "HardModeTypes.h"
 
+#include "Config.h"
 #include "Guild.h"
 #include "Player.h"
 #include "SocialMgr.h"
@@ -46,6 +47,9 @@ bool HardModeHooksServerScript::CanPacketSend(WorldSession* session, WorldPacket
 
     case SMSG_GUILD_ROSTER:
         resend = HandleGuildRosterOverride(packet);
+        break;
+    case SMSG_INSPECT_TALENT:
+        HandleInspectOverride(player, packet);
         break;
     }
 
@@ -235,6 +239,47 @@ bool HardModeHooksServerScript::HandleGuildRosterOverride(WorldPacket& packet)
     }
 
     return resendPacket;
+}
+
+void HardModeHooksServerScript::HandleInspectOverride(Player* player, WorldPacket& packet)
+{
+    if (!sConfigMgr->GetOption<bool>("HardMode.Inspect.Alert", true))
+    {
+        return;
+    }
+
+    uint64 packGuid;
+    packet.readPackGUID(packGuid);
+    ObjectGuid targetGuid = ObjectGuid(packGuid);
+    Player* targetPlayer = ObjectAccessor::FindPlayer(targetGuid);
+
+    if (!targetPlayer)
+    {
+        return;
+    }
+
+    auto modes = sHardModeHandler->GetHardModes();
+    bool hasModes = false;
+    for (auto it = modes->begin(); it != modes->end(); ++it)
+    {
+        auto mode = it->second;
+
+        if (sHardModeHandler->IsModeEnabledForPlayer(targetPlayer, mode.Id))
+        {
+            hasModes = true;
+
+            // No need to iterate everything.
+            break;
+        }
+    }
+
+    if (!hasModes)
+    {
+        return;
+    }
+
+    std::string sFormat = Acore::StringFormatFmt("{} has modes {}.", targetPlayer->GetPlayerName(), sHardModeHandler->GetNamesFromEnabledModes(targetPlayer));
+    sHardModeHandler->SendAlert(player, sFormat);
 }
 
 bool HardModeHooksServerScript::HasModifiedTail(WorldPacket& packet)

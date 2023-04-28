@@ -18,6 +18,16 @@
 HardMode.Enable = 0
 
 #
+#    HardMode.Inspect.Alert
+#        Description: Alerts the inspecting player of what modes the target has enabled.
+#                     0 - Disabled
+#        Default:     1 - Enabled
+#        Type:        bool
+#
+
+HardMode.Inspect.Alert = 1
+
+#
 #    HardMode.Restrict.Interact.Group.Range
 #        Description: The level range that players can group together when under this restriction.
 #        Default:     3
