@@ -71,5 +71,6 @@ void HardModeHooksUnitScript::OnDamage(Unit* attacker, Unit* /*victim*/, uint32&
 
         // TODO: Update this to alert in the chat so the player is more aware.
         sHardModeHandler->SendAlert(player, "You have failed the pacifist challenge.");
+        player->AddAura(HARDMODE_AURA_PACIFIST_FAIL, player);
     }
 }
