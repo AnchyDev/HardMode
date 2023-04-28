@@ -43,7 +43,8 @@ enum HardModeRestrictions
     HARDMODE_RESTRICT_BAD_LUCK =                    15, // 32768 The player has bad luck with loot drops.
     HARDMODE_RESTRICT_PACIFIST =                    16, // 65536 The player loses the mode if they damage or kill units.
     HARDMODE_RESTRICT_INTERACT_GROUP_RANGE =        17, // 131072 The player can only group with other players within x (default 3) levels from themself.
-    HARDMODE_RESTRICT_COUNT =                       18,  // Used internally. DO NOT USE
+    HARDMODE_RESTRICT_INTERACT_TALENTS =            18, // 262144 The player cannot use talent points.
+    HARDMODE_RESTRICT_COUNT =                       19,  // Used internally. DO NOT USE
 };
 
 enum HardModeRewardType

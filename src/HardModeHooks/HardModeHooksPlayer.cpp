@@ -219,6 +219,23 @@ bool HardModeHooksPlayerScript::OnBeforeTeleport(Player* player, uint32 mapId, f
     return true;
 }
 
+void HardModeHooksPlayerScript::OnPlayerLearnTalents(Player* player, uint32 talentId, uint32 talentRank, uint32 spellId)
+{
+    if (!player)
+    {
+        return;
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_TALENTS))
+    {
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_INTERACT_TALENTS);
+        std::string alert = Acore::StringFormatFmt("You cannot use talent points while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+        sHardModeHandler->SendAlert(player, alert);
+
+        player->resetTalents();
+    }
+}
+
 bool HardModeHooksPlayerScript::CanInitTrade(Player* player, Player* target)
 {
     if (!sHardModeHandler->IsHardModeEnabled())

@@ -15,7 +15,8 @@ const maskInputs = [
     "hmr_int_crossplay",
     "hmr_unlucky",
     "hmr_pacifist",
-	"hmr_int_grp_range"
+	"hmr_int_grp_range",
+	"hmr_int_talent"
 ];
 
 var modeName = "";
