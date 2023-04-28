@@ -27,7 +27,10 @@ void HardModeHooksPlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* v
         amount = (amount / sConfigMgr->GetOption<float>("Rate.XP.Kill", 1));
     }
 
-    sHardModeHandler->UpdatePlayerTainted(player, true);
+    if (sHardModeHandler->CanTaintPlayer(player))
+    {
+        sHardModeHandler->UpdatePlayerTainted(player, true);
+    }
 }
 
 void HardModeHooksPlayerScript::OnQuestComputeXP(Player* player, Quest const* /*quest*/, uint32& xpValue)
@@ -248,8 +251,15 @@ bool HardModeHooksPlayerScript::CanInitTrade(Player* player, Player* target)
         return false;
     }
 
-    sHardModeHandler->UpdatePlayerTainted(player, true);
-    sHardModeHandler->UpdatePlayerTainted(target, true);
+    if (sHardModeHandler->CanTaintPlayer(player))
+    {
+        sHardModeHandler->UpdatePlayerTainted(player, true);
+    }
+
+    if (sHardModeHandler->CanTaintPlayer(target))
+    {
+        sHardModeHandler->UpdatePlayerTainted(target, true);
+    }
 
     return true;
 }
@@ -297,11 +307,17 @@ bool HardModeHooksPlayerScript::CanSendMail(Player* player, ObjectGuid receiverG
         }
     }
 
-    sHardModeHandler->UpdatePlayerTainted(player, true);
+    if (sHardModeHandler->CanTaintPlayer(player))
+    {
+        sHardModeHandler->UpdatePlayerTainted(player, true);
+    }
 
     if (target)
     {
-        sHardModeHandler->UpdatePlayerTainted(target, true);
+        if (sHardModeHandler->CanTaintPlayer(target))
+        {
+            sHardModeHandler->UpdatePlayerTainted(target, true);
+        }
     }
     else
     {

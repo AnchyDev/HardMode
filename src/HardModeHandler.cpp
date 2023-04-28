@@ -739,6 +739,19 @@ void HardModeHandler::UpdateOfflinePlayerTainted(ObjectGuid guid, bool state)
     CharacterDatabase.Execute("INSERT INTO character_settings (guid, source, data) VALUES ({}, 'HardModeTainted', '{}') ON DUPLICATE KEY UPDATE data = '{}'", guid.GetRawValue(), sState, sState);
 }
 
+bool HardModeHandler::CanTaintPlayer(Player* player)
+{
+    if (player->getClass() == CLASS_DEATH_KNIGHT && player->GetMapId() == HARDMODE_AREA_EBONHOLD)
+    {
+        if (!player->IsQuestRewarded(HARDMODE_QUEST_DK_INITIAL))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool HardModeHandler::IsPlayerShadowBanned(Player* player)
 {
     return player->GetPlayerSetting("HardModeShadowBanned", 0).value > 0;

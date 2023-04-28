@@ -99,6 +99,12 @@ bool HardModeCommandsScript::HandleHardModeSetTaintCommand(ChatHandler* handler,
     }
 
     auto targetPlayer = target->GetConnectedPlayer();
+
+    if (!sHardModeHandler->CanTaintPlayer(targetPlayer))
+    {
+        return false;
+    }
+
     sHardModeHandler->UpdatePlayerTainted(targetPlayer, value);
 
     handler->SendSysMessage(Acore::StringFormatFmt("Updated taint for player '{}' to '{}'.", targetPlayer->GetName(), value));

@@ -59,6 +59,7 @@ public:
     bool IsPlayerTainted(Player* player);
     void UpdatePlayerTainted(Player* player, bool state);
     void UpdateOfflinePlayerTainted(ObjectGuid guid, bool state);
+    bool CanTaintPlayer(Player* player);
 
     bool IsPlayerShadowBanned(Player* player);
     void UpdatePlayerShadowBanned(Player* player, bool state);
