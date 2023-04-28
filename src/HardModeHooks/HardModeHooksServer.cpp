@@ -122,15 +122,23 @@ bool HardModeHooksServerScript::HandleFriendStatus(WorldPacket& packet)
     uint8 status = packet.read<uint8>();
     ObjectGuid targetGuid = ObjectGuid(packet.read<uint64>());
 
-    if (status != FRIEND_ADDED_ONLINE &&
-        status != FRIEND_ONLINE)
+    if (status == FRIEND_REMOVED)
     {
         return false;
     }
 
-    packet.read_skip<std::string>(); // Friend Note
-    packet.read_skip<uint8>(); // Friend status
-    packet.read_skip<uint32>(); // Friend area
+    if (status == FRIEND_ADDED_ONLINE ||
+        status == FRIEND_ADDED_OFFLINE)
+    {
+        packet.read_skip<std::string>(); // Friend Note
+    }
+
+    if (status == FRIEND_ADDED_ONLINE ||
+        status == FRIEND_ONLINE)
+    {
+        packet.read_skip<uint8>(); // Friend status
+        packet.read_skip<uint32>(); // Friend area
+    }
 
     Player* targetPlayer = ObjectAccessor::FindPlayer(targetGuid);
     if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer, HARDMODE_RESTRICT_HIDE_FRIENDS))
