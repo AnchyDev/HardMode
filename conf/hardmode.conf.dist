@@ -25,3 +25,15 @@ HardMode.Enable = 0
 #
 
 HardMode.Restrict.Interact.Group.Range = 3
+
+#
+#    HardMode.Restrict.BadLuck.Chance
+#        Description: The chance that an item is deleted when under this restriction.
+#        Note: When an item drops in BadLuck, there is another internal roll, if you fail this roll
+#              the item is deleted from the loot table. This is what this config is responsible for.
+#        Default:     10
+#        Type:        uint32
+#        Range:       0 - 100
+#
+
+HardMode.Restrict.BadLuck.Chance = 10
