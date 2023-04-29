@@ -89,7 +89,7 @@ bool HardModeHooksServerScript::HandleWhoListOverride(WorldPacket& packet)
         packet.read_skip<uint32>(); //PlayerZoneId
 
         auto targetPlayer = ObjectAccessor::FindPlayerByName(playerName);
-        if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer, HARDMODE_RESTRICT_HIDE_WHOLIST))
+        if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer->GetGUID(), HARDMODE_RESTRICT_HIDE_WHOLIST))
         {
             packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
             resendPacket = true;
@@ -141,7 +141,7 @@ bool HardModeHooksServerScript::HandleFriendStatus(WorldPacket& packet)
     }
 
     Player* targetPlayer = ObjectAccessor::FindPlayer(targetGuid);
-    if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer, HARDMODE_RESTRICT_HIDE_FRIENDS))
+    if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer->GetGUID(), HARDMODE_RESTRICT_HIDE_FRIENDS))
     {
         packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
         resendPacket = true;
@@ -184,7 +184,7 @@ bool HardModeHooksServerScript::HandleContactList(WorldPacket& packet)
         packet.read_skip<uint32>(); // target area
 
         Player* targetPlayer = ObjectAccessor::FindPlayer(targetGuid);
-        if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer, HARDMODE_RESTRICT_HIDE_FRIENDS))
+        if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer->GetGUID(), HARDMODE_RESTRICT_HIDE_FRIENDS))
         {
             packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
             resendPacket = true;
@@ -231,7 +231,7 @@ bool HardModeHooksServerScript::HandleGuildRosterOverride(WorldPacket& packet)
 
         Player* targetMember = ObjectAccessor::FindPlayer(memberGuid);
 
-        if (!targetMember || sHardModeHandler->PlayerHasRestriction(targetMember, HARDMODE_RESTRICT_HIDE_GUILD))
+        if (!targetMember || sHardModeHandler->PlayerHasRestriction(targetMember->GetGUID(), HARDMODE_RESTRICT_HIDE_GUILD))
         {
             packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
             resendPacket = true;
@@ -272,7 +272,7 @@ void HardModeHooksServerScript::HandleInspectOverride(Player* player, WorldPacke
     {
         auto mode = it->second;
 
-        if (sHardModeHandler->IsModeEnabledForPlayer(targetPlayer, mode.Id))
+        if (sHardModeHandler->IsModeEnabledForPlayer(targetPlayer->GetGUID(), mode.Id))
         {
             hasModes = true;
 

@@ -13,7 +13,7 @@ void HardModeHooksGlobalScript::OnBeforeDropAddItem(Player const* player, Loot& 
 
     auto ncPlayer = const_cast<Player*>(player);
 
-    if (sHardModeHandler->PlayerHasRestriction(ncPlayer, HARDMODE_RESTRICT_BAD_LUCK))
+    if (sHardModeHandler->PlayerHasRestriction(ncPlayer->GetGUID(), HARDMODE_RESTRICT_BAD_LUCK))
     {
         if (!lootStoreItem ||
             !lootStoreItem->itemid)

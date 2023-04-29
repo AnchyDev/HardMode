@@ -20,6 +20,12 @@ public:
     void LoadHardModes();
     void ClearHardModes();
     std::map<uint8, HardModeInfo>* GetHardModes();
+    HardModeInfo* GetHardModeFromId(uint8 id);
+
+    void LoadPlayerSettings();
+    void ClearPlayerSettings();
+    std::map<uint64, HardModePlayerSettings>* GetPlayerSettings();
+    HardModePlayerSettings* GetPlayerSetting(ObjectGuid guid);
 
     void LoadSelfCraftExcludeIds();
     void ClearSelfCraftExcludeIds();
@@ -43,27 +49,24 @@ public:
     void RewardTitle(Player* player, uint32 titleId);
     void RewardSpell(Player* player, uint32 spellId);
     void SendMailItems(Player* player, std::vector<std::pair<uint32, uint32>>& mailItems, std::string header, std::string body);
+
     void SendAlert(Player* player, std::string message);
 
-    bool IsModeEnabledForPlayer(Player* player, uint8 mode);
-    bool IsModeEnabledForPlayerSettings(PlayerSettingMap* settingMap, uint8 mode);
-    void UpdateModeForPlayer(Player* player, uint8 mode, bool state);
-    bool PlayerHasRestriction(Player* player, uint32 restriction);
-    bool OfflinePlayerHasRestriction(PlayerSettingMap* settingMap, uint32 restriction);
-    std::vector<HardModeInfo> GetPlayerModesFromRestriction(Player* player, uint32 restriction);
-    std::vector<HardModeInfo> GetOfflinePlayerModesFromRestriction(PlayerSettingMap* settingMap, uint32 restriction);
+    bool IsModeEnabledForPlayer(ObjectGuid guid, uint8 mode);
+    void UpdateModeForPlayer(ObjectGuid guid, uint8 mode, bool state);
+    bool PlayerHasRestriction(ObjectGuid guid, uint32 restriction);
+    std::vector<HardModeInfo> GetPlayerModesFromRestriction(ObjectGuid guid, uint32 restriction);
     std::string GetDelimitedModes(std::vector<HardModeInfo> modes, std::string delimiter);
     bool HasMatchingModesWithRestriction(Player* player, Player* target, uint32 restriction);
     bool ModeHasRestriction(uint8 mode, uint32 restriction);
 
-    bool IsPlayerTainted(Player* player);
-    void UpdatePlayerTainted(Player* player, bool state);
-    void UpdateOfflinePlayerTainted(ObjectGuid guid, bool state);
-    bool CanTaintPlayer(Player* player);
+    bool IsPlayerTainted(ObjectGuid guid);
+    void UpdatePlayerTainted(ObjectGuid guid, bool state);
+    bool CanTaintPlayer(ObjectGuid guid);
 
-    bool IsPlayerShadowBanned(Player* player);
-    void UpdatePlayerShadowBanned(Player* player, bool state);
-    void TryShadowBanPlayer(Player* player);
+    bool IsPlayerShadowBanned(ObjectGuid guid);
+    void UpdatePlayerShadowBanned(ObjectGuid guid, bool state);
+    void TryShadowBanPlayer(ObjectGuid guid);
 
     std::string GetNamesFromEnabledModes(Player* player);
     std::string GetNameFromMode(uint8 mode);
@@ -73,6 +76,7 @@ public:
 
 private:
     std::map<uint8, HardModeInfo> _hardModes;
+    std::map<uint64, HardModePlayerSettings> _playerSettings;
     std::vector<int32> _selfCraftExcludeIds;
     std::map<uint8, std::vector<HardModeReward>> _rewards;
     std::map<uint8, std::vector<uint32>> _auras;

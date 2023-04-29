@@ -23,11 +23,11 @@ bool HardModeShrineObject::OnGossipHello(Player* player, GameObject* go)
             continue;
         }
 
-        bool flag = sHardModeHandler->IsModeEnabledForPlayer(player, mode.Id);
+        bool flag = sHardModeHandler->IsModeEnabledForPlayer(player->GetGUID(), mode.Id);
         std::string state = flag ? "Disable" : "Enable";
         std::string format = Acore::StringFormatFmt("{} {} mode.", state, mode.Name);
 
-        if (sHardModeHandler->IsPlayerTainted(player))
+        if (sHardModeHandler->IsPlayerTainted(player->GetGUID()))
         {
             if (flag)
             {
@@ -41,7 +41,7 @@ bool HardModeShrineObject::OnGossipHello(Player* player, GameObject* go)
         }
     }
 
-    if (!sHardModeHandler->IsPlayerTainted(player))
+    if (!sHardModeHandler->IsPlayerTainted(player->GetGUID()))
     {
         SendGossipMenuFor(player, HARDMODE_SHRINE_GREETING, go->GetGUID());
     }
@@ -60,15 +60,15 @@ bool HardModeShrineObject::OnGossipSelect(Player* player, GameObject* /*go*/, ui
         return false;
     }
 
-    bool flag = sHardModeHandler->IsModeEnabledForPlayer(player, mode);
+    bool flag = sHardModeHandler->IsModeEnabledForPlayer(player->GetGUID(), mode);
 
-    if (!flag && sHardModeHandler->IsPlayerTainted(player))
+    if (!flag && sHardModeHandler->IsPlayerTainted(player->GetGUID()))
     {
         sHardModeHandler->SendAlert(player, "You cannot enable hard modes while tainted.");
     }
     else
     {
-        sHardModeHandler->UpdateModeForPlayer(player, mode, !flag);
+        sHardModeHandler->UpdateModeForPlayer(player->GetGUID(), mode, !flag);
     }
 
     CloseGossipMenuFor(player);

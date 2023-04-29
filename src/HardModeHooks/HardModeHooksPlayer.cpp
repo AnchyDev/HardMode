@@ -17,7 +17,7 @@ void HardModeHooksPlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* v
         return;
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_RETAIL_XP))
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_RETAIL_XP))
     {
         switch (xpSource)
         {
@@ -31,9 +31,9 @@ void HardModeHooksPlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* v
         }
     }
 
-    if (sHardModeHandler->CanTaintPlayer(player))
+    if (sHardModeHandler->CanTaintPlayer(player->GetGUID()))
     {
-        sHardModeHandler->UpdatePlayerTainted(player, true);
+        sHardModeHandler->UpdatePlayerTainted(player->GetGUID(), true);
     }
 }
 
@@ -49,7 +49,7 @@ void HardModeHooksPlayerScript::OnQuestComputeXP(Player* player, Quest const* /*
         return;
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_RETAIL_XP))
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_RETAIL_XP))
     {
         xpValue = (xpValue / sConfigMgr->GetOption<float>("Rate.XP.Quest", 1));
     }
@@ -67,7 +67,7 @@ bool HardModeHooksPlayerScript::CanEquipItem(Player* player, uint8 /*slot*/, uin
         return true;
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_SELFCRAFTED))
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_SELFCRAFTED))
     {
         auto itemProto = pItem->GetTemplate();
 
@@ -86,7 +86,7 @@ bool HardModeHooksPlayerScript::CanEquipItem(Player* player, uint8 /*slot*/, uin
         // If the item is not creator by the player, block equip.
         if (pItem->GetGuidValue(ITEM_FIELD_CREATOR) != player->GetGUID())
         {
-            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_SELFCRAFTED);
+            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player->GetGUID(), HARDMODE_RESTRICT_SELFCRAFTED);
             std::string alert = Acore::StringFormatFmt("You cannot equip this item while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
             sHardModeHandler->SendAlert(player, alert);
 
@@ -109,7 +109,7 @@ bool HardModeHooksPlayerScript::CanCastItemUseSpell(Player* player, Item* item, 
         return true;
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_SELFCRAFTED))
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_SELFCRAFTED))
     {
         // Exclude spell ids in the `hardmode_selfcraft_exclude` table.
         if (sHardModeHandler->IsSelfCraftSpellExcluded(item->GetTemplate()->Spells[0].SpellId))
@@ -135,7 +135,7 @@ bool HardModeHooksPlayerScript::CanCastItemUseSpell(Player* player, Item* item, 
 
         if (item->GetGuidValue(ITEM_FIELD_CREATOR) != player->GetGUID())
         {
-            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_SELFCRAFTED);
+            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player->GetGUID(), HARDMODE_RESTRICT_SELFCRAFTED);
             std::string alert = Acore::StringFormatFmt("You cannot use this item while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
             sHardModeHandler->SendAlert(player, alert);
 
@@ -158,9 +158,9 @@ void HardModeHooksPlayerScript::OnPlayerResurrect(Player* player, float /*restor
         return;
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_PERMADEATH))
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_PERMADEATH))
     {
-        sHardModeHandler->TryShadowBanPlayer(player);
+        sHardModeHandler->TryShadowBanPlayer(player->GetGUID());
     }
 
     sHardModeHandler->ValidatePlayerAuras(player);
@@ -178,9 +178,9 @@ void HardModeHooksPlayerScript::OnPlayerReleasedGhost(Player* player)
         return;
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_PERMADEATH))
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_PERMADEATH))
     {
-        sHardModeHandler->TryShadowBanPlayer(player);
+        sHardModeHandler->TryShadowBanPlayer(player->GetGUID());
     }
 }
 
@@ -196,7 +196,7 @@ bool HardModeHooksPlayerScript::CanRepopAtGraveyard(Player* player)
         return true;
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_PERMADEATH))
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_PERMADEATH))
     {
         return false;
     }
@@ -211,7 +211,7 @@ bool HardModeHooksPlayerScript::OnBeforeTeleport(Player* player, uint32 mapId, f
         return true;
     }
 
-    if (sHardModeHandler->IsPlayerShadowBanned(player))
+    if (sHardModeHandler->IsPlayerShadowBanned(player->GetGUID()))
     {
         return (mapId == HARDMODE_AREA_AZSHARACRATER); // Only allow teleports for Shadowban players if it's to the azshara crater / shadow tomb.
     }
@@ -226,9 +226,9 @@ void HardModeHooksPlayerScript::OnPlayerLearnTalents(Player* player, uint32 /*ta
         return;
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_TALENTS))
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_INTERACT_TALENTS))
     {
-        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_INTERACT_TALENTS);
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player->GetGUID(), HARDMODE_RESTRICT_INTERACT_TALENTS);
         std::string alert = Acore::StringFormatFmt("You cannot use talent points while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
         sHardModeHandler->SendAlert(player, alert);
 
@@ -248,38 +248,38 @@ bool HardModeHooksPlayerScript::CanInitTrade(Player* player, Player* target)
         return true;
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_TRADE))
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_INTERACT_TRADE))
     {
         player->GetSession()->SendTradeStatus(TRADE_STATUS_TRADE_CANCELED);
         target->GetSession()->SendTradeStatus(TRADE_STATUS_TRADE_CANCELED);
 
-        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_INTERACT_TRADE);
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player->GetGUID(), HARDMODE_RESTRICT_INTERACT_TRADE);
         std::string alert = Acore::StringFormatFmt("You cannot trade players while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
         sHardModeHandler->SendAlert(player, alert);
 
         return false;
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(target, HARDMODE_RESTRICT_INTERACT_TRADE))
+    if (sHardModeHandler->PlayerHasRestriction(target->GetGUID(), HARDMODE_RESTRICT_INTERACT_TRADE))
     {
         player->GetSession()->SendTradeStatus(TRADE_STATUS_TRADE_CANCELED);
         target->GetSession()->SendTradeStatus(TRADE_STATUS_TRADE_CANCELED);
 
-        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(target, HARDMODE_RESTRICT_INTERACT_TRADE);
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(target->GetGUID(), HARDMODE_RESTRICT_INTERACT_TRADE);
         std::string alert = Acore::StringFormatFmt("You cannot trade players in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
         sHardModeHandler->SendAlert(player, alert);
 
         return false;
     }
 
-    if (sHardModeHandler->CanTaintPlayer(player))
+    if (sHardModeHandler->CanTaintPlayer(player->GetGUID()))
     {
-        sHardModeHandler->UpdatePlayerTainted(player, true);
+        sHardModeHandler->UpdatePlayerTainted(player->GetGUID(), true);
     }
 
-    if (sHardModeHandler->CanTaintPlayer(target))
+    if (sHardModeHandler->CanTaintPlayer(target->GetGUID()))
     {
-        sHardModeHandler->UpdatePlayerTainted(target, true);
+        sHardModeHandler->UpdatePlayerTainted(target->GetGUID(), true);
     }
 
     return true;
@@ -297,52 +297,30 @@ bool HardModeHooksPlayerScript::CanSendMail(Player* player, ObjectGuid receiverG
         return true;
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_MAIL_SEND))
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_INTERACT_MAIL_SEND))
     {
-        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_INTERACT_MAIL_SEND);
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player->GetGUID(), HARDMODE_RESTRICT_INTERACT_MAIL_SEND);
         std::string alert = Acore::StringFormatFmt("You cannot send mail to other players while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
         sHardModeHandler->SendAlert(player, alert);
         return false;
     }
 
-    Player* target = ObjectAccessor::FindPlayer(receiverGuid);
-    if (!target)
+    if (sHardModeHandler->PlayerHasRestriction(receiverGuid, HARDMODE_RESTRICT_INTERACT_MAIL_RECEIVE))
     {
-        auto targetSettings = sHardModeHandler->GetPlayerSettingsFromDatabase(receiverGuid);
-        if (sHardModeHandler->OfflinePlayerHasRestriction(targetSettings, HARDMODE_RESTRICT_INTERACT_MAIL_RECEIVE))
-        {
-            auto restrictedModes = sHardModeHandler->GetOfflinePlayerModesFromRestriction(targetSettings, HARDMODE_RESTRICT_INTERACT_MAIL_RECEIVE);
-            std::string alert = Acore::StringFormatFmt("You cannot send mail to players in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
-            sHardModeHandler->SendAlert(player, alert);
-            return false;
-        }
-    }
-    else
-    {
-        if (sHardModeHandler->PlayerHasRestriction(target, HARDMODE_RESTRICT_INTERACT_MAIL_RECEIVE))
-        {
-            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(target, HARDMODE_RESTRICT_INTERACT_MAIL_RECEIVE);
-            std::string alert = Acore::StringFormatFmt("You cannot send mail to players in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
-            sHardModeHandler->SendAlert(player, alert);
-            return false;
-        }
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(receiverGuid, HARDMODE_RESTRICT_INTERACT_MAIL_RECEIVE);
+        std::string alert = Acore::StringFormatFmt("You cannot send mail to players in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+        sHardModeHandler->SendAlert(player, alert);
+        return false;
     }
 
-    if (sHardModeHandler->CanTaintPlayer(player))
+    if (sHardModeHandler->CanTaintPlayer(player->GetGUID()))
     {
-        sHardModeHandler->UpdatePlayerTainted(player, true);
+        sHardModeHandler->UpdatePlayerTainted(player->GetGUID(), true);
     }
 
-    if (target)
+    if (sHardModeHandler->CanTaintPlayer(receiverGuid))
     {
-        if (sHardModeHandler->CanTaintPlayer(target))
-        {
-            sHardModeHandler->UpdatePlayerTainted(target, true);
-        }
-    }
-    else
-    {
-        sHardModeHandler->UpdateOfflinePlayerTainted(receiverGuid, true);
+        sHardModeHandler->UpdatePlayerTainted(receiverGuid, true);
     }
 
     return true;
@@ -355,9 +333,9 @@ bool HardModeHooksPlayerScript::CanJoinLfg(Player* player, uint8 /*roles*/, lfg:
         return true;
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_LFG))
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_INTERACT_LFG))
     {
-        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_INTERACT_LFG);
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player->GetGUID(), HARDMODE_RESTRICT_INTERACT_LFG);
         std::string alert = Acore::StringFormatFmt("You cannot join looking for group while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
         sHardModeHandler->SendAlert(player, alert);
         return false;
@@ -380,46 +358,46 @@ bool HardModeHooksPlayerScript::CanGroupInvite(Player* player, std::string& memb
         return true;
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(target, HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY))
+    if (sHardModeHandler->PlayerHasRestriction(target->GetGUID(), HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY))
     {
         if (!sHardModeHandler->HasMatchingModesWithRestriction(player, target, HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY))
         {
-            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(target, HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY);
+            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(target->GetGUID(), HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY);
             std::string alert = Acore::StringFormatFmt("You cannot invite players if you aren't in the cross-play {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
             sHardModeHandler->SendAlert(player, alert);
             return false;
         }
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY))
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY))
     {
         if (!sHardModeHandler->HasMatchingModesWithRestriction(player, target, HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY))
         {
-            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY);
+            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player->GetGUID(), HARDMODE_RESTRICT_INTERACT_GROUP_CROSSPLAY);
             std::string alert = Acore::StringFormatFmt("You cannot invite players that aren't in the cross-play {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
             sHardModeHandler->SendAlert(player, alert);
             return false;
         }
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_GROUP))
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_INTERACT_GROUP))
     {
-        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_INTERACT_GROUP);
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player->GetGUID(), HARDMODE_RESTRICT_INTERACT_GROUP);
         std::string alert = Acore::StringFormatFmt("You cannot invite players while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
         sHardModeHandler->SendAlert(player, alert);
         return false;
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(target, HARDMODE_RESTRICT_INTERACT_GROUP))
+    if (sHardModeHandler->PlayerHasRestriction(target->GetGUID(), HARDMODE_RESTRICT_INTERACT_GROUP))
     {
-        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(target, HARDMODE_RESTRICT_INTERACT_GROUP);
+        auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(target->GetGUID(), HARDMODE_RESTRICT_INTERACT_GROUP);
         std::string alert = Acore::StringFormatFmt("You cannot invite players in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
         sHardModeHandler->SendAlert(player, alert);
         return false;
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_INTERACT_GROUP_RANGE) ||
-        sHardModeHandler->PlayerHasRestriction(target, HARDMODE_RESTRICT_INTERACT_GROUP_RANGE))
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_INTERACT_GROUP_RANGE) ||
+        sHardModeHandler->PlayerHasRestriction(target->GetGUID(), HARDMODE_RESTRICT_INTERACT_GROUP_RANGE))
     {
         uint32 pLevel = player->GetLevel();
         uint32 tLevel = target->GetLevel();
@@ -428,7 +406,7 @@ bool HardModeHooksPlayerScript::CanGroupInvite(Player* player, std::string& memb
         uint32 result = std::abs(int32(pLevel - tLevel));
         if (result > range)
         {
-            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(target, HARDMODE_RESTRICT_INTERACT_GROUP);
+            auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(target->GetGUID(), HARDMODE_RESTRICT_INTERACT_GROUP);
             std::string alert = Acore::StringFormatFmt("You cannot invite players who are further than {} levels from you.", range);
             sHardModeHandler->SendAlert(player, alert);
             return false;

@@ -56,9 +56,9 @@ void HardModeHooksUnitScript::OnDamage(Unit* attacker, Unit* /*victim*/, uint32&
         return;
     }
 
-    if (sHardModeHandler->PlayerHasRestriction(player, HARDMODE_RESTRICT_PACIFIST))
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_PACIFIST))
     {
-        auto modes = sHardModeHandler->GetPlayerModesFromRestriction(player, HARDMODE_RESTRICT_PACIFIST);
+        auto modes = sHardModeHandler->GetPlayerModesFromRestriction(player->GetGUID(), HARDMODE_RESTRICT_PACIFIST);
         for (auto mode : modes)
         {
             if (!mode.Enabled)
@@ -66,7 +66,7 @@ void HardModeHooksUnitScript::OnDamage(Unit* attacker, Unit* /*victim*/, uint32&
                 continue;
             }
 
-            sHardModeHandler->UpdateModeForPlayer(player, mode.Id, false);
+            sHardModeHandler->UpdateModeForPlayer(player->GetGUID(), mode.Id, false);
         }
 
         // TODO: Update this to alert in the chat so the player is more aware.

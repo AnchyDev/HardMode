@@ -3,6 +3,8 @@
 
 #include "Common.h"
 
+#include <vector>
+
 enum HardModeConstants
 {
     HARDMODE_MAIL_SENDER = 441102,
@@ -22,6 +24,13 @@ struct HardModeInfo
     std::string Description;
     uint64 Restrictions;
     bool Enabled;
+};
+
+struct HardModePlayerSettings
+{
+    std::vector<uint8> Modes;
+    bool Tainted;
+    bool ShadowBanned;
 };
 
 enum HardModeRestrictions

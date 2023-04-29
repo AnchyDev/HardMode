@@ -8,6 +8,8 @@
 #include "StringConvert.h"
 #include "Tokenize.h"
 
+#include <boost/lexical_cast.hpp>
+
 #include <sstream>
 
 bool HardModeHandler::IsHardModeEnabled()
@@ -61,6 +63,110 @@ void HardModeHandler::ClearHardModes()
 std::map<uint8, HardModeInfo>* HardModeHandler::GetHardModes()
 {
     return &_hardModes;
+}
+
+HardModeInfo* HardModeHandler::GetHardModeFromId(uint8 id)
+{
+    auto modes = sHardModeHandler->GetHardModes();
+
+    for (auto it = modes->begin(); it != modes->end(); ++it)
+    {
+        auto mode = it->second;
+
+        if (mode.Id == id)
+        {
+            return &mode;
+        }
+    }
+
+    return nullptr;
+}
+
+void HardModeHandler::LoadPlayerSettings()
+{
+    QueryResult qResult = CharacterDatabase.Query("SELECT * FROM `hardmode_player_settings`");
+
+    if (qResult)
+    {
+        uint32 count = 0;
+
+        do
+        {
+            Field* fields = qResult->Fetch();
+
+            uint32 guid = fields[0].Get<int64>();
+            std::string modes = fields[1].Get<std::string>();
+            bool tainted = fields[2].Get<bool>();
+            bool shadowban = fields[3].Get<bool>();
+
+            std::vector<std::string_view> tokens = Acore::Tokenize(modes, ' ', false);
+            HardModePlayerSettings playerSettings;
+            std::vector<uint8> playerModes;
+
+            for (auto token : tokens)
+            {
+                try
+                {
+                    uint32 modeId = boost::lexical_cast<uint32>(token);
+
+                    auto hardMode = sHardModeHandler->GetHardModeFromId(modeId);
+                    if (!hardMode)
+                    {
+                        continue;
+                    }
+
+                    playerModes.push_back(hardMode->Id);
+                }
+                catch (const boost::bad_lexical_cast&)
+                {
+                    LOG_ERROR("module", "Detected bad mode settings format for column 'mode' and guid '{}' in 'hardmode_player_settings' table.", guid);
+                }
+            }
+
+            playerSettings.Modes = playerModes;
+            playerSettings.Tainted = tainted;
+            playerSettings.ShadowBanned = shadowban;
+
+            sHardModeHandler->GetPlayerSettings()->emplace(guid, playerSettings);
+
+            count++;
+        } while (qResult->NextRow());
+
+        LOG_INFO("module", "Loaded '{}' rows from 'hardmode_player_settings' table.", count);
+    }
+    else
+    {
+        LOG_INFO("module", "Loaded '0' rows from 'hardmode_player_settings' table.");
+    }
+}
+
+void HardModeHandler::ClearPlayerSettings()
+{
+    _playerSettings.clear();
+}
+
+std::map<uint64, HardModePlayerSettings>* HardModeHandler::GetPlayerSettings()
+{
+    return &_playerSettings;
+}
+
+HardModePlayerSettings* HardModeHandler::GetPlayerSetting(ObjectGuid guid)
+{
+    auto playerSettings = sHardModeHandler->GetPlayerSettings();
+
+    auto it = playerSettings->find(guid.GetRawValue());
+    if (it == playerSettings->end())
+    {
+        HardModePlayerSettings _settings;
+        std::vector<uint8> _modes;
+        _settings.Modes = _modes;
+        _settings.Tainted = false;
+        _settings.ShadowBanned = false;
+
+        it = playerSettings->emplace(guid.GetRawValue(), _settings).first;
+    }
+
+    return &it->second;
 }
 
 void HardModeHandler::LoadSelfCraftExcludeIds()
@@ -220,7 +326,7 @@ void HardModeHandler::ValidatePlayerAuras(Player* player)
 
         for (auto aura : *auras)
         {
-            if (sHardModeHandler->IsModeEnabledForPlayer(player, mode))
+            if (sHardModeHandler->IsModeEnabledForPlayer(player->GetGUID(), mode))
             {
                 if (!player->HasAura(aura))
                 {
@@ -474,51 +580,66 @@ void HardModeHandler::SendAlert(Player* player, std::string message)
     player->SendDirectMessage(&data);
 }
 
-bool HardModeHandler::IsModeEnabledForPlayer(Player* player, uint8 mode)
+bool HardModeHandler::IsModeEnabledForPlayer(ObjectGuid guid, uint8 mode)
 {
-    if (!player)
+    if (!guid)
     {
         return false;
     }
 
-    return player->GetPlayerSetting("HardMode", mode).value > 0;
+    auto playerModes = sHardModeHandler->GetPlayerSetting(guid)->Modes;
+    if (playerModes.size() < 1)
+    {
+        return false;
+    }
+
+    for (auto it = playerModes.begin(); it != playerModes.end(); ++it)
+    {
+        auto pMode = *it;
+        if (pMode == mode)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
-bool HardModeHandler::IsModeEnabledForPlayerSettings(PlayerSettingMap* settingMap, uint8 mode)
+void HardModeHandler::UpdateModeForPlayer(ObjectGuid guid, uint8 mode, bool state)
 {
-    if (!settingMap)
-    {
-        return false;
-    }
-
-    auto itr = settingMap->find("HardMode");
-    if (itr == settingMap->end())
-    {
-        return false;
-    }
-
-
-    auto setting = itr->second;
-    if (setting.size() < (mode + 1))
-    {
-        return false;
-    }
-
-    return setting[mode].value > 0;
-}
-
-void HardModeHandler::UpdateModeForPlayer(Player* player, uint8 mode, bool state)
-{
-    if (!player)
+    if (!guid)
     {
         return;
     }
 
-    player->UpdatePlayerSetting("HardMode", mode, state);
-    sHardModeHandler->ValidatePlayerAuras(player);
+    auto modes = &sHardModeHandler->GetPlayerSetting(guid)->Modes;
+
+    auto it = std::find(modes->begin(), modes->end(), mode);
+
+    if (state)
+    {
+        if (it == modes->end())
+        {
+            modes->push_back(mode);
+        }
+    }
+    else
+    {
+        if (it != modes->end())
+        {
+            modes->erase(it);
+        }
+    }
+
+    auto player = ObjectAccessor::FindPlayer(guid);
+
+    if (player)
+    {
+        sHardModeHandler->ValidatePlayerAuras(player);
+    }
 }
 
-bool HardModeHandler::PlayerHasRestriction(Player* player, uint32 restriction)
+bool HardModeHandler::PlayerHasRestriction(ObjectGuid guid, uint32 restriction)
 {
     auto modes = sHardModeHandler->GetHardModes();
 
@@ -536,7 +657,7 @@ bool HardModeHandler::PlayerHasRestriction(Player* player, uint32 restriction)
             continue;
         }
 
-        if (!sHardModeHandler->IsModeEnabledForPlayer(player, mode.Id))
+        if (!sHardModeHandler->IsModeEnabledForPlayer(guid, mode.Id))
         {
             continue;
         }
@@ -553,42 +674,7 @@ bool HardModeHandler::PlayerHasRestriction(Player* player, uint32 restriction)
     return false;
 }
 
-bool HardModeHandler::OfflinePlayerHasRestriction(PlayerSettingMap* settingMap, uint32 restriction)
-{
-    auto modes = sHardModeHandler->GetHardModes();
-
-    for (auto it = modes->begin(); it != modes->end(); ++it)
-    {
-        auto mode = it->second;
-
-        if (!mode.Enabled)
-        {
-            continue;
-        }
-
-        if (mode.Restrictions == HARDMODE_RESTRICT_NONE)
-        {
-            continue;
-        }
-
-        if (!sHardModeHandler->IsModeEnabledForPlayerSettings(settingMap, mode.Id))
-        {
-            continue;
-        }
-
-        auto rMask = (1 << restriction);
-        bool hasRestriction = (mode.Restrictions & rMask) == rMask;
-
-        if (hasRestriction)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-std::vector<HardModeInfo> HardModeHandler::GetPlayerModesFromRestriction(Player* player, uint32 restriction)
+std::vector<HardModeInfo> HardModeHandler::GetPlayerModesFromRestriction(ObjectGuid guid, uint32 restriction)
 {
     auto modes = sHardModeHandler->GetHardModes();
     std::vector<HardModeInfo> enabledModes;
@@ -607,43 +693,7 @@ std::vector<HardModeInfo> HardModeHandler::GetPlayerModesFromRestriction(Player*
             continue;
         }
 
-        if (!sHardModeHandler->IsModeEnabledForPlayer(player, mode.Id))
-        {
-            continue;
-        }
-
-        auto rMask = (1 << restriction);
-        bool hasRestriction = (mode.Restrictions & rMask) == rMask;
-
-        if (hasRestriction)
-        {
-            enabledModes.push_back(mode);
-        }
-    }
-
-    return enabledModes;
-}
-
-std::vector<HardModeInfo> HardModeHandler::GetOfflinePlayerModesFromRestriction(PlayerSettingMap* settingMap, uint32 restriction)
-{
-    auto modes = sHardModeHandler->GetHardModes();
-    std::vector<HardModeInfo> enabledModes;
-
-    for (auto it = modes->begin(); it != modes->end(); ++it)
-    {
-        auto mode = it->second;
-
-        if (!mode.Enabled)
-        {
-            continue;
-        }
-
-        if (mode.Restrictions == HARDMODE_RESTRICT_NONE)
-        {
-            continue;
-        }
-
-        if (!sHardModeHandler->IsModeEnabledForPlayerSettings(settingMap, mode.Id))
+        if (!sHardModeHandler->IsModeEnabledForPlayer(guid, mode.Id))
         {
             continue;
         }
@@ -695,8 +745,8 @@ bool HardModeHandler::HasMatchingModesWithRestriction(Player* player, Player* ta
             continue;
         }
 
-        bool flag1 = (sHardModeHandler->IsModeEnabledForPlayer(player, mode.Id));
-        bool flag2 = (sHardModeHandler->IsModeEnabledForPlayer(target, mode.Id));
+        bool flag1 = (sHardModeHandler->IsModeEnabledForPlayer(player->GetGUID(), mode.Id));
+        bool flag2 = (sHardModeHandler->IsModeEnabledForPlayer(target->GetGUID(), mode.Id));
 
         if (flag1 != flag2)
         {
@@ -723,25 +773,32 @@ bool HardModeHandler::ModeHasRestriction(uint8 mode, uint32 restriction)
     return hasRestriction;
 }
 
-bool HardModeHandler::IsPlayerTainted(Player* player)
+bool HardModeHandler::IsPlayerTainted(ObjectGuid guid)
 {
-    return player->GetPlayerSetting("HardModeTainted", 0).value > 0;
+    auto playerSettings = sHardModeHandler->GetPlayerSetting(guid);
+    if (!playerSettings)
+    {
+        return false;
+    }
+
+    return playerSettings->Tainted;
 }
 
-void HardModeHandler::UpdatePlayerTainted(Player* player, bool state)
+void HardModeHandler::UpdatePlayerTainted(ObjectGuid guid, bool state)
 {
-    player->UpdatePlayerSetting("HardModeTainted", 0, state);
+    auto playerSettings = sHardModeHandler->GetPlayerSetting(guid);
+    if (!playerSettings)
+    {
+        return;
+    }
+
+    playerSettings->Tainted = state;
 }
 
-void HardModeHandler::UpdateOfflinePlayerTainted(ObjectGuid guid, bool state)
+bool HardModeHandler::CanTaintPlayer(ObjectGuid guid)
 {
-    std::string sState = state ? "1" : "0";
-    CharacterDatabase.Execute("INSERT INTO character_settings (guid, source, data) VALUES ({}, 'HardModeTainted', '{}') ON DUPLICATE KEY UPDATE data = '{}'", guid.GetRawValue(), sState, sState);
-}
-
-bool HardModeHandler::CanTaintPlayer(Player* player)
-{
-    if (player->getClass() == CLASS_DEATH_KNIGHT && player->GetMapId() == HARDMODE_AREA_EBONHOLD)
+    auto player = ObjectAccessor::FindPlayer(guid);
+    if (player && player->getClass() == CLASS_DEATH_KNIGHT && player->GetMapId() == HARDMODE_AREA_EBONHOLD)
     {
         if (!player->IsQuestRewarded(HARDMODE_QUEST_DK_INITIAL))
         {
@@ -752,43 +809,65 @@ bool HardModeHandler::CanTaintPlayer(Player* player)
     return true;
 }
 
-bool HardModeHandler::IsPlayerShadowBanned(Player* player)
+bool HardModeHandler::IsPlayerShadowBanned(ObjectGuid guid)
 {
-    return player->GetPlayerSetting("HardModeShadowBanned", 0).value > 0;
+    auto playerSettings = sHardModeHandler->GetPlayerSetting(guid);
+    if (!playerSettings)
+    {
+        return false;
+    }
+
+    return playerSettings->ShadowBanned;
 }
 
-void HardModeHandler::UpdatePlayerShadowBanned(Player* player, bool state)
+void HardModeHandler::UpdatePlayerShadowBanned(ObjectGuid guid, bool state)
 {
-    player->UpdatePlayerSetting("HardModeShadowBanned", 0, state);
-
-    if (state)
+    auto playerSettings = sHardModeHandler->GetPlayerSetting(guid);
+    if (!playerSettings)
     {
-        if (!player->HasAura(HARDMODE_AURA_SHADOWBAN))
-        {
-            player->AddAura(HARDMODE_AURA_SHADOWBAN, player);
-        }
+        return;
     }
-    else
+
+    playerSettings->ShadowBanned = state;
+
+    auto player = ObjectAccessor::FindPlayer(guid);
+
+    if (player)
     {
-        if (player->HasAura(HARDMODE_AURA_SHADOWBAN))
+        if (state)
         {
-            player->RemoveAura(HARDMODE_AURA_SHADOWBAN);
+            if (!player->HasAura(HARDMODE_AURA_SHADOWBAN))
+            {
+                player->AddAura(HARDMODE_AURA_SHADOWBAN, player);
+            }
+        }
+        else
+        {
+            if (player->HasAura(HARDMODE_AURA_SHADOWBAN))
+            {
+                player->RemoveAura(HARDMODE_AURA_SHADOWBAN);
+            }
         }
     }
 }
 
-void HardModeHandler::TryShadowBanPlayer(Player* player)
+void HardModeHandler::TryShadowBanPlayer(ObjectGuid guid)
 {
-    sHardModeHandler->UpdatePlayerShadowBanned(player, true);
+    sHardModeHandler->UpdatePlayerShadowBanned(guid, true);
 
-    WorldLocation worldLoc(HARDMODE_AREA_AZSHARACRATER, -614.38, -239.69, 379.35, 0.69); // Azshara Crater / Shadow Tomb
-    player->TeleportTo(worldLoc);
-    player->SetHomebind(worldLoc, HARDMODE_AREA_SHADOWTOMB);
+    auto player = ObjectAccessor::FindPlayer(guid);
 
-    if (!player->IsAlive())
+    if (player)
     {
-        player->ResurrectPlayer(100, false);
-        player->RemoveCorpse();
+        WorldLocation worldLoc(HARDMODE_AREA_AZSHARACRATER, -614.38, -239.69, 379.35, 0.69); // Azshara Crater / Shadow Tomb
+        player->TeleportTo(worldLoc);
+        player->SetHomebind(worldLoc, HARDMODE_AREA_SHADOWTOMB);
+
+        if (!player->IsAlive())
+        {
+            player->ResurrectPlayer(100, false);
+            player->RemoveCorpse();
+        }
     }
 }
 
@@ -800,7 +879,7 @@ std::string HardModeHandler::GetNamesFromEnabledModes(Player* player)
     auto hardModes = sHardModeHandler->GetHardModes();
     for (auto mode = hardModes->begin(); mode != hardModes->end(); ++mode)
     {
-        if (sHardModeHandler->IsModeEnabledForPlayer(player, mode->second.Id))
+        if (sHardModeHandler->IsModeEnabledForPlayer(player->GetGUID(), mode->second.Id))
         {
             modes.push_back(mode->second);
         }

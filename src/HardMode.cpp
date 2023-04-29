@@ -31,7 +31,7 @@ void HardModePlayerScript::OnLevelChanged(Player* player, uint8 /*oldLevel*/)
     {
         auto mode = it->second;
 
-        if (!sHardModeHandler->IsModeEnabledForPlayer(player, mode.Id))
+        if (!sHardModeHandler->IsModeEnabledForPlayer(player->GetGUID(), mode.Id))
         {
             continue;
         }
@@ -80,12 +80,14 @@ void HardModeWorldScript::OnAfterConfigLoad(bool reload)
     if (reload)
     {
         sHardModeHandler->ClearHardModes();
+        sHardModeHandler->ClearPlayerSettings();
         sHardModeHandler->ClearSelfCraftExcludeIds();
         sHardModeHandler->ClearRewards();
         sHardModeHandler->ClearAuras();
     }
 
     sHardModeHandler->LoadHardModes();
+    sHardModeHandler->LoadPlayerSettings();
     sHardModeHandler->LoadSelfCraftExcludeIds();
     sHardModeHandler->LoadRewards();
     sHardModeHandler->LoadAuras();
