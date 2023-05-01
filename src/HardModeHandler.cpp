@@ -687,6 +687,15 @@ void HardModeHandler::UpdateModeForPlayer(ObjectGuid guid, uint8 mode, bool stat
     if (player)
     {
         sHardModeHandler->ValidatePlayerAuras(player);
+
+        if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_SMALLFISH))
+        {
+            sHardModeHandler->UpdatePlayerScaleSpeed(player, SMALLFISH_SCALE);
+        }
+        else
+        {
+            sHardModeHandler->UpdatePlayerScaleSpeed(player, 1);
+        }
     }
 }
 
