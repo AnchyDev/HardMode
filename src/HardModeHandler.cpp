@@ -145,6 +145,34 @@ void HardModeHandler::ClearPlayerSettings()
     _playerSettings.clear();
 }
 
+void HardModeHandler::SavePlayerSettings()
+{
+    auto settings = sHardModeHandler->GetPlayerSettings();
+    for (auto it = settings->begin(); it != settings->end(); ++it)
+    {
+        auto guid = it->first;
+        auto setting = it->second;
+
+        sHardModeHandler->SavePlayerSetting(guid, &setting);
+    }
+}
+
+void HardModeHandler::SavePlayerSetting(uint64 guid, HardModePlayerSettings* settings)
+{
+    std::stringstream ss;
+    for (const uint8& mode : settings->Modes)
+    {
+        ss << std::to_string(mode);
+        ss << " ";
+    }
+
+    std::string sModes = ss.str();
+
+    CharacterDatabase.Execute("INSERT INTO hardmode_player_settings (guid, modes, tainted, shadowban) VALUES ({}, '{}', {}, {}) ON DUPLICATE KEY UPDATE modes = '{}', tainted = {}, shadowban = {}",
+        guid, sModes, settings->Tainted, settings->ShadowBanned,
+        sModes, settings->Tainted, settings->ShadowBanned);
+}
+
 std::map<uint64, HardModePlayerSettings>* HardModeHandler::GetPlayerSettings()
 {
     return &_playerSettings;

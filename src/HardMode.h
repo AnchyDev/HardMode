@@ -10,6 +10,7 @@ public:
 
 private:
     void OnLevelChanged(Player* player, uint8 oldLevel) override;
+    void OnLogout(Player* player) override;
 };
 
 class HardModeWorldScript : WorldScript
@@ -19,6 +20,7 @@ public:
 
 private:
     void OnAfterConfigLoad(bool reload) override;
+    void OnShutdown() override;
 };
 
 #endif // MODULE_HARDMODE_H

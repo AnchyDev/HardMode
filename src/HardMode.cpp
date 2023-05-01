@@ -70,6 +70,20 @@ void HardModePlayerScript::OnLevelChanged(Player* player, uint8 /*oldLevel*/)
     }
 }
 
+void HardModePlayerScript::OnLogout(Player* player)
+{
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
+    auto guid = player->GetGUID();
+    if (auto setting = sHardModeHandler->GetPlayerSetting(guid))
+    {
+        sHardModeHandler->SavePlayerSetting(player->GetGUID().GetRawValue(), setting);
+    }
+}
+
 void HardModeWorldScript::OnAfterConfigLoad(bool reload)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
@@ -79,6 +93,8 @@ void HardModeWorldScript::OnAfterConfigLoad(bool reload)
 
     if (reload)
     {
+        sHardModeHandler->SavePlayerSettings();
+
         sHardModeHandler->ClearHardModes();
         sHardModeHandler->ClearPlayerSettings();
         sHardModeHandler->ClearSelfCraftExcludeIds();
@@ -91,6 +107,16 @@ void HardModeWorldScript::OnAfterConfigLoad(bool reload)
     sHardModeHandler->LoadSelfCraftExcludeIds();
     sHardModeHandler->LoadRewards();
     sHardModeHandler->LoadAuras();
+}
+
+void HardModeWorldScript::OnShutdown()
+{
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
+    sHardModeHandler->SavePlayerSettings();
 }
 
 void SC_AddHardModeScripts()
