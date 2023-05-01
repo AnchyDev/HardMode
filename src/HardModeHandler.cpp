@@ -388,29 +388,26 @@ void HardModeHandler::ValidatePlayerAuras(Player* player)
     }
 }
 
-void HardModeHandler::UpdateSmallFishScale(Player* player)
+void HardModeHandler::UpdatePlayerScaleSpeed(Player* player, float scaleSpeed)
 {
-    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_SMALLFISH))
+    float scale = scaleSpeed;
+    float move = scaleSpeed;
+    bool forced = true;
+
+    player->SetObjectScale(scale);
+
+    for (auto i = 0; i < MAX_MOVE_TYPE; ++i)
     {
-        float scale = 0.5f;
-        float move = scale;
-        bool forced = true;
-
-        player->SetObjectScale(scale);
-
-        for (auto i = 0; i < MAX_MOVE_TYPE; ++i)
+        // Slow rotation is cancer, so skip adjusting these.
+        if (i == UnitMoveType::MOVE_TURN_RATE || i == UnitMoveType::MOVE_PITCH_RATE)
         {
-            // Slow rotation is cancer, so skip adjusting these.
-            if (i == UnitMoveType::MOVE_TURN_RATE || i == UnitMoveType::MOVE_PITCH_RATE)
-            {
-                continue;
-            }
-
-            auto moveType = static_cast<UnitMoveType>(i);
-
-            player->UpdateSpeed(moveType, forced);
-            player->SetSpeed(moveType, player->GetSpeedRate(moveType) * move, forced);
+            continue;
         }
+
+        auto moveType = static_cast<UnitMoveType>(i);
+
+        player->UpdateSpeed(moveType, forced);
+        player->SetSpeed(moveType, player->GetSpeedRate(moveType) * move, forced);
     }
 }
 

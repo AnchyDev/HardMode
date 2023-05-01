@@ -423,11 +423,14 @@ void HardModeHooksPlayerScript::OnLogin(Player* player)
         return;
     }
 
-    // Schedule due to issues..
-    sHardModeHandler->GetScheduler()->Schedule(1s, [player](TaskContext task)
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_SMALLFISH))
     {
-        sHardModeHandler->UpdateSmallFishScale(player);
-    });
+        // Schedule due to issues..
+        sHardModeHandler->GetScheduler()->Schedule(1s, [player](TaskContext /*task*/)
+        {
+            sHardModeHandler->UpdatePlayerScaleSpeed(player, SMALLFISH_SCALE);
+        });
+    }
     
     sHardModeHandler->ValidatePlayerAuras(player);
 }

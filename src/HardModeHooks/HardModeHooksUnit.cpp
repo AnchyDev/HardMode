@@ -24,11 +24,14 @@ void HardModeHooksUnitScript::OnAuraApply(Unit* unit, Aura* aura)
         return;
     }
 
-    // Schedule due to issues..
-    sHardModeHandler->GetScheduler()->Schedule(50ms, [player](TaskContext task)
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_SMALLFISH))
     {
-        sHardModeHandler->UpdateSmallFishScale(player);
-    });
+        // Schedule due to issues..
+        sHardModeHandler->GetScheduler()->Schedule(50ms, [player](TaskContext /*task*/)
+        {
+            sHardModeHandler->UpdatePlayerScaleSpeed(player, SMALLFISH_SCALE);
+        });
+    }
 }
 
 void HardModeHooksUnitScript::OnAuraRemove(Unit* unit, AuraApplication* /*auraApp*/, AuraRemoveMode mode)
@@ -54,11 +57,14 @@ void HardModeHooksUnitScript::OnAuraRemove(Unit* unit, AuraApplication* /*auraAp
         return;
     }
 
-    // Schedule due to issues..
-    sHardModeHandler->GetScheduler()->Schedule(50ms, [player](TaskContext task)
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_SMALLFISH))
     {
-        sHardModeHandler->UpdateSmallFishScale(player);
-    });
+        // Schedule due to issues..
+        sHardModeHandler->GetScheduler()->Schedule(50ms, [player](TaskContext /*task*/)
+        {
+            sHardModeHandler->UpdatePlayerScaleSpeed(player, SMALLFISH_SCALE);
+        });
+    }
 
     // Don't reapply aura on death, resurrection handles reapplication already.
     if (mode == AURA_REMOVE_BY_DEATH)

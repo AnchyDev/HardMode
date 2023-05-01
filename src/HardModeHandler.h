@@ -42,7 +42,7 @@ public:
     std::vector<uint32>* GetAurasForMode(uint8 mode);
     void ValidatePlayerAuras(Player* player);
 
-    void UpdateSmallFishScale(Player* player);
+    void UpdatePlayerScaleSpeed(Player* player, float scaleSpeed);
 
     void LoadRewards();
     void ClearRewards();

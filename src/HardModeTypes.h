@@ -17,6 +17,8 @@ enum HardModeConstants
     HARDMODE_AURA_PACIFIST_FAIL = 46221
 };
 
+constexpr float SMALLFISH_SCALE = 0.5f;
+
 struct HardModeInfo
 {
     uint8 Id;
