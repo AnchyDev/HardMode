@@ -423,5 +423,11 @@ void HardModeHooksPlayerScript::OnLogin(Player* player)
         return;
     }
 
+    // Schedule due to issues..
+    sHardModeHandler->GetScheduler()->Schedule(1s, [player](TaskContext task)
+    {
+        sHardModeHandler->UpdateSmallFishScale(player);
+    });
+    
     sHardModeHandler->ValidatePlayerAuras(player);
 }

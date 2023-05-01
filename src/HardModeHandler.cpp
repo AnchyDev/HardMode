@@ -388,6 +388,39 @@ void HardModeHandler::ValidatePlayerAuras(Player* player)
     }
 }
 
+void HardModeHandler::UpdateSmallFishScale(Player* player)
+{
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_SMALLFISH))
+    {
+        float scale = 0.5f;
+        float move = scale;
+        bool forced = true;
+
+        player->SetObjectScale(scale);
+
+        player->UpdateSpeed(UnitMoveType::MOVE_RUN, forced);
+        player->SetSpeed(UnitMoveType::MOVE_RUN, player->GetSpeedRate(UnitMoveType::MOVE_RUN) * move, forced);
+
+        player->UpdateSpeed(UnitMoveType::MOVE_RUN_BACK, forced);
+        player->SetSpeed(UnitMoveType::MOVE_RUN_BACK, player->GetSpeedRate(UnitMoveType::MOVE_RUN_BACK) * move, forced);
+
+        player->UpdateSpeed(UnitMoveType::MOVE_SWIM, forced);
+        player->SetSpeed(UnitMoveType::MOVE_SWIM, player->GetSpeedRate(UnitMoveType::MOVE_SWIM) * move, forced);
+
+        player->UpdateSpeed(UnitMoveType::MOVE_SWIM_BACK, forced);
+        player->SetSpeed(UnitMoveType::MOVE_SWIM_BACK, player->GetSpeedRate(UnitMoveType::MOVE_SWIM_BACK) * move, forced);
+
+        player->UpdateSpeed(UnitMoveType::MOVE_WALK, forced);
+        player->SetSpeed(UnitMoveType::MOVE_WALK, player->GetSpeedRate(UnitMoveType::MOVE_WALK) * move, forced);
+
+        player->UpdateSpeed(UnitMoveType::MOVE_FLIGHT, forced);
+        player->SetSpeed(UnitMoveType::MOVE_FLIGHT, player->GetSpeedRate(UnitMoveType::MOVE_FLIGHT) * move, forced);
+
+        player->UpdateSpeed(UnitMoveType::MOVE_FLIGHT_BACK, forced);
+        player->SetSpeed(UnitMoveType::MOVE_FLIGHT_BACK, player->GetSpeedRate(UnitMoveType::MOVE_FLIGHT_BACK) * move, forced);
+    }
+}
+
 void HardModeHandler::LoadRewards()
 {
     QueryResult qResult = WorldDatabase.Query("SELECT `mode`, `reward_level`, `reward_type`, `reward_id`, `reward_count` FROM `hardmode_rewards`");

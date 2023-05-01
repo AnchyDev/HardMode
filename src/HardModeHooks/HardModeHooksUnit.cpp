@@ -1,6 +1,36 @@
 #include "HardModeHooks/HardModeHooksUnit.h"
 #include "HardModeHandler.h"
 
+void HardModeHooksUnitScript::OnAuraApply(Unit* unit, Aura* aura)
+{
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
+    if (!unit)
+    {
+        return;
+    }
+
+    if (!unit->IsPlayer())
+    {
+        return;
+    }
+
+    Player* player = unit->ToPlayer();
+    if (!player || !player->IsInWorld())
+    {
+        return;
+    }
+
+    // Schedule due to issues..
+    sHardModeHandler->GetScheduler()->Schedule(50ms, [player](TaskContext task)
+    {
+        sHardModeHandler->UpdateSmallFishScale(player);
+    });
+}
+
 void HardModeHooksUnitScript::OnAuraRemove(Unit* unit, AuraApplication* /*auraApp*/, AuraRemoveMode mode)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
@@ -18,14 +48,20 @@ void HardModeHooksUnitScript::OnAuraRemove(Unit* unit, AuraApplication* /*auraAp
         return;
     }
 
-    // Don't reapply aura on death, resurrection handles reapplication already.
-    if (mode == AURA_REMOVE_BY_DEATH)
+    Player* player = unit->ToPlayer();
+    if (!player || !player->IsInWorld())
     {
         return;
     }
 
-    Player* player = unit->ToPlayer();
-    if (!player || !player->IsInWorld())
+    // Schedule due to issues..
+    sHardModeHandler->GetScheduler()->Schedule(50ms, [player](TaskContext task)
+    {
+        sHardModeHandler->UpdateSmallFishScale(player);
+    });
+
+    // Don't reapply aura on death, resurrection handles reapplication already.
+    if (mode == AURA_REMOVE_BY_DEATH)
     {
         return;
     }

@@ -42,6 +42,8 @@ public:
     std::vector<uint32>* GetAurasForMode(uint8 mode);
     void ValidatePlayerAuras(Player* player);
 
+    void UpdateSmallFishScale(Player* player);
+
     void LoadRewards();
     void ClearRewards();
     std::map<uint8, std::vector<HardModeReward>>* GetRewards();
