@@ -52,6 +52,7 @@ void HardModeHooksUnitScript::OnAuraRemove(Unit* unit, AuraApplication* /*auraAp
     }
 
     Player* player = unit->ToPlayer();
+
     if (!player || !player->IsInWorld())
     {
         return;
@@ -93,6 +94,7 @@ void HardModeHooksUnitScript::OnDamage(Unit* attacker, Unit* /*victim*/, uint32&
     }
 
     Player* player = attacker->ToPlayer();
+
     if (!player)
     {
         return;
@@ -114,5 +116,95 @@ void HardModeHooksUnitScript::OnDamage(Unit* attacker, Unit* /*victim*/, uint32&
         // TODO: Update this to alert in the chat so the player is more aware.
         sHardModeHandler->SendAlert(player, "You have failed the pacifist challenge.");
         player->AddAura(HARDMODE_AURA_PACIFIST_FAIL, player);
+    }
+}
+
+void HardModeHooksUnitScript::ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage, SpellInfo const* spellInfo)
+{
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
+    if (!attacker)
+    {
+        return;
+    }
+
+    if (!attacker->IsPlayer())
+    {
+        return;
+    }
+
+    auto player = attacker->ToPlayer();
+
+    if (!player)
+    {
+        return;
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_SMALLFISH))
+    {
+        damage = damage * SMALLFISH_SCALE;
+    }
+}
+
+void HardModeHooksUnitScript::ModifyMeleeDamage(Unit* target, Unit* attacker, uint32& damage)
+{
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
+    if (!attacker)
+    {
+        return;
+    }
+
+    if (!attacker->IsPlayer())
+    {
+        return;
+    }
+
+    auto player = attacker->ToPlayer();
+
+    if (!player)
+    {
+        return;
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_SMALLFISH))
+    {
+        damage = damage * SMALLFISH_SCALE;
+    }
+}
+
+void HardModeHooksUnitScript::ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo)
+{
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
+    if (!attacker)
+    {
+        return;
+    }
+
+    if (!attacker->IsPlayer())
+    {
+        return;
+    }
+
+    auto player = attacker->ToPlayer();
+
+    if (!player)
+    {
+        return;
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_SMALLFISH))
+    {
+        damage = damage * SMALLFISH_SCALE;
     }
 }
