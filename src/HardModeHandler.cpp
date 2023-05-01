@@ -75,7 +75,7 @@ HardModeInfo* HardModeHandler::GetHardModeFromId(uint8 id)
 
         if (mode.Id == id)
         {
-            return &mode;
+            return &it->second;
         }
     }
 
@@ -398,26 +398,19 @@ void HardModeHandler::UpdateSmallFishScale(Player* player)
 
         player->SetObjectScale(scale);
 
-        player->UpdateSpeed(UnitMoveType::MOVE_RUN, forced);
-        player->SetSpeed(UnitMoveType::MOVE_RUN, player->GetSpeedRate(UnitMoveType::MOVE_RUN) * move, forced);
+        for (auto i = 0; i < MAX_MOVE_TYPE; ++i)
+        {
+            // Slow rotation is cancer, so skip adjusting these.
+            if (i == UnitMoveType::MOVE_TURN_RATE || i == UnitMoveType::MOVE_PITCH_RATE)
+            {
+                continue;
+            }
 
-        player->UpdateSpeed(UnitMoveType::MOVE_RUN_BACK, forced);
-        player->SetSpeed(UnitMoveType::MOVE_RUN_BACK, player->GetSpeedRate(UnitMoveType::MOVE_RUN_BACK) * move, forced);
+            auto moveType = static_cast<UnitMoveType>(i);
 
-        player->UpdateSpeed(UnitMoveType::MOVE_SWIM, forced);
-        player->SetSpeed(UnitMoveType::MOVE_SWIM, player->GetSpeedRate(UnitMoveType::MOVE_SWIM) * move, forced);
-
-        player->UpdateSpeed(UnitMoveType::MOVE_SWIM_BACK, forced);
-        player->SetSpeed(UnitMoveType::MOVE_SWIM_BACK, player->GetSpeedRate(UnitMoveType::MOVE_SWIM_BACK) * move, forced);
-
-        player->UpdateSpeed(UnitMoveType::MOVE_WALK, forced);
-        player->SetSpeed(UnitMoveType::MOVE_WALK, player->GetSpeedRate(UnitMoveType::MOVE_WALK) * move, forced);
-
-        player->UpdateSpeed(UnitMoveType::MOVE_FLIGHT, forced);
-        player->SetSpeed(UnitMoveType::MOVE_FLIGHT, player->GetSpeedRate(UnitMoveType::MOVE_FLIGHT) * move, forced);
-
-        player->UpdateSpeed(UnitMoveType::MOVE_FLIGHT_BACK, forced);
-        player->SetSpeed(UnitMoveType::MOVE_FLIGHT_BACK, player->GetSpeedRate(UnitMoveType::MOVE_FLIGHT_BACK) * move, forced);
+            player->UpdateSpeed(moveType, forced);
+            player->SetSpeed(moveType, player->GetSpeedRate(moveType) * move, forced);
+        }
     }
 }
 
