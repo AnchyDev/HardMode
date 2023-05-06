@@ -27,7 +27,7 @@ public:
     virtual void OnPlayerReleasedGhost(Player* /*player*/) { }
     virtual bool CanRepopAtGraveyard(Player* /*player*/) { return true; }
     virtual bool OnBeforeTeleport(Player* /*player*/, uint32 /*mapId*/, float /*x*/, float /*y*/, float /*z*/, float /*orientation*/, uint32 /*options*/, Unit* /*target*/) { return true; }
-    virtual void OnGiveXP(Player* /*player*/, uint32& /*amount*/, Unit* /*victim*/) { }
+    virtual void OnGiveXP(Player* /*player*/, uint32& /*amount*/, Unit* /*victim*/, uint8 xpSource) { }
     virtual void OnQuestComputeXP(Player* /*player*/, Quest const* /*quest*/, uint32& /*xpValue*/) { }
     virtual void OnAfterConfigLoad(bool /*reload*/) { }
 

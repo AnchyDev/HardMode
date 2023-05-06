@@ -536,7 +536,7 @@ void HardModePlayerScript::OnLogin(Player* player)
     }
 }
 
-void HardModePlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* victim)
+void HardModePlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* victim, uint8 xpSource)
 {
     if (!sConfigMgr->GetOption<bool>("HardMode.Enable", false))
     {
@@ -558,7 +558,7 @@ void HardModePlayerScript::OnGiveXP(Player* player, uint32& amount, Unit* victim
             continue;
         }
 
-        sHardModeHandler->Modes[i]->OnGiveXP(player, amount, victim);
+        sHardModeHandler->Modes[i]->OnGiveXP(player, amount, victim, xpSource);
     }
 
     sHardModeHandler->SetTainted(player, true);
