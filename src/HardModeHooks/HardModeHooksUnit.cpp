@@ -119,7 +119,7 @@ void HardModeHooksUnitScript::OnDamage(Unit* attacker, Unit* /*victim*/, uint32&
     }
 }
 
-void HardModeHooksUnitScript::ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage, SpellInfo const* spellInfo)
+void HardModeHooksUnitScript::ModifyPeriodicDamageAurasTick(Unit* /*target*/, Unit* attacker, uint32& damage, SpellInfo const* /*spellInfo*/)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
@@ -149,7 +149,7 @@ void HardModeHooksUnitScript::ModifyPeriodicDamageAurasTick(Unit* target, Unit* 
     }
 }
 
-void HardModeHooksUnitScript::ModifyMeleeDamage(Unit* target, Unit* attacker, uint32& damage)
+void HardModeHooksUnitScript::ModifyMeleeDamage(Unit* /*target*/, Unit* attacker, uint32& damage)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
@@ -179,7 +179,7 @@ void HardModeHooksUnitScript::ModifyMeleeDamage(Unit* target, Unit* attacker, ui
     }
 }
 
-void HardModeHooksUnitScript::ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo)
+void HardModeHooksUnitScript::ModifySpellDamageTaken(Unit* /*target*/, Unit* attacker, int32& damage, SpellInfo const* /*spellInfo*/)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
