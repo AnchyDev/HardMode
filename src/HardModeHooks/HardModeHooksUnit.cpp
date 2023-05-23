@@ -1,7 +1,7 @@
 #include "HardModeHooks/HardModeHooksUnit.h"
 #include "HardModeHandler.h"
 
-void HardModeHooksUnitScript::OnAuraApply(Unit* unit, Aura* aura)
+void HardModeHooksUnitScript::OnAuraApply(Unit* unit, Aura* /*aura*/)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
