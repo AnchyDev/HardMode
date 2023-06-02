@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Hardmode Documentation</title>
+        <link rel="stylesheet" href="./style.css">
+        <script src="./bitmask.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="logo">
+                <img src="./logo.png">
+                <div class="header">HardMode</div>
+            </div>
+            <div class="menu">
+                <a href="#about">About</a>
+                <a href="#mode-editor">Mode Editor</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="content">
+                <div class="sections">
+                    <section id="about">
+                        <div class="header">
+                            About
+                        </div>
+                        <div class="body">
+                            The HardMode module gives server owners the tools to create their own HardModes without writing a line of C++/Lua, and is entirely possible within the database.
+                        </div>
+                    </section>
+                    <section id="mode-editor">
+                        <div class="header">
+                            Mode Editor
+                        </div>
+                        <div class="body">
+                            This section will help you create your first hard mode, before you can create a mode you need to come up with a name, choose a color, description & restrictions.<br>
+                            <div class="sub-header">
+                                <label for="mode-name">Name</label>
+                            </div>
+                            <div class="name-picker">
+                                <input id="mode-name" type="text" placeholder="Name">
+                                <button id="mode-color-button" class="color-picker" type="button" onclick="openColorPicker()"></button>
+                                <input id="mode-color" type="color" style="display: none">
+                            </div>
+                            <div class="sub-header">
+                                <label for="mode-desc">Description</label>
+                            </div>
+                            <div class="sub-body">
+                                <input id="mode-desc" type="text" placeholder="Description">
+                            </div>
+                            <div class="sub-header">
+                                Restrictions
+                            </div>
+                            To enable restrictions for your modes you need to create a bitmask to store in the <div class="highlight-dark">restrictions</div> column of the <div class="highlight-dark">hardmode_modes</div> table.<br><br>
+                            Tick the restrictions you would like to use below and copy the bitmask result into the <div class="highlight-dark">restrictions</div> table column for your mode, or generate the SQL and apply it yourself.
+                        </div>
+                        <div class="body-item">
+                            <input id="bitmask-edit" type="text" placeholder="Bitmask"><button class="nice-button" type="button" onclick="loadMask()">Edit</button>
+                        </div>
+                        <div class="bitmask-options">
+                            <div class="bitmask-option">
+                                <input id="hmr_retailxp" type="checkbox">
+                                <label for="hmr_retailxp"> Retail XP (2)</label>
+                                <div class="sub-body">
+                                    Enables 1x rates for kill, quest, exploration.
+                                </div>
+                            </div>
+                            
+                            <div class="bitmask-option">
+                                <input id="hmr_selfcrafted" type="checkbox">
+                                <label for="hmr_selfcrafted"> Self Crafted (4)</label>
+                                <div class="sub-body">
+                                    Disables the use of items/equipment that are not crafted by the player.
+                                </div>
+                            </div>
+
+                            <div class="bitmask-option">
+                                <input id="hmr_int_auction" type="checkbox">
+                                <label for="hmr_int_auction"> Interact Auction House (8)</label>
+                                <div class="sub-body">
+                                    Disables the interaction with the auction house NPC.
+                                </div>
+                            </div>
+
+                            <div class="bitmask-option">
+                                <input id="hmr_int_gbank" type="checkbox">
+                                <label for="hmr_int_gbank"> Interact Guild Bank (16)</label>
+                                <div class="sub-body">
+                                    Disables the interaction with the guild bank.
+                                </div>
+                            </div>
+
+                            <div class="bitmask-option">
+                                <input id="hmr_int_msend" type="checkbox">
+                                <label for="hmr_int_msend"> Interact Mail Send (32)</label>
+                                <div class="sub-body">
+                                    Disables sending of mail to other players.
+                                </div>
+                            </div>
+
+                            <div class="bitmask-option">
+                                <input id="hmr_int_mrec" type="checkbox">
+                                <label for="hmr_int_mrec"> Interact Mail Receive (64)</label>
+                                <div class="sub-body">
+                                    Disables receiving of mail from other players.
+                                </div>
+                            </div>
+
+                            <div class="bitmask-option">
+                                <input id="hmr_int_trade" type="checkbox">
+                                <label for="hmr_int_trade"> Interact Trade (128)</label>
+                                <div class="sub-body">
+                                    Disables trading to/from other players.
+                                </div>
+                            </div>
+
+                            <div class="bitmask-option">
+                                <input id="hmr_permadeath" type="checkbox">
+                                <label for="hmr_permadeath"> Permadeath (256)</label>
+                                <div class="sub-body">
+                                    The player is sent to the shadow realm on death (you cannot leave the shadow realm).
+                                </div>
+                            </div>
+
+                            <div class="bitmask-option">
+                                <input id="hmr_hide_who" type="checkbox">
+                                <label for="hmr_hide_who"> Hide Who List (512)</label>
+                                <div class="sub-body">
+                                    The player is hidden from the who list (shows unknown location).
+                                </div>
+                            </div>
+
+                            <div class="bitmask-option">
+                                <input id="hmr_hide_friends" type="checkbox">
+                                <label for="hmr_hide_friends"> Hide Friends List (1024)</label>
+                                <div class="sub-body">
+                                    The player is hidden from the friends list (shows unknown location).
+                                </div>
+                            </div>
+
+                            <div class="bitmask-option">
+                                <input id="hmr_hide_guild" type="checkbox">
+                                <label for="hmr_hide_guild"> Hide Guild List (2048)</label>
+                                <div class="sub-body">
+                                    The player is hidden from the guild member roster (shows unknown location).
+                                </div>
+                            </div>
+
+                            <div class="bitmask-option">
+                                <input id="hmr_int_lfg" type="checkbox">
+                                <label for="hmr_int_lfg"> Interact LFG (4096)</label>
+                                <div class="sub-body">
+                                    The player cannot queue for looking for group.
+                                </div>
+                            </div>
+
+                            <div class="bitmask-option">
+                                <input id="hmr_int_grp" type="checkbox">
+                                <label for="hmr_int_grp"> Interact Group (8192)</label>
+                                <div class="sub-body">
+                                    The player cannot group with other players.
+                                </div>
+                            </div>
+
+                            <div class="bitmask-option">
+                                <input id="hmr_int_crossplay" type="checkbox">
+                                <label for="hmr_int_crossplay"> Interact Cross-Play (16384)</label>
+                                <div class="sub-body">
+                                    The player can only group with other players with the same cross-play modes as them (all the modes with this flag enabled).
+                                </div>
+                            </div>
+
+                            <div class="bitmask-option">
+                                <input id="hmr_unlucky" type="checkbox">
+                                <label for="hmr_unlucky"> Unlucky (32768)</label>
+                                <div class="sub-body">
+                                    The player is unlucky with loot drops (there is a configurable chance for items to drop, quest items are unaffected).
+                                </div>
+                            </div>
+
+                            <div class="bitmask-option">
+                                <input id="hmr_pacifist" type="checkbox">
+                                <label for="hmr_pacifist"> Pacifist (65536)</label>
+                                <div class="sub-body">
+                                    The player loses the mode if they damage or kill units (they are covered in blood to show other players what a monster they are).
+                                </div>
+                            </div>
+							
+							 <div class="bitmask-option">
+                                <input id="hmr_int_grp_range" type="checkbox">
+                                <label for="hmr_int_grp_range"> Group Level Range (131072)</label>
+                                <div class="sub-body">
+                                    The player can only group with other players within x (default 3) levels from themself (configurable).
+                                </div>
+                            </div>
+							
+							<div class="bitmask-option">
+                                <input id="hmr_int_talent" type="checkbox">
+                                <label for="hmr_int_talent"> Interact Talents (262144)</label>
+                                <div class="sub-body">
+                                    The player cannot use talent points.
+                                </div>
+                            </div>
+							
+							<div class="bitmask-option">
+                                <input id="hmr_smallfish" type="checkbox">
+                                <label for="hmr_smallfish"> Small Fish (524288)</label>
+                                <div class="sub-body">
+                                    The player is half the size, speed and deals half as much damage.
+                                </div>
+                            </div>
+                        </div><br>
+                        <div class="body">
+                            <div>
+                                <input id="hm-enabled" type="checkbox">
+                                <label for="hm-enabled"> Enabled By Default</label>
+                                <div class="sub-body">
+                                    The mode is enabled by default in the table entry (it will show up in the HardMode gossip).
+                                </div>
+                            </div>
+                            <button class="nice-button" type="button" onclick="generateSQL()">Generate SQL </button><br><br>
+                            <div id="sql-result" class="highlight-dark"></div>
+                        </div>
+                    </section>
+                    <section id="contact">
+                        <div class="header">
+                            Contact
+                        </div>
+                        <div class="body">
+                            If you are having difficulty with this module or want to speak to me you can join the <a href="https://discord.gg/zpJRC2rc6G">Discord</a>. If you want to report a bug you can open an issue on the <a href="https://github.com/AnchyDev/HardMode/issues">repository</a>.
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

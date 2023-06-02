@@ -18,204 +18,32 @@
 HardMode.Enable = 0
 
 #
-#    HardMode.SelfCrafted.Enable
-#        Description: Enables the Self-Crafted mode.
-#        Default:     0 - Disabled
-#                     1 - Enabled
-#        Type:        bool
-#
-
-HardMode.SelfCrafted.Enable = 0
-
-#
-#    HardMode.SelfCrafted.CanBeTraded
-#        Description: Allows SelfCrafted players to trade non-SelfCrafted players.
-#        Default:     0 - Disabled
-#                     1 - Enabled
-#        Type:        bool
-#
-
-HardMode.SelfCrafted.CanBeTraded = 0
-
-#
-#    HardMode.SelfCrafted.CanSendRecMail
-#        Description: Allows SelfCrafted players to send/receive mail to/from non-SelfCrafted players.
-#        Default:     0 - Disabled
-#                     1 - Enabled
-#        Type:        bool
-#
-
-HardMode.SelfCrafted.CanSendRecMail = 0
-
-#
-#    HardMode.SelfCrafted.CanCrossPlay
-#        Description: Allows SelfCrafted players to group with non-SelfCrafted players.
-#        Default:     0 - Disabled
-#                     1 - Enabled
-#        Type:        bool
-#
-
-HardMode.SelfCrafted.CanCrossPlay = 0
-
-#
-#    HardMode.HardCore.Enable
-#        Description: Enables the HardCore mode.
-#        Default:     0 - Disabled
-#                     1 - Enabled
-#        Type:        bool
-#
-
-HardMode.HardCore.Enable = 0
-
-#
-#    HardMode.HardCore.CanBeTraded
-#        Description: Allows HardCore players to trade non-HardCore players.
-#        Default:     0 - Disabled
-#                     1 - Enabled
-#        Type:        bool
-#
-
-HardMode.HardCore.CanBeTraded = 0
-
-#
-#    HardMode.HardCore.CanSendRecMail
-#        Description: Allows HardCore players to send/receive mail to/from non-HardCore players.
-#        Default:     0 - Disabled
-#                     1 - Enabled
-#        Type:        bool
-#
-
-HardMode.HardCore.CanSendRecMail = 0
-
-#
-#    HardMode.HardCore.CanCrossPlay
-#        Description: Allows HardCore players to group with non-HardCore players.
-#        Default:     0 - Disabled
-#                     1 - Enabled
-#        Type:        bool
-#
-
-
-HardMode.HardCore.CanCrossPlay = 0
-
-#
-#    HardMode.SlowXP.Enable
-#        Description: Enables the SlowXP mode.
-#        Default:     0 - Disabled
-#                     1 - Enabled
-#        Type:        bool
-#
-
-HardMode.SlowXP.Enable = 0
-
-#
-#    HardMode.SlowXP.CanBeTraded
-#        Description: Allows SlowXP players to trade non-SlowXP players.
-#        Default:     0 - Disabled
-#                     1 - Enabled
-#        Type:        bool
-#
-
-HardMode.SlowXP.CanBeTraded = 1
-
-#
-#    HardMode.SlowXP.CanSendRecMail
-#        Description: Allows SlowXP players to send/receive mail to/from non-SlowXP players.
-#        Default:     0 - Disabled
-#                     1 - Enabled
-#        Type:        bool
-#
-
-HardMode.SlowXP.CanSendRecMail = 1
-
-#
-#    HardMode.SlowXP.CanCrossPlay
-#        Description: Allows SlowXP players to group with non-SlowXP players.
-#        Default:     0 - Disabled
-#                     1 - Enabled
-#        Type:        bool
-#
-
-HardMode.SlowXP.CanCrossPlay = 1
-
-#
-#    HardMode.SlowXPMultiplier
-#        Description: Takes in a float to multiply the divider value when calculating XP loss.
-#                     A larger number = less XP.
-#        Default:     1
-#        Type:        Float
-#
-
-HardMode.SlowXP.Multiplier = 1
-
-#
-#    HardMode.AnnounceModesOnLogin
-#        Description: Enable announcing the modes enabled into chat on login.
+#    HardMode.Inspect.Alert
+#        Description: Alerts the inspecting player of what modes the target has enabled.
 #                     0 - Disabled
 #        Default:     1 - Enabled
 #        Type:        bool
 #
 
-HardMode.Announce.ModesOnLogin = 1
+HardMode.Inspect.Alert = 1
 
 #
-#    HardMode.Announce.MaxLevel
-#        Description: Enable announcing the modes completed when hitting max level to the world chat.
-#                     0 - Disabled
-#        Default:     1 - Enabled
-#        Type:        bool
-#
-
-HardMode.Announce.MaxLevel = 1
-
-#
-#    HardMode.Announce.OnPvPKill
-#        Description: Enable announcing when a player kills another player with activated modes.
-#                     0 - Disabled
-#        Default:     1 - Enabled
-#        Type:        bool
-#
-
-HardMode.Announce.OnPvPKill = 1
-
-#
-#    HardMode.PartyLevelRange
-#        Description: Set the level range that you have to be in to group together while in modes.
+#    HardMode.Restrict.Interact.Group.Range
+#        Description: The level range that players can group together when under this restriction.
 #        Default:     3
-#        Type:        unsigned int
+#        Type:        uint32
 #
 
-HardMode.PartyLevelRange = 3
+HardMode.Restrict.Interact.Group.Range = 3
 
 #
-#    HardMode.BlockCrossPlay
-#        Description: Disables damage and healing on players without matching hard modes.
-#                     0 - Disabled
-#        Default:     1 - Enabled
-#        Type:        bool
+#    HardMode.Restrict.BadLuck.Chance
+#        Description: The chance that an item is deleted when under this restriction.
+#        Note: When an item drops in BadLuck, there is another internal roll, if you fail this roll
+#              the item is deleted from the loot table. This is what this config is responsible for.
+#        Default:     10
+#        Type:        uint32
+#        Range:       0 - 100
 #
 
-HardMode.BlockCrossPlay = 1
-
-#
-#    HardMode.OverrideWhoList
-#        Description: Override the who list to display "Unknown" for HardCore players and "Shadow Tomb" for Shadowbanned players.
-#                     0 - Disabled
-#        Default:     1 - Enabled
-#        Type:        bool
-#
-
-HardMode.OverrideWhoList = 1
-
-#
-#    HardMode.Webhook.Enable
-#        Description: Allows HardMode.Announce.OnPvPKill to be transmitted to a Discord webhook.
-#                     0 - Disabled
-#        Default:     1 - Enabled
-#        Type:        bool
-#
-
-HardMode.Webhook.Enable = 0
-HardMode.Webhook.Url = ""
-HardMode.Webhook.Name = "Hardcore Announcer"
-HardMode.Webhook.AvatarUrl = "https://i.imgur.com/ZhlJPgY.png"
+HardMode.Restrict.BadLuck.Chance = 10

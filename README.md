@@ -15,16 +15,8 @@ Read the `mode-restrictions.txt` file for a list of restrictions.
 ## ⚠️ Attention ⚠️
 You _must_ enable `EnablePlayerSettings` in the World config to use this module.
 
-## Database Values
-When referencing the modes and reward types you have to use the id value.
-
-
-### Modes / Rewards
-| Mode | Value | | Reward | Value |
-| --- | --- | --- | --- | --- |
-| Self-Crafted | 0 | | Item | 0 |
-| HardCore | 1 | | Title | 1 |
-| SlowXP | 2 | | Spell | 2 |
+## Database
+Head over to my HardMode editor to create your first mode: https://anchydev.github.io/HardMode/#mode-editor
 
 ## Credits
 Thanks to [ZhengPeiRu21](https://github.com/ZhengPeiRu21) for creating the original module which inspired this one.

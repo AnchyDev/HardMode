@@ -1,24 +1,267 @@
-#include "HardMode.h"
 #include "HardModeHandler.h"
-#include "HardModeReward.h"
+#include "HardModeTypes.h"
 
-#include "Tokenize.h"
+#include "Config.h"
+#include "DatabaseEnv.h"
+#include "Log.h"
 #include "Player.h"
 #include "StringConvert.h"
-#include "DBCStore.h"
-#include "Mail.h"
-#include "Config.h"
-#include "Spell.h"
+#include "Tokenize.h"
 
-#include <iostream>
-#include <fstream>
-#include <regex>
+#include <boost/lexical_cast.hpp>
 
-void HardModeHandler::LoadRewardsFromDatabase()
+#include <sstream>
+
+bool HardModeHandler::IsHardModeEnabled()
 {
-    _hardModeRewards.clear();
+    return sConfigMgr->GetOption<bool>("HardMode.Enable", false);
+}
 
-    QueryResult qResult = WorldDatabase.Query("SELECT `mode`, `reward_type`, `reward_id`, `reward_count` FROM `hardmode_rewards`");
+void HardModeHandler::LoadHardModes()
+{
+    QueryResult qResult = WorldDatabase.Query("SELECT * FROM `hardmode_modes` ORDER BY id ASC");
+
+    if (qResult)
+    {
+        uint32 count = 0;
+
+        do
+        {
+            Field* fields = qResult->Fetch();
+
+            uint32 id = fields[0].Get<int32>();
+            std::string name = fields[1].Get<std::string>();
+            std::string description = fields[2].Get<std::string>();
+            uint64 restrictions = fields[3].Get<uint64>();
+            bool enabled = fields[4].Get<bool>();
+
+            HardModeInfo mode;
+            mode.Id = id;
+            mode.Name = name;
+            mode.Description = description;
+            mode.Restrictions = restrictions;
+            mode.Enabled = enabled;
+
+            _hardModes.emplace(id, mode);
+
+            count++;
+        } while (qResult->NextRow());
+
+        LOG_INFO("module", "Loaded '{}' rows from 'hardmode_modes' table.", count);
+    }
+    else
+    {
+        LOG_INFO("module", "Loaded '0' rows from 'hardmode_modes' table.");
+    }
+}
+
+void HardModeHandler::ClearHardModes()
+{
+    _hardModes.clear();
+}
+
+std::map<uint8, HardModeInfo>* HardModeHandler::GetHardModes()
+{
+    return &_hardModes;
+}
+
+HardModeInfo* HardModeHandler::GetHardModeFromId(uint8 id)
+{
+    auto modes = sHardModeHandler->GetHardModes();
+
+    for (auto it = modes->begin(); it != modes->end(); ++it)
+    {
+        auto mode = it->second;
+
+        if (mode.Id == id)
+        {
+            return &it->second;
+        }
+    }
+
+    return nullptr;
+}
+
+void HardModeHandler::LoadPlayerSettings()
+{
+    QueryResult qResult = CharacterDatabase.Query("SELECT * FROM `hardmode_player_settings`");
+
+    if (qResult)
+    {
+        uint32 count = 0;
+
+        do
+        {
+            Field* fields = qResult->Fetch();
+
+            uint32 guid = fields[0].Get<int64>();
+            std::string modes = fields[1].Get<std::string>();
+            bool tainted = fields[2].Get<bool>();
+            bool shadowban = fields[3].Get<bool>();
+
+            std::vector<std::string_view> tokens = Acore::Tokenize(modes, ' ', false);
+            HardModePlayerSettings playerSettings;
+            std::vector<uint8> playerModes;
+
+            for (auto token : tokens)
+            {
+                try
+                {
+                    uint32 modeId = boost::lexical_cast<uint32>(token);
+
+                    auto hardMode = sHardModeHandler->GetHardModeFromId(modeId);
+                    if (!hardMode)
+                    {
+                        continue;
+                    }
+
+                    playerModes.push_back(hardMode->Id);
+                }
+                catch (const boost::bad_lexical_cast&)
+                {
+                    LOG_ERROR("module", "Detected bad mode settings format for column 'mode' and guid '{}' in 'hardmode_player_settings' table.", guid);
+                }
+            }
+
+            playerSettings.Modes = playerModes;
+            playerSettings.Tainted = tainted;
+            playerSettings.ShadowBanned = shadowban;
+
+            sHardModeHandler->GetPlayerSettings()->emplace(guid, playerSettings);
+
+            count++;
+        } while (qResult->NextRow());
+
+        LOG_INFO("module", "Loaded '{}' rows from 'hardmode_player_settings' table.", count);
+    }
+    else
+    {
+        LOG_INFO("module", "Loaded '0' rows from 'hardmode_player_settings' table.");
+    }
+}
+
+void HardModeHandler::ClearPlayerSettings()
+{
+    _playerSettings.clear();
+}
+
+void HardModeHandler::SavePlayerSettings()
+{
+    auto settings = sHardModeHandler->GetPlayerSettings();
+    for (auto it = settings->begin(); it != settings->end(); ++it)
+    {
+        auto guid = it->first;
+        auto setting = it->second;
+
+        sHardModeHandler->SavePlayerSetting(guid, &setting);
+    }
+}
+
+void HardModeHandler::SavePlayerSetting(uint64 guid, HardModePlayerSettings* settings)
+{
+    std::stringstream ss;
+    for (const uint8& mode : settings->Modes)
+    {
+        ss << std::to_string(mode);
+        ss << " ";
+    }
+
+    std::string sModes = ss.str();
+
+    CharacterDatabase.Execute("INSERT INTO hardmode_player_settings (guid, modes, tainted, shadowban) VALUES ({}, '{}', {}, {}) ON DUPLICATE KEY UPDATE modes = '{}', tainted = {}, shadowban = {}",
+        guid, sModes, settings->Tainted, settings->ShadowBanned,
+        sModes, settings->Tainted, settings->ShadowBanned);
+}
+
+std::map<uint64, HardModePlayerSettings>* HardModeHandler::GetPlayerSettings()
+{
+    return &_playerSettings;
+}
+
+HardModePlayerSettings* HardModeHandler::GetPlayerSetting(ObjectGuid guid)
+{
+    auto playerSettings = sHardModeHandler->GetPlayerSettings();
+
+    auto it = playerSettings->find(guid.GetRawValue());
+    if (it == playerSettings->end())
+    {
+        HardModePlayerSettings _settings;
+        std::vector<uint8> _modes;
+        _settings.Modes = _modes;
+        _settings.Tainted = false;
+        _settings.ShadowBanned = false;
+
+        it = playerSettings->emplace(guid.GetRawValue(), _settings).first;
+    }
+
+    return &it->second;
+}
+
+void HardModeHandler::LoadSelfCraftExcludeIds()
+{
+    QueryResult qResult = WorldDatabase.Query("SELECT `id` FROM `hardmode_selfcraft_exclude`");
+
+    if (qResult)
+    {
+        uint32 count = 0;
+
+        do
+        {
+            Field* fields = qResult->Fetch();
+            int32 id = fields[0].Get<int32>();
+
+            _selfCraftExcludeIds.push_back(id);
+            count++;
+        } while (qResult->NextRow());
+
+        LOG_INFO("module", "Loaded '{}' rows from 'hardmode_selfcraft_exclude' table.", count);
+    }
+    else
+    {
+        LOG_INFO("module", "Loaded '0' rows from 'hardmode_selfcraft_exclude' table.");
+    }
+}
+
+void HardModeHandler::ClearSelfCraftExcludeIds()
+{
+    _selfCraftExcludeIds.clear();
+}
+
+std::vector<int32>* HardModeHandler::GetSelfCraftedExcludeIds()
+{
+    return &_selfCraftExcludeIds;
+}
+
+bool HardModeHandler::IsSelfCraftExcluded(int32 id)
+{
+    for (uint32 i = 0; i < _selfCraftExcludeIds.size(); ++i)
+    {
+        if (_selfCraftExcludeIds[i] == id)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool HardModeHandler::IsSelfCraftSpellExcluded(uint32 spellId)
+{
+    return IsSelfCraftExcluded(-spellId);
+
+    return false;
+}
+
+bool HardModeHandler::IsSelfCraftItemExcluded(uint32 itemId)
+{
+    return IsSelfCraftExcluded(itemId);
+
+    return false;
+}
+
+void HardModeHandler::LoadAuras()
+{
+    QueryResult qResult = WorldDatabase.Query("SELECT `mode`, `aura` FROM `hardmode_auras`");
 
     if (qResult)
     {
@@ -29,18 +272,186 @@ void HardModeHandler::LoadRewardsFromDatabase()
             Field* fields = qResult->Fetch();
 
             uint32 mode = fields[0].Get<uint32>();
-            uint32 rewardType = fields[1].Get<uint32>();
-            uint32 rewardId = fields[2].Get<uint32>();
-            uint32 rewardCount = fields[3].Get<uint32>();
+            uint32 aura = fields[1].Get<uint32>();
+
+            auto it = _auras.find(mode);
+            if (it == _auras.end())
+            {
+                std::vector<uint32> auras;
+                _auras.emplace(mode, auras);
+
+                it = _auras.find(mode);
+                if (it == _auras.end())
+                {
+                    LOG_ERROR("module", "An error occurred when trying to populate auras map!");
+                    return;
+                }
+            }
+
+            it->second.push_back(aura);
+            count++;
+        } while (qResult->NextRow());
+
+        LOG_INFO("module", "Loaded '{}' rows from 'hardmode_auras' table.", count);
+    }
+    else
+    {
+        LOG_INFO("module", "Loaded '0' rows from 'hardmode_auras' table.");
+    }
+}
+
+void HardModeHandler::ClearAuras()
+{
+    _auras.clear();
+}
+
+std::map<uint8, std::vector<uint32>>* HardModeHandler::GetAuras()
+{
+    return &_auras;
+}
+
+std::vector<uint32>* HardModeHandler::GetAurasForMode(uint8 mode)
+{
+    auto auras = sHardModeHandler->GetAuras();
+
+    auto auraIt = auras->find(mode);
+    if (auraIt != auras->end())
+    {
+        return &(auraIt->second);
+    }
+
+    return nullptr;
+}
+
+void HardModeHandler::ValidatePlayerAuras(Player* player)
+{
+    if (!player)
+    {
+        return;
+    }
+
+    auto modes = sHardModeHandler->GetHardModes();
+
+    if (!modes)
+    {
+        return;
+    }
+
+    if (modes->size() < 1)
+    {
+        return;
+    }
+
+    for (auto modeIt = modes->begin(); modeIt != modes->end(); ++modeIt)
+    {
+        auto mode = modeIt->second.Id;
+        auto auras = sHardModeHandler->GetAurasForMode(mode);
+        
+        if (!auras)
+        {
+            continue;
+        }
+
+        for (auto aura : *auras)
+        {
+            if (sHardModeHandler->IsModeEnabledForPlayer(player->GetGUID(), mode))
+            {
+                if (!player->HasAura(aura))
+                {
+                    _scheduler.Schedule(1s, [aura, player](TaskContext /*task*/)
+                     {
+                            if (!player || !aura)
+                            {
+                                return;
+                            }
+
+                            player->AddAura(aura, player);
+                     });
+                }
+            }
+            else
+            {
+                if (player->HasAura(aura))
+                {
+                    _scheduler.Schedule(1s, [aura, player](TaskContext /*task*/)
+                    {
+                        if (!player || !aura)
+                        {
+                            return;
+                        }
+
+                        player->RemoveAura(aura);
+                    });
+                }
+            }
+        }
+    }
+}
+
+void HardModeHandler::UpdatePlayerScaleSpeed(Player* player, float scaleSpeed)
+{
+    float scale = scaleSpeed;
+    float move = scaleSpeed;
+    bool forced = true;
+
+    player->SetObjectScale(scale);
+
+    for (auto i = 0; i < MAX_MOVE_TYPE; ++i)
+    {
+        // Slow rotation is cancer, so skip adjusting these.
+        if (i == UnitMoveType::MOVE_TURN_RATE || i == UnitMoveType::MOVE_PITCH_RATE)
+        {
+            continue;
+        }
+
+        auto moveType = static_cast<UnitMoveType>(i);
+
+        player->UpdateSpeed(moveType, forced);
+        player->SetSpeed(moveType, player->GetSpeedRate(moveType) * move, forced);
+    }
+}
+
+void HardModeHandler::LoadRewards()
+{
+    QueryResult qResult = WorldDatabase.Query("SELECT `mode`, `reward_level`, `reward_type`, `reward_id`, `reward_count` FROM `hardmode_rewards`");
+
+    if (qResult)
+    {
+        uint32 count = 0;
+
+        do
+        {
+            Field* fields = qResult->Fetch();
+
+            uint32 mode = fields[0].Get<uint32>();
+            uint32 level = fields[1].Get<uint32>();
+            uint32 rewardType = fields[2].Get<uint32>();
+            uint32 rewardId = fields[3].Get<uint32>();
+            uint32 rewardCount = fields[4].Get<uint32>();
 
             HardModeReward reward;
 
             reward.Mode = mode;
+            reward.Level = level;
             reward.Type = rewardType;
             reward.RewardId = rewardId;
             reward.RewardCount = rewardCount;
 
-            _hardModeRewards.push_back(reward);
+            auto it = _rewards.find(mode);
+            if (it == _rewards.end())
+            {
+                std::vector<HardModeReward> rewards;
+                _rewards.emplace(mode, rewards);
+
+                it = _rewards.find(mode);
+                if (it == _rewards.end())
+                {
+                    LOG_ERROR("module", "An error occurred when trying to populate rewards map!");
+                    return;
+                }
+            }
+
+            it->second.push_back(reward);
             count++;
         } while (qResult->NextRow());
 
@@ -50,6 +461,98 @@ void HardModeHandler::LoadRewardsFromDatabase()
     {
         LOG_INFO("module", "Loaded '0' rows from 'hardmode_rewards' table.");
     }
+}
+
+void HardModeHandler::ClearRewards()
+{
+    _rewards.clear();
+}
+
+std::map<uint8, std::vector<HardModeReward>>* HardModeHandler::GetRewards()
+{
+    return &_rewards;
+}
+
+std::vector<HardModeReward>* HardModeHandler::GetRewardsForMode(uint8 mode)
+{
+    auto it = _rewards.find(mode);
+    if (it != _rewards.end())
+    {
+        return &it->second;
+    }
+
+    return nullptr;
+}
+
+void HardModeHandler::TryRewardPlayer(Player* player, std::vector<HardModeReward> rewards)
+{
+    for (auto reward : rewards)
+    {
+        switch (reward.Type)
+        {
+        case HardModeRewardType::HARDMODE_REWARD_TYPE_TITLE:
+            RewardTitle(player, reward.RewardId);
+            break;
+
+        case HardModeRewardType::HARDMODE_REWARD_TYPE_SPELL:
+            RewardSpell(player, reward.RewardId);
+            break;
+        }
+    }
+
+    RewardItems(player, rewards);
+}
+
+void HardModeHandler::RewardItems(Player* player, std::vector<HardModeReward> rewards)
+{
+    std::vector<std::pair<uint32, uint32>> mailItems;
+    uint8 mode = 0;
+
+    for (auto const& reward : rewards)
+    {
+        if (reward.Type == HardModeRewardType::HARDMODE_REWARD_TYPE_ITEM)
+        {
+            mailItems.push_back(std::make_pair(reward.RewardId, reward.RewardCount));
+            mode = reward.Mode;
+        }
+    }
+
+    if (mailItems.size() < 1)
+    {
+        return;
+    }
+
+    std::string hardModeName = sHardModeHandler->GetNameFromMode(mode);
+    std::string header = Acore::StringFormatFmt("{} Rewards", hardModeName);
+    std::string body = Acore::StringFormatFmt("Congratulations on reaching level {} on {} mode, enjoy your rewards!", player->GetLevel(), hardModeName);
+
+    SendMailItems(player, mailItems, header, body);
+}
+
+void HardModeHandler::RewardTitle(Player* player, uint32 titleId)
+{
+    auto titleEntry = sCharTitlesStore.LookupEntry(titleId);
+
+    if (!titleEntry)
+    {
+        LOG_ERROR("module", "No title with entry '{}' found while rewarding player '{}'.", titleId, player->GetName());
+        return;
+    }
+
+    player->SetTitle(titleEntry);
+}
+
+void HardModeHandler::RewardSpell(Player* player, uint32 spellId)
+{
+    auto spellEntry = sSpellStore.LookupEntry(spellId);
+
+    if (!spellEntry)
+    {
+        LOG_ERROR("module", "No spell with entry '{}' found while rewarding player '{}'.", spellId, player->GetName());
+        return;
+    }
+
+    player->learnSpell(spellId);
 }
 
 void HardModeHandler::SendMailItems(Player* player, std::vector<std::pair<uint32, uint32>>& mailItems, std::string header, std::string body)
@@ -71,7 +574,7 @@ void HardModeHandler::SendMailItems(Player* player, std::vector<std::pair<uint32
 
         if (itemCount < 1 || (itemTemplate->MaxCount > 0 && itemCount > static_cast<uint32>(itemTemplate->MaxCount)))
         {
-            LOG_ERROR("entities.player.items", "> HardModeHandler::SendMailItems: Incorrect item count ({}) for item id {}", itemEntry, itemCount);
+            LOG_ERROR("entities.player.items", "> HardModeHandler::SendMailItems: Incorrect item count ({}) for item id {}", itemCount, itemEntry);
             return;
         }
 
@@ -120,317 +623,6 @@ void HardModeHandler::SendMailItems(Player* player, std::vector<std::pair<uint32
     CharacterDatabase.CommitTransaction(trans);
 }
 
-void HardModeHandler::RewardItems(Player* player, std::vector<HardModeReward> rewards)
-{
-    std::vector<std::pair<uint32, uint32>> mailItems;
-    uint8 mode = 0;
-
-    for (auto const& reward : rewards)
-    {
-        if (reward.Type == HardModeRewardType::HARDMODE_REWARD_TYPE_ITEM)
-        {
-            mailItems.push_back(std::make_pair(reward.RewardId, reward.RewardCount));
-            mode = reward.Mode;
-        }
-    }
-
-    if (mailItems.size() < 1)
-    {
-        return;
-    }
-
-    std::string hardModeName = sHardModeHandler->GetNameFromMode(mode);
-    std::string header = Acore::StringFormatFmt("{} Rewards", hardModeName);
-    std::string body = Acore::StringFormatFmt("Congratulations on reaching max level on {}, enjoy your rewards!", hardModeName);
-
-    SendMailItems(player, mailItems, header, body);
-}
-
-void HardModeHandler::RewardTitle(Player* player, uint32 titleId)
-{
-    auto titleEntry = sCharTitlesStore.LookupEntry(titleId);
-
-    if (!titleEntry)
-    {
-        LOG_ERROR("module", "No title with entry '{}' found while rewarding player '{}'.", titleId, player->GetName());
-        return;
-    }
-
-    player->SetTitle(titleEntry);
-}
-
-void HardModeHandler::RewardSpell(Player* player, uint32 spellId)
-{
-    auto spellEntry = sSpellStore.LookupEntry(spellId);
-
-    if (!spellEntry)
-    {
-        LOG_ERROR("module", "No spell with entry '{}' found while rewarding player '{}'.", spellId, player->GetName());
-        return;
-    }
-
-    player->learnSpell(spellId);
-}
-
-void HardModeHandler::RewardPlayerForMode(Player* player, uint8 mode)
-{
-    std::vector<HardModeReward> rewards = GetRewardsForMode(mode);
-
-    // Reward non-item rewards, items are handled differently.
-    for (auto const& reward : rewards)
-    {
-        switch (reward.Type)
-        {
-        case HardModeRewardType::HARDMODE_REWARD_TYPE_TITLE:
-            RewardTitle(player, reward.RewardId);
-            break;
-
-        case HardModeRewardType::HARDMODE_REWARD_TYPE_SPELL:
-            RewardSpell(player, reward.RewardId);
-            break;
-        }
-    }
-
-    RewardItems(player, rewards);
-}
-
-std::vector<HardModeReward> HardModeHandler::GetRewardsForMode(uint8 mode)
-{
-    std::vector<HardModeReward> rewards;
-
-    for (uint32 i = 0; i < _hardModeRewards.size(); ++i)
-    {
-        auto reward = _hardModeRewards[i];
-
-        if (reward.Mode == mode)
-        {
-            rewards.push_back(reward);
-        }
-    }
-
-    return rewards;
-}
-
-void HardModeHandler::SetTainted(Player* player, bool value)
-{
-    player->UpdatePlayerSetting("HardModeTainted", 0, value);
-}
-
-bool HardModeHandler::IsTainted(Player* player)
-{
-    return player->GetPlayerSetting("HardModeTainted", 0).value > 0;
-}
-
-void HardModeHandler::SetShadowBanned(Player* player, bool value)
-{
-    player->UpdatePlayerSetting("HardModeShadowBanned", 0, value);
-}
-
-bool HardModeHandler::IsShadowBanned(Player* player)
-{
-    return player->GetPlayerSetting("HardModeShadowBanned", 0).value > 0;
-}
-
-std::string HardModeHandler::GetColorFromMode(uint8 mode)
-{
-    switch (mode)
-    {
-    case DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED:
-        return "|cff01F91E";
-    case DifficultyModes::DIFFICULTY_MODE_HARDCORE:
-        return "|cffFF2600";
-    case DifficultyModes::DIFFICULTY_MODE_SLOWXP:
-        return "|cff0094FF";
-    }
-
-    return "ERROR";
-}
-
-std::string HardModeHandler::GetNameFromMode(uint8 mode)
-{
-    switch (mode)
-    {
-    case DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED:
-        return "Self-Crafted";
-    case DifficultyModes::DIFFICULTY_MODE_HARDCORE:
-        return "HardCore";
-    case DifficultyModes::DIFFICULTY_MODE_SLOWXP:
-        return "SlowXP";
-    }
-
-    return "ERROR";
-}
-
-std::string HardModeHandler::GetNamesFromEnabledModes(Player* player, bool colored)
-{
-    struct difficultyMode
-    {
-        uint8 mode;
-        std::string name;
-    };
-
-    std::stringstream ss;
-    std::vector<difficultyMode> modes;
-
-    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
-    {
-        if (sHardModeHandler->IsModeEnabledForPlayer(player, i))
-        {
-            difficultyMode mode;
-            mode.mode = i;
-            mode.name = sHardModeHandler->GetNameFromMode(i);
-
-            modes.push_back(mode);
-        }
-    }
-
-    for (uint8 i = 0; i < modes.size(); ++i)
-    {
-        if (colored)
-        {
-            ss << sHardModeHandler->GetColorFromMode(modes[i].mode);
-        }
-        ss << modes[i].name;
-
-        if (i != modes.size() - 1)
-        {
-            if (colored)
-            {
-                ss << "|cffFFFFFF";
-            }
-            ss << ", ";
-        }
-    }
-
-    return ss.str();
-}
-
-std::string HardModeHandler::CreateWebhookObject(std::string title, std::string content)
-{
-    std::stringstream ss;
-
-    ss << "{";
-
-    ss << Acore::StringFormatFmt("\"username\": \"{}\"", sConfigMgr->GetOption<std::string>("HardMode.Webhook.Name", "HardCore Announcer"));
-    ss << ",";
-
-    ss << Acore::StringFormatFmt("\"avatar_url\": \"{}\"", sConfigMgr->GetOption<std::string>("HardMode.Webhook.AvatarUrl", "https://i.imgur.com/ZhlJPgY.png"));
-    ss << ",";
-
-    ss << "\"embeds\": [{ ";
-
-    ss << Acore::StringFormatFmt("\"title\": \"{}\"", title);
-    ss << ",";
-
-    ss << Acore::StringFormatFmt("\"description\": \"{}\"", content);
-
-    ss << " }]";
-
-    ss << "}";
-
-    return ss.str();
-}
-
-void HardModeHandler::SendWebhookMessage(std::string payload)
-{
-    std::stringstream ss;
-    std::string webhookUrl = sConfigMgr->GetOption<std::string>("HardMode.Webhook.Url", "");
-
-    ss << "curl ";
-#if AC_PLATFORM == AC_PLATFORM_WINDOWS
-    std::string windowsPayload = std::regex_replace(payload, std::regex("\""), "`\"");
-
-    ss << Acore::StringFormatFmt("-UseBasicParsing \"{}\" ", webhookUrl);
-    ss << "-ContentType \"application/json\" ";
-    ss << "-Method POST ";
-    ss << Acore::StringFormatFmt("-Body \"{}\"", windowsPayload);
-#else
-    ss << Acore::StringFormatFmt("-X POST -H 'Content-Type: application/json' -d '{}' '{}'", payload, webhookUrl);
-#endif
-    std::string command = ss.str();
-
-    int result = system(command.c_str());
-
-    if (result != 0)
-    {
-        LOG_ERROR("module", "cURL exited with error code ({}) when sending webhook payload.", result);
-        LOG_ERROR("module", "Error codes: https://curl.se/libcurl/c/libcurl-errors.html");
-    }
-}
-
-bool HardModeHandler::HasModesEnabled(Player* player)
-{
-    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
-    {
-        if (sHardModeHandler->IsModeEnabledForPlayer(player, i))
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool HardModeHandler::IsModeEnabledForPlayer(Player* player, uint8 mode)
-{
-    return player->GetPlayerSetting("HardMode", mode).value > 0;
-}
-
-bool HardModeHandler::IsModeEnabledForPlayerAndServer(Player* player, uint8 mode)
-{
-    if (!sHardModeHandler->IsModeEnabledForPlayer(player, mode))
-    {
-        return false;
-    }
-
-    if (!sConfigMgr->GetOption<bool>(sHardModeHandler->GetConfigNameFromMode(mode), false))
-    {
-        return false;
-    }
-
-    return true;
-}
-
-void HardModeHandler::UpdateAllModeEffects(Player* player)
-{
-    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
-    {
-        if (sHardModeHandler->IsModeEnabledForPlayerAndServer(player, i))
-        {
-            sHardModeHandler->Modes[i]->AddEffectsForPlayer(player);
-        }
-        else
-        {
-            sHardModeHandler->Modes[i]->RemoveEffectsForPlayer(player);
-        }
-    }
-}
-
-bool HardModeHandler::TestForCrossplay(Player* target, Player* player)
-{
-    if (!sConfigMgr->GetOption<bool>("HardMode.BlockCrossPlay", true))
-    {
-        return true;
-    }
-
-    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
-    {
-        bool result = sHardModeHandler->Modes[i]->CanCrossPlay();
-        bool attackerResult = sHardModeHandler->IsModeEnabledForPlayer(player, i);
-        bool victimResult = sHardModeHandler->IsModeEnabledForPlayer(target, i);
-
-        if (!result)
-        {
-            if (attackerResult != victimResult)
-            {
-                return false;
-            }
-        }
-    }
-
-    return true;
-}
-
 void HardModeHandler::SendAlert(Player* player, std::string message)
 {
     WorldPacket data(SMSG_NOTIFICATION, (message.size() + 1));
@@ -439,34 +631,345 @@ void HardModeHandler::SendAlert(Player* player, std::string message)
     player->SendDirectMessage(&data);
 }
 
-uint32 HardModeHandler::GetEnabledModesAsMask(Player* player)
+bool HardModeHandler::IsModeEnabledForPlayer(ObjectGuid guid, uint8 mode)
 {
-    uint32 mask = 0;
-
-    for (uint8 i = 0; i < DifficultyModes::DIFFICULTY_MODE_COUNT; ++i)
+    if (!guid)
     {
-        if (sHardModeHandler->IsModeEnabledForPlayerAndServer(player, i))
+        return false;
+    }
+
+    auto playerModes = sHardModeHandler->GetPlayerSetting(guid)->Modes;
+    if (playerModes.size() < 1)
+    {
+        return false;
+    }
+
+    for (auto it = playerModes.begin(); it != playerModes.end(); ++it)
+    {
+        auto pMode = *it;
+        if (pMode == mode)
         {
-            mask += (1 << i);
+            return true;
         }
     }
 
-    return mask;
+    return false;
 }
 
-std::string HardModeHandler::GetConfigNameFromMode(uint8 mode)
+void HardModeHandler::UpdateModeForPlayer(ObjectGuid guid, uint8 mode, bool state)
 {
-    switch (mode)
+    if (!guid)
     {
-    case DifficultyModes::DIFFICULTY_MODE_SELF_CRAFTED:
-        return "HardMode.SelfCrafted.Enable";
-    case DifficultyModes::DIFFICULTY_MODE_HARDCORE:
-        return "HardMode.HardCore.Enable";
-    case DifficultyModes::DIFFICULTY_MODE_SLOWXP:
-        return "HardMode.SlowXP.Enable";
+        return;
     }
 
-    return "ERROR";
+    auto modes = &sHardModeHandler->GetPlayerSetting(guid)->Modes;
+
+    auto it = std::find(modes->begin(), modes->end(), mode);
+
+    if (state)
+    {
+        if (it == modes->end())
+        {
+            modes->push_back(mode);
+        }
+    }
+    else
+    {
+        if (it != modes->end())
+        {
+            modes->erase(it);
+        }
+    }
+
+    auto player = ObjectAccessor::FindPlayer(guid);
+
+    if (player)
+    {
+        sHardModeHandler->ValidatePlayerAuras(player);
+
+        if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_SMALLFISH))
+        {
+            sHardModeHandler->UpdatePlayerScaleSpeed(player, SMALLFISH_SCALE);
+        }
+        else
+        {
+            sHardModeHandler->UpdatePlayerScaleSpeed(player, 1);
+        }
+    }
+}
+
+bool HardModeHandler::PlayerHasRestriction(ObjectGuid guid, uint32 restriction)
+{
+    auto modes = sHardModeHandler->GetHardModes();
+
+    for (auto it = modes->begin(); it != modes->end(); ++it)
+    {
+        auto mode = it->second;
+
+        if (!mode.Enabled)
+        {
+            continue;
+        }
+
+        if (mode.Restrictions == HARDMODE_RESTRICT_NONE)
+        {
+            continue;
+        }
+
+        if (!sHardModeHandler->IsModeEnabledForPlayer(guid, mode.Id))
+        {
+            continue;
+        }
+
+        auto rMask = (1 << restriction);
+        bool hasRestriction = (mode.Restrictions & rMask) == rMask;
+
+        if (hasRestriction)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+std::vector<HardModeInfo> HardModeHandler::GetPlayerModesFromRestriction(ObjectGuid guid, uint32 restriction)
+{
+    auto modes = sHardModeHandler->GetHardModes();
+    std::vector<HardModeInfo> enabledModes;
+
+    for (auto it = modes->begin(); it != modes->end(); ++it)
+    {
+        auto mode = it->second;
+
+        if (!mode.Enabled)
+        {
+            continue;
+        }
+
+        if (mode.Restrictions == HARDMODE_RESTRICT_NONE)
+        {
+            continue;
+        }
+
+        if (!sHardModeHandler->IsModeEnabledForPlayer(guid, mode.Id))
+        {
+            continue;
+        }
+
+        auto rMask = (1 << restriction);
+        bool hasRestriction = (mode.Restrictions & rMask) == rMask;
+
+        if (hasRestriction)
+        {
+            enabledModes.push_back(mode);
+        }
+    }
+
+    return enabledModes;
+}
+
+std::string HardModeHandler::GetDelimitedModes(std::vector<HardModeInfo> modes, std::string delimiter)
+{
+    std::stringstream ss;
+
+    for (uint8 i = 0; i < modes.size(); ++i)
+    {
+        ss << modes[i].Name;
+
+        if (i != modes.size() - 1)
+        {
+            ss << delimiter;
+        }
+    }
+
+    return ss.str();
+}
+
+bool HardModeHandler::HasMatchingModesWithRestriction(Player* player, Player* target, uint32 restriction)
+{
+    auto hardModes = sHardModeHandler->GetHardModes();
+
+    for (auto it = hardModes->begin(); it != hardModes->end(); ++it)
+    {
+        auto mode = it->second;
+
+        if (!mode.Enabled)
+        {
+            continue;
+        }
+
+        if (!sHardModeHandler->ModeHasRestriction(mode.Id, restriction))
+        {
+            continue;
+        }
+
+        bool flag1 = (sHardModeHandler->IsModeEnabledForPlayer(player->GetGUID(), mode.Id));
+        bool flag2 = (sHardModeHandler->IsModeEnabledForPlayer(target->GetGUID(), mode.Id));
+
+        if (flag1 != flag2)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool HardModeHandler::ModeHasRestriction(uint8 mode, uint32 restriction)
+{
+    auto modes = sHardModeHandler->GetHardModes();
+    auto modeIt = modes->find(mode);
+
+    if (modeIt == modes->end())
+    {
+        return false;
+    }
+
+    auto rMask = (1 << restriction);
+    bool hasRestriction = (modeIt->second.Restrictions & rMask) == rMask;
+
+    return hasRestriction;
+}
+
+bool HardModeHandler::IsPlayerTainted(ObjectGuid guid)
+{
+    auto playerSettings = sHardModeHandler->GetPlayerSetting(guid);
+    if (!playerSettings)
+    {
+        return false;
+    }
+
+    return playerSettings->Tainted;
+}
+
+void HardModeHandler::UpdatePlayerTainted(ObjectGuid guid, bool state)
+{
+    auto playerSettings = sHardModeHandler->GetPlayerSetting(guid);
+    if (!playerSettings)
+    {
+        return;
+    }
+
+    playerSettings->Tainted = state;
+}
+
+bool HardModeHandler::CanTaintPlayer(ObjectGuid guid)
+{
+    auto player = ObjectAccessor::FindPlayer(guid);
+    if (player && player->getClass() == CLASS_DEATH_KNIGHT && player->GetMapId() == HARDMODE_AREA_EBONHOLD)
+    {
+        if (!player->IsQuestRewarded(HARDMODE_QUEST_DK_INITIAL))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool HardModeHandler::IsPlayerShadowBanned(ObjectGuid guid)
+{
+    auto playerSettings = sHardModeHandler->GetPlayerSetting(guid);
+    if (!playerSettings)
+    {
+        return false;
+    }
+
+    return playerSettings->ShadowBanned;
+}
+
+void HardModeHandler::UpdatePlayerShadowBanned(ObjectGuid guid, bool state)
+{
+    auto playerSettings = sHardModeHandler->GetPlayerSetting(guid);
+    if (!playerSettings)
+    {
+        return;
+    }
+
+    playerSettings->ShadowBanned = state;
+
+    auto player = ObjectAccessor::FindPlayer(guid);
+
+    if (player)
+    {
+        if (state)
+        {
+            if (!player->HasAura(HARDMODE_AURA_SHADOWBAN))
+            {
+                player->AddAura(HARDMODE_AURA_SHADOWBAN, player);
+            }
+        }
+        else
+        {
+            if (player->HasAura(HARDMODE_AURA_SHADOWBAN))
+            {
+                player->RemoveAura(HARDMODE_AURA_SHADOWBAN);
+            }
+        }
+    }
+}
+
+void HardModeHandler::TryShadowBanPlayer(ObjectGuid guid)
+{
+    sHardModeHandler->UpdatePlayerShadowBanned(guid, true);
+
+    auto player = ObjectAccessor::FindPlayer(guid);
+
+    if (player)
+    {
+        WorldLocation worldLoc(HARDMODE_AREA_AZSHARACRATER, -614.38, -239.69, 379.35, 0.69); // Azshara Crater / Shadow Tomb
+        player->TeleportTo(worldLoc);
+        player->SetHomebind(worldLoc, HARDMODE_AREA_SHADOWTOMB);
+
+        if (!player->IsAlive())
+        {
+            player->ResurrectPlayer(100, false);
+            player->RemoveCorpse();
+        }
+    }
+}
+
+std::string HardModeHandler::GetNamesFromEnabledModes(Player* player)
+{
+    std::stringstream ss;
+    std::vector<HardModeInfo> modes;
+
+    auto hardModes = sHardModeHandler->GetHardModes();
+    for (auto mode = hardModes->begin(); mode != hardModes->end(); ++mode)
+    {
+        if (sHardModeHandler->IsModeEnabledForPlayer(player->GetGUID(), mode->second.Id))
+        {
+            modes.push_back(mode->second);
+        }
+    }
+
+    for (uint8 i = 0; i < modes.size(); ++i)
+    {
+        ss << modes[i].Name;
+
+        if (i != modes.size() - 1)
+        {
+            ss << ", ";
+        }
+    }
+
+    return ss.str();
+}
+
+std::string HardModeHandler::GetNameFromMode(uint8 id)
+{
+    auto hardModes = sHardModeHandler->GetHardModes();
+
+    auto mode = hardModes->find(id);
+
+    if (mode != hardModes->end())
+    {
+        return mode->second.Name;
+    }
+
+    return "Unknown";
 }
 
 PlayerSettingMap* HardModeHandler::GetPlayerSettingsFromDatabase(ObjectGuid guid)
@@ -512,9 +1015,7 @@ PlayerSettingMap* HardModeHandler::GetPlayerSettingsFromDatabase(ObjectGuid guid
     return settingMap;
 }
 
-HardModeHandler* HardModeHandler::GetInstance()
+TaskScheduler* HardModeHandler::GetScheduler()
 {
-    static HardModeHandler instance;
-
-    return &instance;
+    return &_scheduler;
 }

@@ -1,11 +1,13 @@
 #ifndef MODULE_HARDMODE_HANDLER_H
 #define MODULE_HARDMODE_HANDLER_H
 
-#include "DifficultyMode.h"
-#include "HardModeReward.h"
+#include "HardModeTypes.h"
 
 #include "Player.h"
+#include "TaskScheduler.h"
+
 #include <vector>
+#include <map>
 
 class HardModeHandler
 {
@@ -13,41 +15,84 @@ private:
     HardModeHandler() { }
 
 public:
-    void SetTainted(Player* player, bool value);
-    bool IsTainted(Player* player);
-    void SetShadowBanned(Player* player, bool value);
-    bool IsShadowBanned(Player* player);
+    bool IsHardModeEnabled();
 
-    std::string GetColorFromMode(uint8 mode);
-    std::string GetNameFromMode(uint8 mode);
-    std::string GetNamesFromEnabledModes(Player* player, bool colored = false);
-    void SendAlert(Player* player, std::string message);
-    bool HasModesEnabled(Player* player);
-    bool IsModeEnabledForPlayer(Player* player, uint8 mode);
-    bool IsModeEnabledForPlayerAndServer(Player* player, uint8 mode);
-    void UpdateAllModeEffects(Player* player);
-    bool TestForCrossplay(Player* target, Player* player);
-    uint32 GetEnabledModesAsMask(Player* player);
-    std::string GetConfigNameFromMode(uint8 mode);
-    PlayerSettingMap* GetPlayerSettingsFromDatabase(ObjectGuid guid);
-    std::string CreateWebhookObject(std::string title, std::string content);
-    void SendWebhookMessage(std::string payload);
+    void LoadHardModes();
+    void ClearHardModes();
+    std::map<uint8, HardModeInfo>* GetHardModes();
+    HardModeInfo* GetHardModeFromId(uint8 id);
 
-    void LoadRewardsFromDatabase();
-    std::vector<HardModeReward> GetRewardsForMode(uint8 mode);
-    void RewardPlayerForMode(Player* player, uint8 mode);
+    void LoadPlayerSettings();
+    void ClearPlayerSettings();
+    void SavePlayerSettings();
+    void SavePlayerSetting(uint64 guid, HardModePlayerSettings* settings);
+    std::map<uint64, HardModePlayerSettings>* GetPlayerSettings();
+    HardModePlayerSettings* GetPlayerSetting(ObjectGuid guid);
+
+    void LoadSelfCraftExcludeIds();
+    void ClearSelfCraftExcludeIds();
+    std::vector<int32>* GetSelfCraftedExcludeIds();
+    bool IsSelfCraftExcluded(int32 id);
+    bool IsSelfCraftSpellExcluded(uint32 spellId);
+    bool IsSelfCraftItemExcluded(uint32 itemId);
+
+    void LoadAuras();
+    void ClearAuras();
+    std::map<uint8, std::vector<uint32>>* GetAuras();
+    std::vector<uint32>* GetAurasForMode(uint8 mode);
+    void ValidatePlayerAuras(Player* player);
+
+    void UpdatePlayerScaleSpeed(Player* player, float scaleSpeed);
+
+    void LoadRewards();
+    void ClearRewards();
+    std::map<uint8, std::vector<HardModeReward>>* GetRewards();
+    std::vector<HardModeReward>* GetRewardsForMode(uint8 mode);
+    void TryRewardPlayer(Player* player, std::vector<HardModeReward> rewards);
     void RewardItems(Player* player, std::vector<HardModeReward> rewards);
     void RewardTitle(Player* player, uint32 titleId);
     void RewardSpell(Player* player, uint32 spellId);
     void SendMailItems(Player* player, std::vector<std::pair<uint32, uint32>>& mailItems, std::string header, std::string body);
 
-    static HardModeHandler* GetInstance();
+    void SendAlert(Player* player, std::string message);
 
-public:
-    DifficultyMode* Modes[DifficultyModes::DIFFICULTY_MODE_COUNT];
+    bool IsModeEnabledForPlayer(ObjectGuid guid, uint8 mode);
+    void UpdateModeForPlayer(ObjectGuid guid, uint8 mode, bool state);
+    bool PlayerHasRestriction(ObjectGuid guid, uint32 restriction);
+    std::vector<HardModeInfo> GetPlayerModesFromRestriction(ObjectGuid guid, uint32 restriction);
+    std::string GetDelimitedModes(std::vector<HardModeInfo> modes, std::string delimiter);
+    bool HasMatchingModesWithRestriction(Player* player, Player* target, uint32 restriction);
+    bool ModeHasRestriction(uint8 mode, uint32 restriction);
+
+    bool IsPlayerTainted(ObjectGuid guid);
+    void UpdatePlayerTainted(ObjectGuid guid, bool state);
+    bool CanTaintPlayer(ObjectGuid guid);
+
+    bool IsPlayerShadowBanned(ObjectGuid guid);
+    void UpdatePlayerShadowBanned(ObjectGuid guid, bool state);
+    void TryShadowBanPlayer(ObjectGuid guid);
+
+    std::string GetNamesFromEnabledModes(Player* player);
+    std::string GetNameFromMode(uint8 mode);
+
+    PlayerSettingMap* GetPlayerSettingsFromDatabase(ObjectGuid guid);
+    TaskScheduler* GetScheduler();
 
 private:
-    std::vector<HardModeReward> _hardModeRewards;
+    std::map<uint8, HardModeInfo> _hardModes;
+    std::map<uint64, HardModePlayerSettings> _playerSettings;
+    std::vector<int32> _selfCraftExcludeIds;
+    std::map<uint8, std::vector<HardModeReward>> _rewards;
+    std::map<uint8, std::vector<uint32>> _auras;
+    TaskScheduler _scheduler;
+
+public:
+    static HardModeHandler* GetInstance()
+    {
+        static HardModeHandler instance;
+
+        return &instance;
+    }
 };
 
 #define sHardModeHandler HardModeHandler::GetInstance()
