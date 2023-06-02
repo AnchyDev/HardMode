@@ -11,22 +11,18 @@ bool DifficultyModeSlowXP::CanGroupInvite(Player* /*player*/, Player* /*targetPl
     return true;
 }
 
-void DifficultyModeSlowXP::OnGiveXP(Player* player, uint32& amount, Unit* victim, uint8 xpSource)
+void DifficultyModeSlowXP::OnGiveXP(Player* player, uint32& amount, Unit* victim)
 {
     if (!player)
     {
         return;
     }
-
-    if (xpSource == XPSOURCE_KILL)
+    if (!victim)
     {
-        amount = (amount / (sConfigMgr->GetOption<float>("Rate.XP.Kill", 1) * sConfigMgr->GetOption<float>("HardMode.SlowXP.Multiplier", 1)));
+        return;
     }
 
-    if (xpSource == XPSOURCE_EXPLORE)
-    {
-        amount = (amount / (sConfigMgr->GetOption<float>("Rate.XP.Explore", 1) * sConfigMgr->GetOption<float>("HardMode.SlowXP.Multiplier", 1)));
-    }
+    amount = (amount / (sConfigMgr->GetOption<float>("Rate.XP.Kill", 1) * sConfigMgr->GetOption<float>("HardMode.SlowXP.Multiplier", 1)));
 }
 
 void DifficultyModeSlowXP::OnQuestComputeXP(Player* player, Quest const* /*quest*/, uint32& xpValue)
