@@ -4,16 +4,9 @@ HardMode is a module heavily inspired by [mod-challenge-modes](https://github.co
 This module is still a WIP.
 
 ## Features
-- **Self-Crafted Mode**
-  - You can only equip and use items crafted by the player.
-- **HardCore Mode**
-   - Dying means you get sent to the shadow realm (permadeath).
-- **SlowXP Mode**
-   - Your kill and quest exp is reduced to 1x rates.
-
-Read the `mode-restrictions.txt` file for a list of restrictions.
-## ⚠️ Attention ⚠️
-You _must_ enable `EnablePlayerSettings` in the World config to use this module.
+- Build your own HardModes using the [restriction builder](https://anchydev.github.io/HardMode/#mode-editor).
+- Level based rewards for each mode you have created.
+- Dynamic auras for each mode.
 
 ## Database
 Head over to my HardMode editor to create your first mode: https://anchydev.github.io/HardMode/#mode-editor
