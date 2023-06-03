@@ -232,7 +232,7 @@ void HardModeHooksPlayerScript::OnPlayerLearnTalents(Player* player, uint32 /*ta
         std::string alert = Acore::StringFormatFmt("You cannot use talent points while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
         sHardModeHandler->SendAlert(player, alert);
 
-        player->resetTalents();
+        player->resetTalents(true);
     }
 }
 
