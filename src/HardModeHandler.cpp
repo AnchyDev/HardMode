@@ -390,7 +390,7 @@ void HardModeHandler::ValidatePlayerAuras(Player* player)
 
 void HardModeHandler::UpdatePlayerScaleSpeed(Player* player, float scaleSpeed)
 {
-    if (!player)
+    if (!player || !player->IsInWorld())
     {
         return;
     }
