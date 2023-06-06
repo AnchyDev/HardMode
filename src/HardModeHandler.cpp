@@ -390,6 +390,11 @@ void HardModeHandler::ValidatePlayerAuras(Player* player)
 
 void HardModeHandler::UpdatePlayerScaleSpeed(Player* player, float scaleSpeed)
 {
+    if (!player)
+    {
+        return;
+    }
+
     float scale = scaleSpeed;
     float move = scaleSpeed;
     bool forced = true;
