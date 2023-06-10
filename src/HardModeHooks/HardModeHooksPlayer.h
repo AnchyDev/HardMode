@@ -15,6 +15,7 @@ private:
 
     bool CanEquipItem(Player* player, uint8 slot, uint16& dest, Item* pItem, bool swap, bool notLoading) override;
     bool CanCastItemUseSpell(Player* player, Item* item, SpellCastTargets const& targets, uint8 castCount, uint32 glyphIndex) override;
+    void OnCreateItem(Player* player, Item* item, uint32 count) override;
 
     void OnPlayerResurrect(Player* player, float restorePercent, bool applySickness) override;
     void OnPlayerReleasedGhost(Player* player) override;

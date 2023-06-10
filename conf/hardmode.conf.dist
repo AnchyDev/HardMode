@@ -47,3 +47,14 @@ HardMode.Restrict.Interact.Group.Range = 3
 #
 
 HardMode.Restrict.BadLuck.Chance = 10
+
+#
+#    HardMode.Restrict.SelfCrafted.CreatedBy
+#        Description: Items crafted by the player like potions and food with gain a created by tag, allowing self crafted players to use them.
+#        Note: This will only let players use their own items.
+#                     0 - Disabled
+#        Default:     1 - Enabled
+#        Type:        bool
+#
+
+HardMode.Restrict.SelfCrafted.CreatedBy = 1

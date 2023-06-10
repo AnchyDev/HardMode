@@ -146,6 +146,36 @@ bool HardModeHooksPlayerScript::CanCastItemUseSpell(Player* player, Item* item, 
     return true;
 }
 
+void HardModeHooksPlayerScript::OnCreateItem(Player* player, Item* item, uint32 count)
+{
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
+    if (!player || !item)
+    {
+        return;
+    }
+
+    if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_SELFCRAFTED))
+    {
+        if (!sConfigMgr->GetOption<bool>("HardMode.Restrict.SelfCrafted.CreatedBy", true))
+        {
+            return;
+        }
+
+        auto itemProto = item->GetTemplate();
+
+        if (itemProto->Class != ITEM_CLASS_CONSUMABLE)
+        {
+            return;
+        }
+
+        item->SetGuidValue(ITEM_FIELD_CREATOR, player->GetGUID());
+    }
+}
+
 void HardModeHooksPlayerScript::OnPlayerResurrect(Player* player, float /*restorePercent*/, bool /*applySickness*/)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
