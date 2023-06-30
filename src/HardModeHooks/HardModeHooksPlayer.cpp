@@ -146,7 +146,7 @@ bool HardModeHooksPlayerScript::CanCastItemUseSpell(Player* player, Item* item, 
     return true;
 }
 
-void HardModeHooksPlayerScript::OnCreateItem(Player* player, Item* item, uint32 count)
+void HardModeHooksPlayerScript::OnCreateItem(Player* player, Item* item, uint32 /*count*/)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
