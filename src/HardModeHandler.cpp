@@ -360,7 +360,9 @@ void HardModeHandler::ValidatePlayerAuras(Player* player)
                 {
                     _scheduler.Schedule(1s, [aura, player](TaskContext /*task*/)
                      {
-                            if (!player || !aura)
+                            if (!player ||
+                                !player->IsInWorld() ||
+                                !aura)
                             {
                                 return;
                             }
