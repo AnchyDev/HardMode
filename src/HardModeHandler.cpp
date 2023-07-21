@@ -222,13 +222,18 @@ void HardModeHandler::UpdatePlayerSettings(ObjectGuid guid, HardModePlayerSettin
 {
     auto settingsMap = sHardModeHandler->GetPlayerSettings();
 
+    if (!settingsMap)
+    {
+        return;
+    }
+
     auto it = settingsMap->find(guid.GetRawValue());
     if (it != settingsMap->end())
     {
         settingsMap->erase(it);
     }
 
-    settingsMap->emplace(guid.GetRawValue(), settings);
+    settingsMap->emplace(guid.GetRawValue(), *settings);
 }
 
 std::map<uint64, HardModePlayerSettings>* HardModeHandler::GetPlayerSettings()
