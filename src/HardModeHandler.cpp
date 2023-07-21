@@ -142,7 +142,7 @@ void HardModeHandler::LoadPlayerSettings()
 
 void HardModeHandler::LoadPlayerSettings(ObjectGuid player)
 {
-    QueryResult qResult = CharacterDatabase.Query("SELECT * FROM `hardmode_player_settings` WHERE guid = {}", player);
+    QueryResult qResult = CharacterDatabase.Query("SELECT * FROM `hardmode_player_settings` WHERE guid = {}", player.GetRawValue());
 
     if (qResult)
     {
