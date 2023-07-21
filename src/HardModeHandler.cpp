@@ -140,6 +140,53 @@ void HardModeHandler::LoadPlayerSettings()
     }
 }
 
+void HardModeHandler::LoadPlayerSettings(ObjectGuid player)
+{
+    QueryResult qResult = CharacterDatabase.Query("SELECT * FROM `hardmode_player_settings` WHERE guid = {}", player);
+
+    if (qResult)
+    {
+        uint32 count = 0;
+
+        Field* fields = qResult->Fetch();
+
+        uint32 guid = fields[0].Get<int64>();
+        std::string modes = fields[1].Get<std::string>();
+        bool tainted = fields[2].Get<bool>();
+        bool shadowban = fields[3].Get<bool>();
+
+        std::vector<std::string_view> tokens = Acore::Tokenize(modes, ' ', false);
+        HardModePlayerSettings playerSettings;
+        std::vector<uint8> playerModes;
+
+        for (auto token : tokens)
+        {
+            try
+            {
+                uint32 modeId = boost::lexical_cast<uint32>(token);
+
+                auto hardMode = sHardModeHandler->GetHardModeFromId(modeId);
+                if (!hardMode)
+                {
+                    continue;
+                }
+
+                playerModes.push_back(hardMode->Id);
+            }
+            catch (const boost::bad_lexical_cast&)
+            {
+                LOG_ERROR("module", "Detected bad mode settings format for column 'mode' and guid '{}' in 'hardmode_player_settings' table.", guid);
+            }
+        }
+
+        playerSettings.Modes = playerModes;
+        playerSettings.Tainted = tainted;
+        playerSettings.ShadowBanned = shadowban;
+
+        sHardModeHandler->UpdatePlayerSettings(player, &playerSettings);
+    }
+}
+
 void HardModeHandler::ClearPlayerSettings()
 {
     _playerSettings.clear();
@@ -171,6 +218,19 @@ void HardModeHandler::SavePlayerSetting(uint64 guid, HardModePlayerSettings* set
     CharacterDatabase.Execute("INSERT INTO hardmode_player_settings (guid, modes, tainted, shadowban) VALUES ({}, '{}', {}, {}) ON DUPLICATE KEY UPDATE modes = '{}', tainted = {}, shadowban = {}",
         guid, sModes, settings->Tainted, settings->ShadowBanned,
         sModes, settings->Tainted, settings->ShadowBanned);
+}
+
+void HardModeHandler::UpdatePlayerSettings(ObjectGuid guid, HardModePlayerSettings* settings)
+{
+    auto settingsMap = sHardModeHandler->GetPlayerSettings();
+
+    auto it = settingsMap->find(guid.GetRawValue());
+    if (it != settingsMap->end())
+    {
+        settingsMap->erase(it);
+    }
+
+    settingsMap->emplace(guid, settings);
 }
 
 std::map<uint64, HardModePlayerSettings>* HardModeHandler::GetPlayerSettings()

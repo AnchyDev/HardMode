@@ -453,6 +453,13 @@ void HardModeHooksPlayerScript::OnLogin(Player* player)
         return;
     }
 
+    if (!player)
+    {
+        return;
+    }
+
+    sHardModeHandler->LoadPlayerSettings(player->GetGUID());
+
     if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_SMALLFISH))
     {
         // Schedule due to issues..

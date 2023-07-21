@@ -23,9 +23,11 @@ public:
     HardModeInfo* GetHardModeFromId(uint8 id);
 
     void LoadPlayerSettings();
+    void LoadPlayerSettings(ObjectGuid guid);
     void ClearPlayerSettings();
     void SavePlayerSettings();
     void SavePlayerSetting(uint64 guid, HardModePlayerSettings* settings);
+    void UpdatePlayerSettings(ObjectGuid guid, HardModePlayerSettings* settings);
     std::map<uint64, HardModePlayerSettings>* GetPlayerSettings();
     HardModePlayerSettings* GetPlayerSetting(ObjectGuid guid);
 
