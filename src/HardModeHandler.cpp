@@ -146,8 +146,6 @@ void HardModeHandler::LoadPlayerSettings(ObjectGuid player)
 
     if (qResult)
     {
-        uint32 count = 0;
-
         Field* fields = qResult->Fetch();
 
         uint32 guid = fields[0].Get<int64>();
