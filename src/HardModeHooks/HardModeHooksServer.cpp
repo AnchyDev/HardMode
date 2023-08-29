@@ -91,7 +91,8 @@ bool HardModeHooksServerScript::HandleWhoListOverride(WorldPacket& packet)
         auto targetPlayer = ObjectAccessor::FindPlayerByName(playerName);
         if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer->GetGUID(), HARDMODE_RESTRICT_HIDE_WHOLIST))
         {
-            packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
+            packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN)); // ZoneId
+            packet.put(packet.rpos() - 17, 0); // PlayerLvl
             resendPacket = true;
         }
     }
@@ -138,12 +139,14 @@ bool HardModeHooksServerScript::HandleFriendStatus(WorldPacket& packet)
     {
         packet.read_skip<uint8>(); // Friend status
         packet.read_skip<uint32>(); // Friend area
+        packet.read_skip<uint32>(); // Friend level
     }
 
     Player* targetPlayer = ObjectAccessor::FindPlayer(targetGuid);
     if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer->GetGUID(), HARDMODE_RESTRICT_HIDE_FRIENDS))
     {
-        packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
+        packet.put(packet.rpos() - 8, static_cast<uint32>(HARDMODE_AREA_UNKNOWN)); // Area
+        packet.put(packet.rpos() - 4, 0); // Level
         resendPacket = true;
     }
 
@@ -182,16 +185,16 @@ bool HardModeHooksServerScript::HandleContactList(WorldPacket& packet)
         }
 
         packet.read_skip<uint32>(); // target area
+        packet.read_skip<uint32>(); // target level
+        packet.read_skip<uint32>(); // target class
 
         Player* targetPlayer = ObjectAccessor::FindPlayer(targetGuid);
         if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer->GetGUID(), HARDMODE_RESTRICT_HIDE_FRIENDS))
         {
-            packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
+            packet.put(packet.rpos() - 12, static_cast<uint32>(HARDMODE_AREA_UNKNOWN)); // Area
+            packet.put(packet.rpos() - 8, 0); // Level
             resendPacket = true;
         }
-
-        packet.read_skip<uint32>(); // target level
-        packet.read_skip<uint32>(); // target class
     }
 
     return resendPacket;
@@ -233,7 +236,8 @@ bool HardModeHooksServerScript::HandleGuildRosterOverride(WorldPacket& packet)
 
         if (!targetMember || sHardModeHandler->PlayerHasRestriction(targetMember->GetGUID(), HARDMODE_RESTRICT_HIDE_GUILD))
         {
-            packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN));
+            packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN)); // Area
+            packet.put(packet.rpos() - 7, 0); // Area
             resendPacket = true;
         }
 
