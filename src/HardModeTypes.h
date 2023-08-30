@@ -57,7 +57,8 @@ enum HardModeRestrictions
     HARDMODE_RESTRICT_INTERACT_GROUP_RANGE =        17, // 131072 The player can only group with other players within x (default 3) levels from themself.
     HARDMODE_RESTRICT_INTERACT_TALENTS =            18, // 262144 The player cannot use talent points.
     HARDMODE_RESTRICT_SMALLFISH =                   19, // 524288 The player is half the size, speed and deals half as much damage.
-    HARDMODE_RESTRICT_COUNT =                       20,  // Used internally. DO NOT USE
+    HARDMODE_RESTRICT_BLOCK_CROSSPVP =              20, // 1048576 The player cannot damage other players with unmatching modes.
+    HARDMODE_RESTRICT_COUNT =                       21,  // Used internally. DO NOT USE
 };
 
 enum HardModeRewardType

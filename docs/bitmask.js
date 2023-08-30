@@ -17,7 +17,8 @@ const maskInputs = [
     "hmr_pacifist",
 	"hmr_int_grp_range",
 	"hmr_int_talent",
-	"hmr_smallfish"
+	"hmr_smallfish",
+	"hmr_block_crosspvp"
 ];
 
 var modeName = "";

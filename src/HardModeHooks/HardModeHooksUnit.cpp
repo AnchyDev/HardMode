@@ -76,7 +76,7 @@ void HardModeHooksUnitScript::OnAuraRemove(Unit* unit, AuraApplication* /*auraAp
     sHardModeHandler->ValidatePlayerAuras(player);
 }
 
-void HardModeHooksUnitScript::OnDamage(Unit* attacker, Unit* /*victim*/, uint32& /*damage*/)
+void HardModeHooksUnitScript::OnDamage(Unit* attacker, Unit* target, uint32& damage)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
@@ -117,9 +117,22 @@ void HardModeHooksUnitScript::OnDamage(Unit* attacker, Unit* /*victim*/, uint32&
         sHardModeHandler->SendAlert(player, "You have failed the pacifist challenge.");
         player->AddAura(HARDMODE_AURA_PACIFIST_FAIL, player);
     }
+
+    auto targetPlayer = target->ToPlayer();
+
+    if (!targetPlayer)
+    {
+        return;
+    }
+
+    if (!sHardModeHandler->HasMatchingModesWithRestriction(player, targetPlayer, HARDMODE_RESTRICT_BLOCK_CROSSPVP))
+    {
+        damage = 0;
+        sHardModeHandler->SendAlert(player, "You cannot damage players in other modes than your own.");
+    }
 }
 
-void HardModeHooksUnitScript::ModifyPeriodicDamageAurasTick(Unit* /*target*/, Unit* attacker, uint32& damage, SpellInfo const* /*spellInfo*/)
+void HardModeHooksUnitScript::ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage, SpellInfo const* /*spellInfo*/)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
@@ -147,9 +160,22 @@ void HardModeHooksUnitScript::ModifyPeriodicDamageAurasTick(Unit* /*target*/, Un
     {
         damage = damage * SMALLFISH_SCALE;
     }
+
+    auto targetPlayer = target->ToPlayer();
+
+    if (!targetPlayer)
+    {
+        return;
+    }
+
+    if (!sHardModeHandler->HasMatchingModesWithRestriction(player, targetPlayer, HARDMODE_RESTRICT_BLOCK_CROSSPVP))
+    {
+        damage = 0;
+        sHardModeHandler->SendAlert(player, "You cannot damage players in other modes than your own.");
+    }
 }
 
-void HardModeHooksUnitScript::ModifyMeleeDamage(Unit* /*target*/, Unit* attacker, uint32& damage)
+void HardModeHooksUnitScript::ModifyMeleeDamage(Unit* target, Unit* attacker, uint32& damage)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
@@ -177,9 +203,22 @@ void HardModeHooksUnitScript::ModifyMeleeDamage(Unit* /*target*/, Unit* attacker
     {
         damage = damage * SMALLFISH_SCALE;
     }
+
+    auto targetPlayer = target->ToPlayer();
+
+    if (!targetPlayer)
+    {
+        return;
+    }
+
+    if (!sHardModeHandler->HasMatchingModesWithRestriction(player, targetPlayer, HARDMODE_RESTRICT_BLOCK_CROSSPVP))
+    {
+        damage = 0;
+        sHardModeHandler->SendAlert(player, "You cannot damage players in other modes than your own.");
+    }
 }
 
-void HardModeHooksUnitScript::ModifySpellDamageTaken(Unit* /*target*/, Unit* attacker, int32& damage, SpellInfo const* /*spellInfo*/)
+void HardModeHooksUnitScript::ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* /*spellInfo*/)
 {
     if (!sHardModeHandler->IsHardModeEnabled())
     {
@@ -206,5 +245,18 @@ void HardModeHooksUnitScript::ModifySpellDamageTaken(Unit* /*target*/, Unit* att
     if (sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_SMALLFISH))
     {
         damage = damage * SMALLFISH_SCALE;
+    }
+
+    auto targetPlayer = target->ToPlayer();
+
+    if (!targetPlayer)
+    {
+        return;
+    }
+
+    if (!sHardModeHandler->HasMatchingModesWithRestriction(player, targetPlayer, HARDMODE_RESTRICT_BLOCK_CROSSPVP))
+    {
+        damage = 0;
+        sHardModeHandler->SendAlert(player, "You cannot damage players in other modes than your own.");
     }
 }
