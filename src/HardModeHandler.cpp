@@ -1042,6 +1042,21 @@ std::string HardModeHandler::GetNameFromMode(uint8 id)
     return "Unknown";
 }
 
+ObjectGuid* HardModeHandler::GetGUIDFromPlayerName(std::string playerName)
+{
+    QueryResult qResult = CharacterDatabase.Query("SELECT guid FROM characters WHERE name = '{}'", playerName);
+
+    if (qResult)
+    {
+        Field* fields = qResult->Fetch();
+        uint64 guid = fields[0].Get<uint64>();
+
+        return new ObjectGuid(guid);
+    }
+
+    return nullptr;
+}
+
 PlayerSettingMap* HardModeHandler::GetPlayerSettingsFromDatabase(ObjectGuid guid)
 {
     PlayerSettingMap* settingMap = new PlayerSettingMap();

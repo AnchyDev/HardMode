@@ -88,8 +88,8 @@ bool HardModeHooksServerScript::HandleWhoListOverride(WorldPacket& packet)
         packet.read_skip<uint8>(); //PlayerGender
         packet.read_skip<uint32>(); //PlayerZoneId
 
-        auto targetPlayer = ObjectAccessor::FindPlayerByName(playerName);
-        if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer->GetGUID(), HARDMODE_RESTRICT_HIDE_WHOLIST))
+        auto targetGuid = sHardModeHandler->GetGUIDFromPlayerName(playerName);
+        if (targetGuid && sHardModeHandler->PlayerHasRestriction(*targetGuid, HARDMODE_RESTRICT_HIDE_WHOLIST))
         {
             packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN)); // ZoneId
             packet.put(packet.rpos() - 17, 0); // PlayerLvl
@@ -142,8 +142,7 @@ bool HardModeHooksServerScript::HandleFriendStatus(WorldPacket& packet)
         packet.read_skip<uint32>(); // Friend level
     }
 
-    Player* targetPlayer = ObjectAccessor::FindPlayer(targetGuid);
-    if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer->GetGUID(), HARDMODE_RESTRICT_HIDE_FRIENDS))
+    if (targetGuid && sHardModeHandler->PlayerHasRestriction(targetGuid, HARDMODE_RESTRICT_HIDE_FRIENDS))
     {
         packet.put(packet.rpos() - 8, static_cast<uint32>(HARDMODE_AREA_UNKNOWN)); // Area
         packet.put(packet.rpos() - 4, 0); // Level
@@ -188,8 +187,7 @@ bool HardModeHooksServerScript::HandleContactList(WorldPacket& packet)
         packet.read_skip<uint32>(); // target level
         packet.read_skip<uint32>(); // target class
 
-        Player* targetPlayer = ObjectAccessor::FindPlayer(targetGuid);
-        if (!targetPlayer || sHardModeHandler->PlayerHasRestriction(targetPlayer->GetGUID(), HARDMODE_RESTRICT_HIDE_FRIENDS))
+        if (targetGuid && sHardModeHandler->PlayerHasRestriction(targetGuid, HARDMODE_RESTRICT_HIDE_FRIENDS))
         {
             packet.put(packet.rpos() - 12, static_cast<uint32>(HARDMODE_AREA_UNKNOWN)); // Area
             packet.put(packet.rpos() - 8, 0); // Level
@@ -232,9 +230,7 @@ bool HardModeHooksServerScript::HandleGuildRosterOverride(WorldPacket& packet)
         packet.read_skip<uint8>(); //MemberGender
         packet.read_skip<int32>(); //MemberAreaId
 
-        Player* targetMember = ObjectAccessor::FindPlayer(memberGuid);
-
-        if (!targetMember || sHardModeHandler->PlayerHasRestriction(targetMember->GetGUID(), HARDMODE_RESTRICT_HIDE_GUILD))
+        if (memberGuid && sHardModeHandler->PlayerHasRestriction(memberGuid, HARDMODE_RESTRICT_HIDE_GUILD))
         {
             packet.put(packet.rpos() - 4, static_cast<uint32>(HARDMODE_AREA_UNKNOWN)); // Area
             packet.put(packet.rpos() - 7, 0); // Area

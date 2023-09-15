@@ -76,6 +76,7 @@ public:
 
     std::string GetNamesFromEnabledModes(Player* player);
     std::string GetNameFromMode(uint8 mode);
+    ObjectGuid* GetGUIDFromPlayerName(std::string playerName);
 
     PlayerSettingMap* GetPlayerSettingsFromDatabase(ObjectGuid guid);
     TaskScheduler* GetScheduler();
