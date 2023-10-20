@@ -88,12 +88,20 @@ void HardModeHooksUnitScript::OnDamage(Unit* attacker, Unit* target, uint32& dam
         return;
     }
 
-    if (!attacker->IsPlayer())
+    if (!attacker->IsPlayer() && !attacker->IsSummon())
     {
         return;
     }
 
     Player* player = attacker->ToPlayer();
+
+    if (!player || attacker->IsSummon())
+    {
+        if (auto owner = attacker->GetOwner())
+        {
+            player = owner->ToPlayer();
+        }
+    }
 
     if (!player)
     {
@@ -187,12 +195,20 @@ void HardModeHooksUnitScript::ModifyMeleeDamage(Unit* target, Unit* attacker, ui
         return;
     }
 
-    if (!attacker->IsPlayer())
+    if (!attacker->IsPlayer() && !attacker->IsSummon())
     {
         return;
     }
 
-    auto player = attacker->ToPlayer();
+    Player* player = attacker->ToPlayer();
+
+    if (!player || attacker->IsSummon())
+    {
+        if (auto owner = attacker->GetOwner())
+        {
+            player = owner->ToPlayer();
+        }
+    }
 
     if (!player)
     {
@@ -230,12 +246,20 @@ void HardModeHooksUnitScript::ModifySpellDamageTaken(Unit* target, Unit* attacke
         return;
     }
 
-    if (!attacker->IsPlayer())
+    if (!attacker->IsPlayer() && !attacker->IsSummon())
     {
         return;
     }
 
-    auto player = attacker->ToPlayer();
+    Player* player = attacker->ToPlayer();
+
+    if (!player || attacker->IsSummon())
+    {
+        if (auto owner = attacker->GetOwner())
+        {
+            player = owner->ToPlayer();
+        }
+    }
 
     if (!player)
     {
