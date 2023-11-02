@@ -3,6 +3,7 @@
 
 #include "HardModeTypes.h"
 
+#include "Config.h"
 #include "Player.h"
 #include "TaskScheduler.h"
 

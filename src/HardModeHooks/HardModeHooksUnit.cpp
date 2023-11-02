@@ -284,3 +284,45 @@ void HardModeHooksUnitScript::ModifySpellDamageTaken(Unit* target, Unit* attacke
         sHardModeHandler->SendAlert(player, "You cannot damage players in other modes than your own.");
     }
 }
+
+void HardModeHooksUnitScript::OnUnitDeath(Unit* unit, Unit* killer)
+{
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
+    if (!sConfigMgr->GetOption<bool>("HardMode.Restrict.Permadeath.Announce", true))
+    {
+        return;
+    }
+
+    if (!unit)
+    {
+        return;
+    }
+
+    auto player = unit->ToPlayer();
+    if (!player)
+    {
+        return;
+    }
+
+    if (!sHardModeHandler->PlayerHasRestriction(player->GetGUID(), HARDMODE_RESTRICT_PERMADEATH))
+    {
+        return;
+    }
+
+    std::stringstream ss;
+
+    if (killer)
+    {
+        ss << Acore::StringFormatFmt("|cffFF0000Player {} has died to {} {} while undertaking the permadeath restriction!", player->GetName(), killer->ToPlayer() ? "player" : "creature", killer->GetName());
+    }
+    else
+    {
+        ss << Acore::StringFormatFmt("|cffFF0000Player {} has died while undertaking the permadeath restriction!", player->GetName());
+    }
+
+    sWorld->SendServerMessage(SERVER_MSG_STRING, ss.str());
+}

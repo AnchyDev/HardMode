@@ -1,7 +1,6 @@
 #include "HardModeHandler.h"
 #include "HardModeTypes.h"
 
-#include "Config.h"
 #include "DatabaseEnv.h"
 #include "Log.h"
 #include "Player.h"

@@ -16,6 +16,8 @@ private:
     void ModifyPeriodicDamageAurasTick(Unit* target, Unit* attacker, uint32& damage, SpellInfo const* spellInfo) override;
     void ModifyMeleeDamage(Unit* target, Unit* attacker, uint32& damage) override;
     void ModifySpellDamageTaken(Unit* target, Unit* attacker, int32& damage, SpellInfo const* spellInfo) override;
+
+    void OnUnitDeath(Unit* unit, Unit* killer) override;
 };
 
 #endif // MODULE_HARDMODE_HOOKS_UNIT_H

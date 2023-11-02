@@ -58,3 +58,13 @@ HardMode.Restrict.BadLuck.Chance = 10
 #
 
 HardMode.Restrict.SelfCrafted.CreatedBy = 1
+
+#
+#    HardMode.Restrict.Permadeath.Announce
+#        Description: Enables the announcement when a permadeath player dies.
+#                     0 - Disabled
+#        Default:     1 - Enabled
+#        Type:        bool
+#
+
+HardMode.Restrict.Permadeath.Announce = 1
