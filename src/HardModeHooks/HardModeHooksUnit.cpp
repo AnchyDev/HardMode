@@ -313,6 +313,11 @@ void HardModeHooksUnitScript::OnUnitDeath(Unit* unit, Unit* killer)
         return;
     }
 
+    if (sHardModeHandler->IsPlayerShadowBanned(player->GetGUID())
+    {
+        return;
+    }
+
     std::stringstream ss;
 
     if (killer)
