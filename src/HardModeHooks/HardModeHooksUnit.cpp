@@ -313,7 +313,7 @@ void HardModeHooksUnitScript::OnUnitDeath(Unit* unit, Unit* killer)
         return;
     }
 
-    if (sHardModeHandler->IsPlayerShadowBanned(player->GetGUID())
+    if (sHardModeHandler->IsPlayerShadowBanned(player->GetGUID()))
     {
         return;
     }
