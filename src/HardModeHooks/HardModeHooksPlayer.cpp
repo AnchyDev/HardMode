@@ -474,6 +474,6 @@ void HardModeHooksPlayerScript::OnLogin(Player* player)
     if (sHardModeHandler->IsPlayerShadowBanned(player->GetGUID()))
     {
         sHardModeHandler->UpdatePlayerShadowBanned(player->GetGUID(), false);
-        sHardModeHandler->TryShadowBanPlayer(player->GetGUID());;
+        sHardModeHandler->TryShadowBanPlayer(player->GetGUID());
     }
 }
