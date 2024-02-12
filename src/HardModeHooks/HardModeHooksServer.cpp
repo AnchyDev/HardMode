@@ -65,6 +65,52 @@ bool HardModeHooksServerScript::CanPacketSend(WorldSession* session, WorldPacket
     return true;
 }
 
+bool HardModeHooksServerScript::CanPacketReceive(WorldSession* session, WorldPacket& packet)
+{
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return true;
+    }
+
+    if (!session)
+    {
+        return true;
+    }
+
+    auto player = session->GetPlayer();
+    if (!player)
+    {
+        return true;
+    }
+
+    auto opCode = packet.GetOpcode();
+
+    switch (opCode)
+    {
+    case CMSG_GET_MAIL_LIST:
+        return HandleGetMailListOverride(session, packet);
+        break;
+    }
+
+    return true;
+}
+
+bool HardModeHooksServerScript::HandleGetMailListOverride(WorldSession* session, WorldPacket& packet)
+{
+    if (!session->GetPlayer())
+    {
+        return true;
+    }
+
+    auto player = session->GetPlayer();
+    if (sHardModeHandler->CanTaintPlayer(player->GetGUID()))
+    {
+        sHardModeHandler->UpdatePlayerTainted(player->GetGUID(), true);
+    }
+
+    return true;
+}
+
 bool HardModeHooksServerScript::HandleWhoListOverride(WorldPacket& packet)
 {
     bool resendPacket = false;
