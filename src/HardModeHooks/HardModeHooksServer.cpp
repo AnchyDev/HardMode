@@ -88,14 +88,14 @@ bool HardModeHooksServerScript::CanPacketReceive(WorldSession* session, WorldPac
     switch (opCode)
     {
     case CMSG_GET_MAIL_LIST:
-        return HandleGetMailListOverride(session, packet);
+        return HandleGetMailListOverride(session);
         break;
     }
 
     return true;
 }
 
-bool HardModeHooksServerScript::HandleGetMailListOverride(WorldSession* session, WorldPacket& packet)
+bool HardModeHooksServerScript::HandleGetMailListOverride(WorldSession* session)
 {
     if (!session->GetPlayer())
     {

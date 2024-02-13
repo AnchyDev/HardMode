@@ -16,7 +16,7 @@ public:
 private:
     bool CanPacketSend(WorldSession* session, WorldPacket& packet) override;
     bool CanPacketReceive(WorldSession* session, WorldPacket& packet) override;
-    bool HandleGetMailListOverride(WorldSession* session, WorldPacket& packet);
+    bool HandleGetMailListOverride(WorldSession* session);
     bool HandleWhoListOverride(WorldPacket& packet);
     bool HandleFriendsListOverride(WorldPacket& packet);
     bool HandleFriendStatus(WorldPacket& packet);
