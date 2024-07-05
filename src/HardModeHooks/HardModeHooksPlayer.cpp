@@ -477,3 +477,13 @@ void HardModeHooksPlayerScript::OnLogin(Player* player)
         sHardModeHandler->TryShadowBanPlayer(player->GetGUID());
     }
 }
+
+void HardModeHooksPlayerScript::OnDelete(ObjectGuid guid, uint32 accountId)
+{
+    if (!sHardModeHandler->IsHardModeEnabled())
+    {
+        return;
+    }
+
+    sHardModeHandler->DeletePlayerSetting(guid.GetRawValue());
+}

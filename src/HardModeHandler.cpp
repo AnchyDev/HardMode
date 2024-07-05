@@ -184,6 +184,20 @@ void HardModeHandler::LoadPlayerSettings(ObjectGuid player)
     }
 }
 
+void HardModeHandler::DeletePlayerSetting(uint64 guid)
+{
+    auto settings = sHardModeHandler->GetPlayerSettings();
+    auto it = settings->find(guid);
+    if (it == settings->end())
+    {
+        return;
+    }
+
+    settings->erase(it);
+
+    CharacterDatabase.Execute("DELETE FROM hardmode_player_settings WHERE guid = {}", guid);
+}
+
 void HardModeHandler::ClearPlayerSettings()
 {
     _playerSettings.clear();

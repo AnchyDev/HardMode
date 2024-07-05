@@ -30,6 +30,7 @@ private:
     bool CanGroupInvite(Player* player, std::string& memberName) override;
 
     void OnLogin(Player* player) override;
+    void OnDelete(ObjectGuid guid, uint32 accountId) override;
 };
 
 #endif // MODULE_HARDMODE_HOOKS_PLAYER_H

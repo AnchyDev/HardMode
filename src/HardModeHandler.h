@@ -25,6 +25,7 @@ public:
 
     void LoadPlayerSettings();
     void LoadPlayerSettings(ObjectGuid guid);
+    void DeletePlayerSetting(uint64 guid);
     void ClearPlayerSettings();
     void SavePlayerSettings();
     void SavePlayerSetting(uint64 guid, HardModePlayerSettings* settings);
