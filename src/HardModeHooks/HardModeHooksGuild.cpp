@@ -26,7 +26,7 @@ bool HardModeHooksGuildScript::CanGuildSendBankList(Guild const* /*guild*/, Worl
     }
 
     auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player->GetGUID(), HARDMODE_RESTRICT_INTERACT_GUILDBANK);
-    std::string alert = Acore::StringFormatFmt("You cannot use the guild bank in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+    std::string alert = Acore::StringFormat("You cannot use the guild bank in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
     sHardModeHandler->SendAlert(player, alert);
 
     return false;
