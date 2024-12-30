@@ -4,9 +4,9 @@ HardMode is a module heavily inspired by [mod-challenge-modes](https://github.co
 This module is still a WIP.
 
 ## How to add rewards
-To add rewards, run mysql and use the world database.
-Run the following command and take note of the hardmode_modes id: SELECT * FROM hardmode_modes;
-Then with each reward you want to give, run the following command: INSERT INTO hardmode_rewards (mode, reward_level, reward_type, reward_id, reward_count, comment) VALUES(<hardmode_mode id>, <reward_type: 0 = item, 1 = title, 2 = spell>, <reward_id>, <reward_count>, 'this comment is not used in the game, so suggest to make it the name of the item, title, spell for future reference');
+To add rewards, run mysql and use the world database.  
+Run the following command and take note of the hardmode_modes id: `SELECT * FROM hardmode_modes;`  
+Then with each reward you want to give, run the following command: `INSERT INTO hardmode_rewards (mode, reward_level, reward_type, reward_id, reward_count, comment) VALUES (<hardmode_mode id>, <reward_type: 0 = item, 1 = title, 2 = spell>, <reward_id>, <reward_count>, 'this comment is not used in the game, so suggest to make it the name of the item, title, spell for future reference');`
 
 example:  
 ![image](https://github.com/user-attachments/assets/539e6b38-db23-4d91-9cb6-adfd46b5cd87)  
