@@ -87,7 +87,7 @@ bool HardModeHooksPlayerScript::CanEquipItem(Player* player, uint8 /*slot*/, uin
         if (pItem->GetGuidValue(ITEM_FIELD_CREATOR) != player->GetGUID())
         {
             auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player->GetGUID(), HARDMODE_RESTRICT_SELFCRAFTED);
-            std::string alert = Acore::StringFormatFmt("You cannot equip this item while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+            std::string alert = Acore::StringFormat("You cannot equip this item while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
             sHardModeHandler->SendAlert(player, alert);
 
             return false;
@@ -136,7 +136,7 @@ bool HardModeHooksPlayerScript::CanCastItemUseSpell(Player* player, Item* item, 
         if (item->GetGuidValue(ITEM_FIELD_CREATOR) != player->GetGUID())
         {
             auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(player->GetGUID(), HARDMODE_RESTRICT_SELFCRAFTED);
-            std::string alert = Acore::StringFormatFmt("You cannot use this item while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+            std::string alert = Acore::StringFormat("You cannot use this item while in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
             sHardModeHandler->SendAlert(player, alert);
 
             return false;
