@@ -332,7 +332,7 @@ void HardModeHooksServerScript::HandleInspectOverride(Player* player, WorldPacke
         return;
     }
 
-    std::string sFormat = Acore::StringFormatFmt("{} has modes {}.", targetPlayer->GetPlayerName(), sHardModeHandler->GetNamesFromEnabledModes(targetPlayer));
+    std::string sFormat = Acore::StringFormat("{} has modes {}.", targetPlayer->GetPlayerName(), sHardModeHandler->GetNamesFromEnabledModes(targetPlayer));
     sHardModeHandler->SendAlert(player, sFormat);
 }
 
