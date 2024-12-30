@@ -606,8 +606,8 @@ void HardModeHandler::RewardItems(Player* player, std::vector<HardModeReward> re
     }
 
     std::string hardModeName = sHardModeHandler->GetNameFromMode(mode);
-    std::string header = Acore::StringFormatFmt("{} Rewards", hardModeName);
-    std::string body = Acore::StringFormatFmt("Congratulations on reaching level {} on {} mode, enjoy your rewards!", player->GetLevel(), hardModeName);
+    std::string header = Acore::StringFormat("{} Rewards", hardModeName);
+    std::string body = Acore::StringFormat("Congratulations on reaching level {} on {} mode, enjoy your rewards!", player->GetLevel(), hardModeName);
 
     SendMailItems(player, mailItems, header, body);
 }
