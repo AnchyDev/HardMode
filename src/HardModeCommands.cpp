@@ -44,9 +44,9 @@ bool HardModeCommandsScript::HandleHardModeInfoCommand(ChatHandler* handler, Opt
 
     auto targetPlayer = target->GetConnectedPlayer();
 
-    handler->SendSysMessage(Acore::StringFormatFmt("Enabled Difficulty Modes: {}", sHardModeHandler->GetNamesFromEnabledModes(targetPlayer)));
-    handler->SendSysMessage(Acore::StringFormatFmt("IsTainted: {}", sHardModeHandler->IsPlayerTainted(targetPlayer->GetGUID())));
-    handler->SendSysMessage(Acore::StringFormatFmt("IsShadowBanned: {}", sHardModeHandler->IsPlayerShadowBanned(targetPlayer->GetGUID())));
+    handler->SendSysMessage(Acore::StringFormat("Enabled Difficulty Modes: {}", sHardModeHandler->GetNamesFromEnabledModes(targetPlayer)));
+    handler->SendSysMessage(Acore::StringFormat("IsTainted: {}", sHardModeHandler->IsPlayerTainted(targetPlayer->GetGUID())));
+    handler->SendSysMessage(Acore::StringFormat("IsShadowBanned: {}", sHardModeHandler->IsPlayerShadowBanned(targetPlayer->GetGUID())));
 
     return true;
 }
