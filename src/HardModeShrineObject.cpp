@@ -25,13 +25,13 @@ bool HardModeShrineObject::OnGossipHello(Player* player, GameObject* go)
 
         bool flag = sHardModeHandler->IsModeEnabledForPlayer(player->GetGUID(), mode.Id);
         std::string state = flag ? "Disable" : "Enable";
-        std::string format = Acore::StringFormatFmt("{} {} mode.", state, mode.Name);
+        std::string format = Acore::StringFormat("{} {} mode.", state, mode.Name);
 
         if (sHardModeHandler->IsPlayerTainted(player->GetGUID()))
         {
             if (flag)
             {
-                std::string popupFormat = Acore::StringFormatFmt("Are you sure you want to disable the {} mode?|n|nYou will not be able to re-enable it.", mode.Name);
+                std::string popupFormat = Acore::StringFormat("Are you sure you want to disable the {} mode?|n|nYou will not be able to re-enable it.", mode.Name);
                 AddGossipItemFor(player, GOSSIP_ICON_CHAT, format, 0, mode.Id, popupFormat, 0, false);
             }
         }
