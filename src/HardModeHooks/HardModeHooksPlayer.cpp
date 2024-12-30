@@ -296,7 +296,7 @@ bool HardModeHooksPlayerScript::CanInitTrade(Player* player, Player* target)
         target->GetSession()->SendTradeStatus(TRADE_STATUS_TRADE_CANCELED);
 
         auto restrictedModes = sHardModeHandler->GetPlayerModesFromRestriction(target->GetGUID(), HARDMODE_RESTRICT_INTERACT_TRADE);
-        std::string alert = Acore::StringFormatFmt("You cannot trade players in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
+        std::string alert = Acore::StringFormat("You cannot trade players in the {} mode(s).", sHardModeHandler->GetDelimitedModes(restrictedModes, ", "));
         sHardModeHandler->SendAlert(player, alert);
 
         return false;
