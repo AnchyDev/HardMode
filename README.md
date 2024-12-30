@@ -10,9 +10,9 @@ Then with each reward you want to give, run the following command: INSERT INTO h
 
 example: 
 ![image](https://github.com/user-attachments/assets/539e6b38-db23-4d91-9cb6-adfd46b5cd87)
-- INSERT INTO hardmode_rewards (mode, reward_level, reward_type, reward_id, reward_count, comment) VALUES (4, 80, 0, 46708, 1, 'Deadly Gladiators Frost Wyrm');
-- INSERT INTO hardmode_rewards (mode, reward_level, reward_type, reward_id, reward_count, comment) VALUES (5, 80, 0, 46171, 1, 'Furious Gladiators Frost Wyrm');
-- INSERT INTO hardmode_rewards (mode, reward_level, reward_type, reward_id, reward_count, comment) VALUES (6, 80, 0, 47840, 1, 'Relentless Gladiators Frost Wyrm');
+```INSERT INTO hardmode_rewards (mode, reward_level, reward_type, reward_id, reward_count, comment) VALUES (4, 80, 0, 46708, 1, 'Deadly Gladiators Frost Wyrm');```  
+```INSERT INTO hardmode_rewards (mode, reward_level, reward_type, reward_id, reward_count, comment) VALUES (5, 80, 0, 46171, 1, 'Furious Gladiators Frost Wyrm');```  
+```INSERT INTO hardmode_rewards (mode, reward_level, reward_type, reward_id, reward_count, comment) VALUES (6, 80, 0, 47840, 1, 'Relentless Gladiators Frost Wyrm');```
 
 ## Features
 - Build your own HardModes using the [restriction builder](https://anchydev.github.io/HardMode/#mode-editor).
