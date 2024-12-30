@@ -76,7 +76,7 @@ bool HardModeCommandsScript::HandleHardModeSetModeCommand(ChatHandler* handler, 
     auto targetPlayer = target->GetConnectedPlayer();
     sHardModeHandler->UpdateModeForPlayer(targetPlayer->GetGUID(), mode, value);
 
-    handler->SendSysMessage(Acore::StringFormatFmt("Updated mode '{}' for player '{}' to '{}'.", sHardModeHandler->GetNameFromMode(mode), targetPlayer->GetName(), value));
+    handler->SendSysMessage(Acore::StringFormat("Updated mode '{}' for player '{}' to '{}'.", sHardModeHandler->GetNameFromMode(mode), targetPlayer->GetName(), value));
 
     return true;
 }
