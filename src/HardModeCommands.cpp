@@ -44,9 +44,9 @@ bool HardModeCommandsScript::HandleHardModeInfoCommand(ChatHandler* handler, Opt
 
     auto targetPlayer = target->GetConnectedPlayer();
 
-    handler->SendSysMessage(Acore::StringFormatFmt("Enabled Difficulty Modes: {}", sHardModeHandler->GetNamesFromEnabledModes(targetPlayer)));
-    handler->SendSysMessage(Acore::StringFormatFmt("IsTainted: {}", sHardModeHandler->IsPlayerTainted(targetPlayer->GetGUID())));
-    handler->SendSysMessage(Acore::StringFormatFmt("IsShadowBanned: {}", sHardModeHandler->IsPlayerShadowBanned(targetPlayer->GetGUID())));
+    handler->SendSysMessage(Acore::StringFormat("Enabled Difficulty Modes: {}", sHardModeHandler->GetNamesFromEnabledModes(targetPlayer)));
+    handler->SendSysMessage(Acore::StringFormat("IsTainted: {}", sHardModeHandler->IsPlayerTainted(targetPlayer->GetGUID())));
+    handler->SendSysMessage(Acore::StringFormat("IsShadowBanned: {}", sHardModeHandler->IsPlayerShadowBanned(targetPlayer->GetGUID())));
 
     return true;
 }
@@ -76,7 +76,7 @@ bool HardModeCommandsScript::HandleHardModeSetModeCommand(ChatHandler* handler, 
     auto targetPlayer = target->GetConnectedPlayer();
     sHardModeHandler->UpdateModeForPlayer(targetPlayer->GetGUID(), mode, value);
 
-    handler->SendSysMessage(Acore::StringFormatFmt("Updated mode '{}' for player '{}' to '{}'.", sHardModeHandler->GetNameFromMode(mode), targetPlayer->GetName(), value));
+    handler->SendSysMessage(Acore::StringFormat("Updated mode '{}' for player '{}' to '{}'.", sHardModeHandler->GetNameFromMode(mode), targetPlayer->GetName(), value));
 
     return true;
 }
@@ -107,7 +107,7 @@ bool HardModeCommandsScript::HandleHardModeSetTaintCommand(ChatHandler* handler,
 
     sHardModeHandler->UpdatePlayerTainted(targetPlayer->GetGUID(), value);
 
-    handler->SendSysMessage(Acore::StringFormatFmt("Updated taint for player '{}' to '{}'.", targetPlayer->GetName(), value));
+    handler->SendSysMessage(Acore::StringFormat("Updated taint for player '{}' to '{}'.", targetPlayer->GetName(), value));
 
     return true;
 }
@@ -132,7 +132,7 @@ bool HardModeCommandsScript::HandleHardModeSetShadowBanCommand(ChatHandler* hand
     auto targetPlayer = target->GetConnectedPlayer();
     sHardModeHandler->UpdatePlayerShadowBanned(targetPlayer->GetGUID(), value);
 
-    handler->SendSysMessage(Acore::StringFormatFmt("Updated shadow ban for player '{}' to '{}'.", targetPlayer->GetName(), value));
+    handler->SendSysMessage(Acore::StringFormat("Updated shadow ban for player '{}' to '{}'.", targetPlayer->GetName(), value));
 
     return true;
 }

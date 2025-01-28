@@ -322,11 +322,11 @@ void HardModeHooksUnitScript::OnUnitDeath(Unit* unit, Unit* killer)
 
     if (killer)
     {
-        ss << Acore::StringFormatFmt("|cffFF0000Player {} has died to {} {} while undertaking the permadeath restriction!", player->GetName(), killer->ToPlayer() ? "player" : "creature", killer->GetName());
+        ss << Acore::StringFormat("|cffFF0000Player {} has died to {} {} while undertaking the permadeath restriction!", player->GetName(), killer->ToPlayer() ? "player" : "creature", killer->GetName());
     }
     else
     {
-        ss << Acore::StringFormatFmt("|cffFF0000Player {} has died while undertaking the permadeath restriction!", player->GetName());
+        ss << Acore::StringFormat("|cffFF0000Player {} has died while undertaking the permadeath restriction!", player->GetName());
     }
 
     sWorld->SendServerMessage(SERVER_MSG_STRING, ss.str());
